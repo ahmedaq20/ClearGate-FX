@@ -11,12 +11,27 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
+/**
+ * @group Dashboard
+ *
+ * Operational summaries and charts for the authenticated user's permitted scope.
+ */
 class DashboardController extends BaseApiController
 {
     public function __construct(
         private BalanceService $balanceService,
     ) {}
 
+    /**
+     * Dashboard summary
+     *
+     * Return headline balances, today's net activity, customer counts, recent transactions, and top customers.
+     * Owners receive the total balance across all vaults; managers receive data scoped to their own vault and customers.
+     *
+     * @authenticated
+     *
+     * @response 200 {"success":true,"message":"Success","data":{"total_balance_usd":15000.5,"my_vault_balance":4200,"today_net_usd":{"receive":500,"send":200,"net":300,"count":3},"customers_count":18,"transactions_today_count":3,"recent_transactions":[],"top_customers":[]}}
+     */
     public function summary(Request $request): JsonResponse
     {
         $user = $this->currentUser($request);
@@ -42,6 +57,17 @@ class DashboardController extends BaseApiController
         ]);
     }
 
+    /**
+     * Dashboard chart
+     *
+     * Return daily receive, send, and net totals for a chart period.
+     *
+     * @authenticated
+     *
+     * @queryParam period string Chart period: 7d, 30d, or 3m. Example: 7d
+     *
+     * @response 200 {"success":true,"message":"Success","data":{"labels":["2026-05-01","2026-05-02"],"receive":[100,250],"send":[50,75],"net":[50,175]}}
+     */
     public function chart(Request $request): JsonResponse
     {
         $period = $request->string('period', '7d')->toString();

@@ -12,12 +12,31 @@ use App\Services\BalanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * @group Customers
+ *
+ * Manage customers owned by users and linked to their vaults.
+ */
 class CustomerController extends BaseApiController
 {
     public function __construct(
         private BalanceService $balanceService,
     ) {}
 
+    /**
+     * List customers
+     *
+     * Owner users can see all customers. Managers are scoped to their own customers.
+     *
+     * @authenticated
+     *
+     * @queryParam search string Search by customer name. Example: Ahmed
+     * @queryParam category string Filter by category. Example: regular
+     * @queryParam user_id integer Owner-only user filter. Example: 3
+     * @queryParam is_active boolean Filter active status. Example: true
+     * @queryParam with_trashed boolean Include soft-deleted rows. Example: false
+     * @queryParam per_page integer Results per page. Example: 20
+     */
     public function index(Request $request): JsonResponse
     {
         $query = Customer::query()->with(['user', 'vault'])->latest();
@@ -39,6 +58,15 @@ class CustomerController extends BaseApiController
         return $this->sendResponse($query->paginate($request->integer('per_page', 20)));
     }
 
+    /**
+     * Create customer
+     *
+     * Create a customer and attach it to the selected user's vault.
+     *
+     * @authenticated
+     *
+     * @response 201 {"success":true,"message":"تم إنشاء العميل"}
+     */
     public function store(StoreCustomerRequest $request): JsonResponse
     {
         $owner = $this->isOwner($request->user());
@@ -54,6 +82,13 @@ class CustomerController extends BaseApiController
         return $this->sendResponse(Customer::query()->create($data), 'تم إنشاء العميل', 201);
     }
 
+    /**
+     * Show customer
+     *
+     * Return one customer if the current user is allowed to view it.
+     *
+     * @authenticated
+     */
     public function show(Request $request, Customer $customer): JsonResponse
     {
         if (! $this->isOwner($request->user()) && $customer->user_id !== $request->user()?->id) {
@@ -63,6 +98,15 @@ class CustomerController extends BaseApiController
         return $this->sendResponse($customer->load(['user', 'vault']));
     }
 
+    /**
+     * Update customer
+     *
+     * Update customer profile fields.
+     *
+     * @authenticated
+     *
+     * @response 200 {"success":true,"message":"تم تحديث العميل"}
+     */
     public function update(UpdateCustomerRequest $request, Customer $customer): JsonResponse
     {
         if (! $this->isOwner($request->user()) && $customer->user_id !== $request->user()?->id) {
@@ -74,6 +118,15 @@ class CustomerController extends BaseApiController
         return $this->sendResponse($customer->refresh(), 'تم تحديث العميل');
     }
 
+    /**
+     * Delete customer
+     *
+     * Soft-delete a customer.
+     *
+     * @authenticated
+     *
+     * @response 200 {"success":true,"message":"تم حذف العميل"}
+     */
     public function destroy(Request $request, Customer $customer): JsonResponse
     {
         if (! $this->isOwner($request->user()) && $customer->user_id !== $request->user()?->id) {
@@ -85,6 +138,15 @@ class CustomerController extends BaseApiController
         return $this->sendResponse(null, 'تم حذف العميل');
     }
 
+    /**
+     * Restore customer
+     *
+     * Owner-only endpoint that restores a soft-deleted customer.
+     *
+     * @authenticated
+     *
+     * @urlParam id integer required Customer ID. Example: 7
+     */
     public function restore(Request $request, int $id): JsonResponse
     {
         if ($error = $this->abortUnlessOwner($request)) {
@@ -97,6 +159,15 @@ class CustomerController extends BaseApiController
         return $this->sendResponse($customer, 'تم استعادة العميل');
     }
 
+    /**
+     * Force delete customer
+     *
+     * Owner-only endpoint that permanently deletes a customer.
+     *
+     * @authenticated
+     *
+     * @urlParam id integer required Customer ID. Example: 7
+     */
     public function forceDelete(Request $request, int $id): JsonResponse
     {
         if ($error = $this->abortUnlessOwner($request)) {
@@ -108,6 +179,15 @@ class CustomerController extends BaseApiController
         return $this->sendResponse(null, 'تم حذف العميل نهائياً');
     }
 
+    /**
+     * Customer transactions
+     *
+     * List transactions linked to a customer.
+     *
+     * @authenticated
+     *
+     * @queryParam per_page integer Results per page. Example: 20
+     */
     public function transactions(Request $request, Customer $customer): JsonResponse
     {
         if (! $this->isOwner($request->user()) && $customer->user_id !== $request->user()?->id) {
@@ -119,6 +199,15 @@ class CustomerController extends BaseApiController
         return $this->sendResponse($query->paginate($request->integer('per_page', 20)));
     }
 
+    /**
+     * Customer balance
+     *
+     * Return the customer balance in USD.
+     *
+     * @authenticated
+     *
+     * @response 200 {"success":true,"message":"Success","data":{"balance_usd":250.5}}
+     */
     public function balance(Request $request, Customer $customer): JsonResponse
     {
         if (! $this->isOwner($request->user()) && $customer->user_id !== $request->user()?->id) {

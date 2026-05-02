@@ -1,0 +1,1767 @@
+openapi: 3.0.3
+info:
+  title: 'ClearGate FX API Documentation'
+  description: 'API documentation for the ClearGate FX currency exchange backend.'
+  version: 1.0.0
+servers:
+  -
+    url: 'http://exhange.test'
+tags:
+  -
+    name: Authentication
+    description: "\nEndpoints for API token login, logout, profile lookup, and password changes."
+  -
+    name: Customers
+    description: "\nManage customers owned by users and linked to their vaults."
+  -
+    name: Endpoints
+    description: ''
+  -
+    name: Transactions
+    description: "\nManage receive/send transactions. Financial calculations are handled by TransactionService."
+  -
+    name: Vaults
+    description: "\nView and manage user vault information. Balance changes remain service-driven."
+components:
+  securitySchemes:
+    default:
+      type: http
+      scheme: bearer
+      description: 'Use the token returned by POST /api/v1/auth/login as a Bearer token.'
+security:
+  -
+    default: []
+paths:
+  /api/v1/auth/login:
+    post:
+      summary: Login
+      operationId: login
+      description: 'Authenticate an active user and return a Sanctum bearer token.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تسجيل الدخول'
+                  data:
+                    user:
+                      id: 1
+                      name: Owner
+                      email: owner@example.com
+                    token: 1|example-token
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تسجيل الدخول'
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: Owner
+                          email:
+                            type: string
+                            example: owner@example.com
+                      token:
+                        type: string
+                        example: 1|example-token
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'بيانات الدخول غير صحيحة'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'بيانات الدخول غير صحيحة'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'الحساب موقوف'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'الحساب موقوف'
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: 'Must be a valid email address.'
+                  example: gbailey@example.net
+                password:
+                  type: string
+                  description: ''
+                  example: '|]|{+-'
+              required:
+                - email
+                - password
+      security: []
+  /api/v1/auth/logout:
+    post:
+      summary: Logout
+      operationId: logout
+      description: 'Revoke the current Sanctum token for the authenticated user.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تسجيل الخروج'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تسجيل الخروج'
+      tags:
+        - Authentication
+  /api/v1/auth/me:
+    get:
+      summary: 'Current user'
+      operationId: currentUser
+      description: 'Return the authenticated user profile.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    id: 1
+                    name: Owner
+                    email: owner@example.com
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: Owner
+                      email:
+                        type: string
+                        example: owner@example.com
+      tags:
+        - Authentication
+  /api/v1/auth/change-password:
+    put:
+      summary: 'Change password'
+      operationId: changePassword
+      description: "Update the authenticated user's password after verifying the current password."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تغيير كلمة المرور'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تغيير كلمة المرور'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'كلمة المرور الحالية غير صحيحة'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'كلمة المرور الحالية غير صحيحة'
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                current_password:
+                  type: string
+                  description: ''
+                  example: architecto
+                password:
+                  type: string
+                  description: 'Must be at least 8 characters.'
+                  example: ']|{+-0pBNvYg'
+              required:
+                - current_password
+                - password
+  '/api/v1/customers/{customer_id}/transactions':
+    get:
+      summary: 'Customer transactions'
+      operationId: customerTransactions
+      description: 'List transactions linked to a customer.'
+      parameters:
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses: {  }
+      tags:
+        - Customers
+    parameters:
+      -
+        in: path
+        name: customer_id
+        description: 'The ID of the customer.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v1/customers/{customer_id}/balance':
+    get:
+      summary: 'Customer balance'
+      operationId: customerBalance
+      description: 'Return the customer balance in USD.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    balance_usd: 250.5
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      balance_usd:
+                        type: number
+                        example: 250.5
+      tags:
+        - Customers
+    parameters:
+      -
+        in: path
+        name: customer_id
+        description: 'The ID of the customer.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/v1/customers:
+    get:
+      summary: 'List customers'
+      operationId: listCustomers
+      description: 'Owner users can see all customers. Managers are scoped to their own customers.'
+      parameters:
+        -
+          in: query
+          name: search
+          description: 'Search by customer name.'
+          example: Ahmed
+          required: false
+          schema:
+            type: string
+            description: 'Search by customer name.'
+            example: Ahmed
+        -
+          in: query
+          name: category
+          description: 'Filter by category.'
+          example: regular
+          required: false
+          schema:
+            type: string
+            description: 'Filter by category.'
+            example: regular
+        -
+          in: query
+          name: user_id
+          description: 'Owner-only user filter.'
+          example: 3
+          required: false
+          schema:
+            type: integer
+            description: 'Owner-only user filter.'
+            example: 3
+        -
+          in: query
+          name: is_active
+          description: 'Filter active status.'
+          example: true
+          required: false
+          schema:
+            type: boolean
+            description: 'Filter active status.'
+            example: true
+        -
+          in: query
+          name: with_trashed
+          description: 'Include soft-deleted rows.'
+          example: false
+          required: false
+          schema:
+            type: boolean
+            description: 'Include soft-deleted rows.'
+            example: false
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses: {  }
+      tags:
+        - Customers
+    post:
+      summary: 'Create customer'
+      operationId: createCustomer
+      description: "Create a customer and attach it to the selected user's vault."
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم إنشاء العميل'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم إنشاء العميل'
+      tags:
+        - Customers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: b
+                phone:
+                  type: string
+                  description: 'Must not be greater than 30 characters.'
+                  example: 'n'
+                  nullable: true
+                note:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                category:
+                  type: string
+                  description: ''
+                  example: agent
+                  enum:
+                    - regular
+                    - vip
+                    - agent
+                    - company
+                  nullable: true
+                country:
+                  type: string
+                  description: 'Must not be greater than 50 characters.'
+                  example: 'n'
+                  nullable: true
+                user_id:
+                  type: integer
+                  description: 'The <code>id</code> of an existing record in the users table.'
+                  example: 16
+                  nullable: true
+              required:
+                - name
+  '/api/v1/customers/{id}':
+    get:
+      summary: 'Show customer'
+      operationId: showCustomer
+      description: 'Return one customer if the current user is allowed to view it.'
+      parameters: []
+      responses: {  }
+      tags:
+        - Customers
+    put:
+      summary: 'Update customer'
+      operationId: updateCustomer
+      description: 'Update customer profile fields.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث العميل'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث العميل'
+      tags:
+        - Customers
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: b
+                phone:
+                  type: string
+                  description: 'Must not be greater than 30 characters.'
+                  example: 'n'
+                  nullable: true
+                note:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                category:
+                  type: string
+                  description: ''
+                  example: agent
+                  enum:
+                    - regular
+                    - vip
+                    - agent
+                    - company
+                  nullable: true
+                country:
+                  type: string
+                  description: 'Must not be greater than 50 characters.'
+                  example: 'n'
+                  nullable: true
+                is_active:
+                  type: boolean
+                  description: ''
+                  example: true
+                  nullable: true
+    delete:
+      summary: 'Delete customer'
+      operationId: deleteCustomer
+      description: 'Soft-delete a customer.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم حذف العميل'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم حذف العميل'
+      tags:
+        - Customers
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the customer.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v1/customers/{id}/restore':
+    patch:
+      summary: 'Restore customer'
+      operationId: restoreCustomer
+      description: 'Owner-only endpoint that restores a soft-deleted customer.'
+      parameters: []
+      responses: {  }
+      tags:
+        - Customers
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'Customer ID.'
+        example: 7
+        required: true
+        schema:
+          type: integer
+  '/api/v1/customers/{id}/force':
+    delete:
+      summary: 'Force delete customer'
+      operationId: forceDeleteCustomer
+      description: 'Owner-only endpoint that permanently deletes a customer.'
+      parameters: []
+      responses: {  }
+      tags:
+        - Customers
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'Customer ID.'
+        example: 7
+        required: true
+        schema:
+          type: integer
+  /api/v1/settings/public:
+    get:
+      summary: ''
+      operationId: getApiV1SettingsPublic
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+  /api/v1/dashboard/summary:
+    get:
+      summary: ''
+      operationId: getApiV1DashboardSummary
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+  /api/v1/dashboard/chart:
+    get:
+      summary: ''
+      operationId: getApiV1DashboardChart
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+  '/api/v1/currencies/{code}/rate':
+    put:
+      summary: ''
+      operationId: putApiV1CurrenciesCodeRate
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rate:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                date:
+                  type: string
+                  description: 'Must be a valid date.'
+                  example: '2026-05-02T21:28:52'
+                  nullable: true
+              required:
+                - rate
+    parameters:
+      -
+        in: path
+        name: code
+        description: ''
+        example: architecto
+        required: true
+        schema:
+          type: string
+  /api/v1/currencies:
+    get:
+      summary: ''
+      operationId: getApiV1Currencies
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    post:
+      summary: ''
+      operationId: postApiV1Currencies
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: bngzmi
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: 'y'
+                name_ar:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: v
+                symbol:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: dljnik
+                rate_to_usd:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                is_active:
+                  type: boolean
+                  description: ''
+                  example: true
+                  nullable: true
+              required:
+                - code
+                - name
+                - name_ar
+                - symbol
+                - rate_to_usd
+  '/api/v1/currencies/{id}':
+    get:
+      summary: ''
+      operationId: getApiV1CurrenciesId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    put:
+      summary: ''
+      operationId: putApiV1CurrenciesId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: bngzmi
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: 'y'
+                name_ar:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: v
+                symbol:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: dljnik
+                rate_to_usd:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                is_active:
+                  type: boolean
+                  description: ''
+                  example: true
+                  nullable: true
+    delete:
+      summary: ''
+      operationId: deleteApiV1CurrenciesId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the currency.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/v1/exchange-rates/bulk-update:
+    post:
+      summary: ''
+      operationId: postApiV1ExchangeRatesBulkUpdate
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rates:
+                  type: array
+                  description: 'Must have at least 1 items.'
+                  example:
+                    - []
+                  items:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: 'The <code>code</code> of an existing record in the currencies table. Must not be greater than 10 characters.'
+                        example: bngzmi
+                      rate:
+                        type: number
+                        description: ''
+                        example: 4326.41688
+                    required:
+                      - code
+                      - rate
+              required:
+                - rates
+  /api/v1/exchange-rates:
+    get:
+      summary: ''
+      operationId: getApiV1ExchangeRates
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+  /api/v1/settings:
+    get:
+      summary: ''
+      operationId: getApiV1Settings
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    put:
+      summary: ''
+      operationId: putApiV1Settings
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settings:
+                  type: array
+                  description: ''
+                  example: null
+                  items:
+                    type: string
+                    nullable: true
+  '/api/v1/settings/{group}':
+    get:
+      summary: ''
+      operationId: getApiV1SettingsGroup
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    parameters:
+      -
+        in: path
+        name: group
+        description: ''
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v1/settings/reset/{group}':
+    post:
+      summary: ''
+      operationId: postApiV1SettingsResetGroup
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    parameters:
+      -
+        in: path
+        name: group
+        description: ''
+        example: architecto
+        required: true
+        schema:
+          type: string
+  /api/v1/notifications/unread-count:
+    get:
+      summary: ''
+      operationId: getApiV1NotificationsUnreadCount
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+  /api/v1/notifications/read-all:
+    put:
+      summary: ''
+      operationId: putApiV1NotificationsReadAll
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+  /api/v1/notifications:
+    get:
+      summary: ''
+      operationId: getApiV1Notifications
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+  '/api/v1/notifications/{notification_id}/read':
+    put:
+      summary: ''
+      operationId: putApiV1NotificationsNotification_idRead
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    parameters:
+      -
+        in: path
+        name: notification_id
+        description: 'The ID of the notification.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v1/notifications/{id}':
+    delete:
+      summary: ''
+      operationId: deleteApiV1NotificationsId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the notification.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v1/users/{id}/restore':
+    patch:
+      summary: ''
+      operationId: patchApiV1UsersIdRestore
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the user.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v1/users/{user_id}/toggle-active':
+    patch:
+      summary: ''
+      operationId: patchApiV1UsersUser_idToggleActive
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    parameters:
+      -
+        in: path
+        name: user_id
+        description: 'The ID of the user.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v1/users/{user_id}/vault-balance':
+    patch:
+      summary: ''
+      operationId: patchApiV1UsersUser_idVaultBalance
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                initial_balance:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+              required:
+                - initial_balance
+    parameters:
+      -
+        in: path
+        name: user_id
+        description: 'The ID of the user.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/v1/users:
+    get:
+      summary: ''
+      operationId: getApiV1Users
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    post:
+      summary: ''
+      operationId: postApiV1Users
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: b
+                email:
+                  type: string
+                  description: 'Must be a valid email address. Must not be greater than 150 characters.'
+                  example: zbailey@example.net
+                password:
+                  type: string
+                  description: 'Must be at least 8 characters.'
+                  example: '-0pBNvYgxw'
+                phone:
+                  type: string
+                  description: 'Must not be greater than 30 characters.'
+                  example: a
+                  nullable: true
+                role:
+                  type: string
+                  description: ''
+                  example: manager
+                  enum:
+                    - manager
+                  nullable: true
+                initial_balance:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                is_active:
+                  type: boolean
+                  description: ''
+                  example: true
+                  nullable: true
+              required:
+                - name
+                - email
+                - password
+  '/api/v1/users/{id}':
+    get:
+      summary: ''
+      operationId: getApiV1UsersId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    put:
+      summary: ''
+      operationId: putApiV1UsersId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: b
+                email:
+                  type: string
+                  description: 'Must be a valid email address. Must not be greater than 150 characters.'
+                  example: zbailey@example.net
+                password:
+                  type: string
+                  description: 'Must be at least 8 characters.'
+                  example: '-0pBNvYgxw'
+                  nullable: true
+                phone:
+                  type: string
+                  description: 'Must not be greater than 30 characters.'
+                  example: a
+                  nullable: true
+                is_active:
+                  type: boolean
+                  description: ''
+                  example: false
+                  nullable: true
+    delete:
+      summary: ''
+      operationId: deleteApiV1UsersId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the user.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/v1/transactions/daily-summary:
+    get:
+      summary: 'Daily transaction summary'
+      operationId: dailyTransactionSummary
+      description: 'Return receive, send, net, and count totals for the current user on a date.'
+      parameters:
+        -
+          in: query
+          name: date
+          description: 'date Summary date.'
+          example: '2026-05-03'
+          required: false
+          schema:
+            type: string
+            description: 'date Summary date.'
+            example: '2026-05-03'
+      responses: {  }
+      tags:
+        - Transactions
+  /api/v1/transactions:
+    get:
+      summary: 'List transactions'
+      operationId: listTransactions
+      description: 'Owner users can see all transactions. Managers are scoped to their own transactions.'
+      parameters:
+        -
+          in: query
+          name: date_from
+          description: 'date Filter from transaction date.'
+          example: '2026-05-01'
+          required: false
+          schema:
+            type: string
+            description: 'date Filter from transaction date.'
+            example: '2026-05-01'
+        -
+          in: query
+          name: date_to
+          description: 'date Filter to transaction date.'
+          example: '2026-05-31'
+          required: false
+          schema:
+            type: string
+            description: 'date Filter to transaction date.'
+            example: '2026-05-31'
+        -
+          in: query
+          name: type
+          description: 'Filter by transaction type.'
+          example: receive
+          required: false
+          schema:
+            type: string
+            description: 'Filter by transaction type.'
+            example: receive
+        -
+          in: query
+          name: customer_id
+          description: 'Filter by customer ID.'
+          example: 12
+          required: false
+          schema:
+            type: integer
+            description: 'Filter by customer ID.'
+            example: 12
+        -
+          in: query
+          name: currency
+          description: 'Filter by currency code.'
+          example: USD
+          required: false
+          schema:
+            type: string
+            description: 'Filter by currency code.'
+            example: USD
+        -
+          in: query
+          name: user_id
+          description: 'Owner-only user filter.'
+          example: 3
+          required: false
+          schema:
+            type: integer
+            description: 'Owner-only user filter.'
+            example: 3
+        -
+          in: query
+          name: vault_id
+          description: 'Filter by vault ID.'
+          example: 2
+          required: false
+          schema:
+            type: integer
+            description: 'Filter by vault ID.'
+            example: 2
+        -
+          in: query
+          name: country
+          description: 'Filter by country.'
+          example: Palestine
+          required: false
+          schema:
+            type: string
+            description: 'Filter by country.'
+            example: Palestine
+        -
+          in: query
+          name: min_usd
+          description: 'Minimum net USD value.'
+          example: 10.0
+          required: false
+          schema:
+            type: number
+            description: 'Minimum net USD value.'
+            example: 10.0
+        -
+          in: query
+          name: max_usd
+          description: 'Maximum net USD value.'
+          example: 5000.0
+          required: false
+          schema:
+            type: number
+            description: 'Maximum net USD value.'
+            example: 5000.0
+        -
+          in: query
+          name: with_trashed
+          description: 'Include soft-deleted rows.'
+          example: false
+          required: false
+          schema:
+            type: boolean
+            description: 'Include soft-deleted rows.'
+            example: false
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses: {  }
+      tags:
+        - Transactions
+    post:
+      summary: 'Create transaction'
+      operationId: createTransaction
+      description: "Create a receive or send transaction using the current user's vault. Commission is calculated in TransactionService."
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم إنشاء العملية'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم إنشاء العملية'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
+      tags:
+        - Transactions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: ''
+                  example: receive
+                  enum:
+                    - receive
+                    - send
+                amount:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                currency_code:
+                  type: string
+                  description: 'The <code>code</code> of an existing record in the currencies table. Must not be greater than 10 characters.'
+                  example: miyvdl
+                exchange_rate:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                customer_id:
+                  type: integer
+                  description: 'The <code>id</code> of an existing record in the customers table.'
+                  example: 16
+                  nullable: true
+                commission_type:
+                  type: string
+                  description: ''
+                  example: percentage
+                  enum:
+                    - percentage
+                    - fixed
+                  nullable: true
+                commission_rate:
+                  type: number
+                  description: 'This field is required when <code>commission_type</code> is present.'
+                  example: 4326.41688
+                  nullable: true
+                commission_sign:
+                  type: integer
+                  description: 'This field is required when <code>commission_type</code> is present.'
+                  example: -1
+                  enum:
+                    - 1
+                    - -1
+                  nullable: true
+                note:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                reference_number:
+                  type: string
+                  description: 'Must not be greater than 50 characters.'
+                  example: 'n'
+                  nullable: true
+                country:
+                  type: string
+                  description: 'Must not be greater than 50 characters.'
+                  example: g
+                  nullable: true
+                transaction_date:
+                  type: string
+                  description: 'Must be a valid date.'
+                  example: '2026-05-02T21:28:52'
+              required:
+                - type
+                - amount
+                - currency_code
+                - transaction_date
+  '/api/v1/transactions/{id}':
+    get:
+      summary: 'Show transaction'
+      operationId: showTransaction
+      description: 'Return one transaction if the current user is allowed to view it.'
+      parameters: []
+      responses: {  }
+      tags:
+        - Transactions
+    put:
+      summary: 'Update transaction metadata'
+      operationId: updateTransactionMetadata
+      description: 'Update non-financial transaction fields only.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث العملية'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث العملية'
+      tags:
+        - Transactions
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                reference_number:
+                  type: string
+                  description: 'Must not be greater than 50 characters.'
+                  example: 'n'
+                  nullable: true
+                country:
+                  type: string
+                  description: 'Must not be greater than 50 characters.'
+                  example: g
+                  nullable: true
+                transaction_date:
+                  type: string
+                  description: 'Must be a valid date.'
+                  example: '2026-05-02T21:28:52'
+                  nullable: true
+    delete:
+      summary: 'Delete transaction'
+      operationId: deleteTransaction
+      description: 'Soft-delete a transaction and reverse its balance effect through TransactionService.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم حذف العملية'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم حذف العملية'
+      tags:
+        - Transactions
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the transaction.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v1/transactions/{id}/restore':
+    patch:
+      summary: 'Restore transaction'
+      operationId: restoreTransaction
+      description: 'Owner-only endpoint that restores a soft-deleted transaction and reapplies its balance effect.'
+      parameters: []
+      responses: {  }
+      tags:
+        - Transactions
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'Transaction ID.'
+        example: 10
+        required: true
+        schema:
+          type: integer
+  '/api/v1/transactions/{id}/force':
+    delete:
+      summary: 'Force delete transaction'
+      operationId: forceDeleteTransaction
+      description: 'Owner-only endpoint that permanently deletes a transaction.'
+      parameters: []
+      responses: {  }
+      tags:
+        - Transactions
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'Transaction ID.'
+        example: 10
+        required: true
+        schema:
+          type: integer
+  '/api/v1/vaults/{vault_id}/set-balance':
+    patch:
+      summary: 'Set vault initial balance'
+      operationId: setVaultInitialBalance
+      description: 'Owner-only endpoint that updates the vault initial balance and recalculates current balance.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث رصيد الصندوق'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث رصيد الصندوق'
+      tags:
+        - Vaults
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                initial_balance:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+              required:
+                - initial_balance
+    parameters:
+      -
+        in: path
+        name: vault_id
+        description: 'The ID of the vault.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v1/vaults/{vault_id}/transactions':
+    get:
+      summary: 'Vault transactions'
+      operationId: vaultTransactions
+      description: 'List transactions linked to a vault.'
+      parameters:
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses: {  }
+      tags:
+        - Vaults
+    parameters:
+      -
+        in: path
+        name: vault_id
+        description: 'The ID of the vault.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v1/vaults/{vault_id}/summary':
+    get:
+      summary: 'Vault summary'
+      operationId: vaultSummary
+      description: 'Return initial balance, receive totals, send totals, and current USD balance.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    initial_balance: 1000
+                    total_receive: 500
+                    total_send: 100
+                    balance_usd: 1400
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      initial_balance:
+                        type: integer
+                        example: 1000
+                      total_receive:
+                        type: integer
+                        example: 500
+                      total_send:
+                        type: integer
+                        example: 100
+                      balance_usd:
+                        type: integer
+                        example: 1400
+      tags:
+        - Vaults
+    parameters:
+      -
+        in: path
+        name: vault_id
+        description: 'The ID of the vault.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/v1/vaults:
+    get:
+      summary: 'List vaults'
+      operationId: listVaults
+      description: 'Owner users can see all vaults. Managers are scoped to their own vault.'
+      parameters:
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses: {  }
+      tags:
+        - Vaults
+  '/api/v1/vaults/{id}':
+    get:
+      summary: 'Show vault'
+      operationId: showVault
+      description: 'Return one vault if the current user is allowed to view it.'
+      parameters: []
+      responses: {  }
+      tags:
+        - Vaults
+    put:
+      summary: 'Update vault'
+      operationId: updateVault
+      description: 'Update editable vault metadata. Managers cannot update initial balance here.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث الصندوق'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث الصندوق'
+      tags:
+        - Vaults
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: b
+                  nullable: true
+                note:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                is_active:
+                  type: boolean
+                  description: ''
+                  example: false
+                  nullable: true
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the vault.'
+        example: 16
+        required: true
+        schema:
+          type: integer

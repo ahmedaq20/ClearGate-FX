@@ -11,6 +11,11 @@ use App\Services\TransactionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * @group Transactions
+ *
+ * Manage receive/send transactions. Financial calculations are handled by TransactionService.
+ */
 class TransactionController extends BaseApiController
 {
     public function __construct(
@@ -18,6 +23,26 @@ class TransactionController extends BaseApiController
         private BalanceService $balanceService,
     ) {}
 
+    /**
+     * List transactions
+     *
+     * Owner users can see all transactions. Managers are scoped to their own transactions.
+     *
+     * @authenticated
+     *
+     * @queryParam date_from date Filter from transaction date. Example: 2026-05-01
+     * @queryParam date_to date Filter to transaction date. Example: 2026-05-31
+     * @queryParam type string Filter by transaction type. Example: receive
+     * @queryParam customer_id integer Filter by customer ID. Example: 12
+     * @queryParam currency string Filter by currency code. Example: USD
+     * @queryParam user_id integer Owner-only user filter. Example: 3
+     * @queryParam vault_id integer Filter by vault ID. Example: 2
+     * @queryParam country string Filter by country. Example: Palestine
+     * @queryParam min_usd number Minimum net USD value. Example: 10
+     * @queryParam max_usd number Maximum net USD value. Example: 5000
+     * @queryParam with_trashed boolean Include soft-deleted rows. Example: false
+     * @queryParam per_page integer Results per page. Example: 20
+     */
     public function index(Request $request): JsonResponse
     {
         $query = Transaction::query()->with(['user', 'vault', 'customer', 'currency'])->latest('transaction_date');
@@ -45,6 +70,16 @@ class TransactionController extends BaseApiController
         return $this->sendResponse($query->paginate($request->integer('per_page', 20)));
     }
 
+    /**
+     * Create transaction
+     *
+     * Create a receive or send transaction using the current user's vault. Commission is calculated in TransactionService.
+     *
+     * @authenticated
+     *
+     * @response 201 {"success":true,"message":"تم إنشاء العملية"}
+     * @response 422 {"success":false,"message":"Validation Error"}
+     */
     public function store(StoreTransactionRequest $request): JsonResponse
     {
         $transaction = $this->transactionService->store($request->validated(), $this->currentUser($request));
@@ -52,6 +87,13 @@ class TransactionController extends BaseApiController
         return $this->sendResponse($transaction->load(['user', 'vault', 'customer', 'currency']), 'تم إنشاء العملية', 201);
     }
 
+    /**
+     * Show transaction
+     *
+     * Return one transaction if the current user is allowed to view it.
+     *
+     * @authenticated
+     */
     public function show(Request $request, Transaction $transaction): JsonResponse
     {
         if (! $this->isOwner($request->user()) && $transaction->user_id !== $request->user()?->id) {
@@ -61,6 +103,15 @@ class TransactionController extends BaseApiController
         return $this->sendResponse($transaction->load(['user', 'vault', 'customer', 'currency']));
     }
 
+    /**
+     * Update transaction metadata
+     *
+     * Update non-financial transaction fields only.
+     *
+     * @authenticated
+     *
+     * @response 200 {"success":true,"message":"تم تحديث العملية"}
+     */
     public function update(UpdateTransactionRequest $request, Transaction $transaction): JsonResponse
     {
         if (! $this->isOwner($request->user()) && $transaction->user_id !== $request->user()?->id) {
@@ -72,6 +123,15 @@ class TransactionController extends BaseApiController
         return $this->sendResponse($transaction->refresh(), 'تم تحديث العملية');
     }
 
+    /**
+     * Delete transaction
+     *
+     * Soft-delete a transaction and reverse its balance effect through TransactionService.
+     *
+     * @authenticated
+     *
+     * @response 200 {"success":true,"message":"تم حذف العملية"}
+     */
     public function destroy(Request $request, Transaction $transaction): JsonResponse
     {
         if (! $this->isOwner($request->user()) && $transaction->user_id !== $request->user()?->id) {
@@ -83,6 +143,15 @@ class TransactionController extends BaseApiController
         return $this->sendResponse(null, 'تم حذف العملية');
     }
 
+    /**
+     * Restore transaction
+     *
+     * Owner-only endpoint that restores a soft-deleted transaction and reapplies its balance effect.
+     *
+     * @authenticated
+     *
+     * @urlParam id integer required Transaction ID. Example: 10
+     */
     public function restore(Request $request, int $id): JsonResponse
     {
         if ($error = $this->abortUnlessOwner($request)) {
@@ -92,6 +161,15 @@ class TransactionController extends BaseApiController
         return $this->sendResponse($this->transactionService->restore($id), 'تم استعادة العملية');
     }
 
+    /**
+     * Force delete transaction
+     *
+     * Owner-only endpoint that permanently deletes a transaction.
+     *
+     * @authenticated
+     *
+     * @urlParam id integer required Transaction ID. Example: 10
+     */
     public function forceDelete(Request $request, int $id): JsonResponse
     {
         if ($error = $this->abortUnlessOwner($request)) {
@@ -103,6 +181,15 @@ class TransactionController extends BaseApiController
         return $this->sendResponse(null, 'تم حذف العملية نهائياً');
     }
 
+    /**
+     * Daily transaction summary
+     *
+     * Return receive, send, net, and count totals for the current user on a date.
+     *
+     * @authenticated
+     *
+     * @queryParam date date Summary date. Example: 2026-05-03
+     */
     public function dailySummary(Request $request): JsonResponse
     {
         return $this->sendResponse($this->balanceService->getDailyNet(

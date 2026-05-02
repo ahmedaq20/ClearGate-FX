@@ -1,0 +1,1992 @@
+{
+    "variable": [
+        {
+            "id": "baseUrl",
+            "key": "baseUrl",
+            "type": "string",
+            "name": "string",
+            "value": "http:\/\/exhange.test"
+        }
+    ],
+    "info": {
+        "name": "ClearGate FX API Documentation",
+        "_postman_id": "309e889d-35ef-4c7f-b9d3-190ae250b774",
+        "description": "API documentation for the ClearGate FX currency exchange backend.",
+        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
+    },
+    "item": [
+        {
+            "name": "Authentication",
+            "description": "\nEndpoints for API token login, logout, profile lookup, and password changes.",
+            "item": [
+                {
+                    "name": "Login",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/login",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/login"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"gbailey@example.net\",\"password\":\"|]|{+-\"}"
+                        },
+                        "description": "Authenticate an active user and return a Sanctum bearer token.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644\",\"data\":{\"user\":{\"id\":1,\"name\":\"Owner\",\"email\":\"owner@example.com\"},\"token\":\"1|example-token\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\"success\":false,\"message\":\"\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u062f\u062e\u0648\u0644 \u063a\u064a\u0631 \u0635\u062d\u064a\u062d\u0629\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u0627\u0644\u062d\u0633\u0627\u0628 \u0645\u0648\u0642\u0648\u0641\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/logout",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/logout"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Revoke the current Sanctum token for the authenticated user."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062e\u0631\u0648\u062c\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Current user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/me",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/me"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Return the authenticated user profile."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"id\":1,\"name\":\"Owner\",\"email\":\"owner@example.com\"}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Change password",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/change-password",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/change-password"
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"current_password\":\"architecto\",\"password\":\"]|{+-0pBNvYg\"}"
+                        },
+                        "description": "Update the authenticated user's password after verifying the current password."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u063a\u064a\u064a\u0631 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062d\u0627\u0644\u064a\u0629 \u063a\u064a\u0631 \u0635\u062d\u064a\u062d\u0629\"}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Customers",
+            "description": "\nManage customers owned by users and linked to their vaults.",
+            "item": [
+                {
+                    "name": "Customer transactions",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/:customer_id\/transactions",
+                            "query": [
+                                {
+                                    "key": "per_page",
+                                    "value": "20",
+                                    "description": "Results per page.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/:customer_id\/transactions?per_page=20",
+                            "variable": [
+                                {
+                                    "id": "customer_id",
+                                    "key": "customer_id",
+                                    "value": "16",
+                                    "description": "The ID of the customer."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "List transactions linked to a customer."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Customer balance",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/:customer_id\/balance",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/:customer_id\/balance",
+                            "variable": [
+                                {
+                                    "id": "customer_id",
+                                    "key": "customer_id",
+                                    "value": "16",
+                                    "description": "The ID of the customer."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Return the customer balance in USD."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"balance_usd\":250.5}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "List customers",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers",
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "Ahmed",
+                                    "description": "Search by customer name.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "category",
+                                    "value": "regular",
+                                    "description": "Filter by category.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "user_id",
+                                    "value": "3",
+                                    "description": "Owner-only user filter.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "is_active",
+                                    "value": "1",
+                                    "description": "Filter active status.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "with_trashed",
+                                    "value": "",
+                                    "description": "Include soft-deleted rows.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "20",
+                                    "description": "Results per page.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers?search=Ahmed&category=regular&user_id=3&is_active=1&with_trashed=&per_page=20"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owner users can see all customers. Managers are scoped to their own customers."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create customer",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"phone\":\"n\",\"note\":\"architecto\",\"category\":\"agent\",\"country\":\"n\",\"user_id\":16}"
+                        },
+                        "description": "Create a customer and attach it to the selected user's vault."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0639\u0645\u064a\u0644\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show customer",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the customer."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Return one customer if the current user is allowed to view it."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update customer",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the customer."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"phone\":\"n\",\"note\":\"architecto\",\"category\":\"agent\",\"country\":\"n\",\"is_active\":true}"
+                        },
+                        "description": "Update customer profile fields."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0639\u0645\u064a\u0644\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete customer",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the customer."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Soft-delete a customer."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062d\u0630\u0641 \u0627\u0644\u0639\u0645\u064a\u0644\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Restore customer",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/:id\/restore",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/:id\/restore",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "7",
+                                    "description": "Customer ID."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owner-only endpoint that restores a soft-deleted customer."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Force delete customer",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/customers\/:id\/force",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/customers\/:id\/force",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "7",
+                                    "description": "Customer ID."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owner-only endpoint that permanently deletes a customer."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Endpoints",
+            "description": "",
+            "item": [
+                {
+                    "name": "GET api\/v1\/settings\/public",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/settings\/public",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/settings\/public"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/dashboard\/summary",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/dashboard\/summary",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/dashboard\/summary"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/dashboard\/chart",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/dashboard\/chart",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/dashboard\/chart"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/currencies\/{code}\/rate",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/currencies\/:code\/rate",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/currencies\/:code\/rate",
+                            "variable": [
+                                {
+                                    "id": "code",
+                                    "key": "code",
+                                    "value": "architecto",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"rate\":4326.41688,\"date\":\"2026-05-02T21:28:52\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/currencies",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/currencies",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/currencies"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/currencies",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/currencies",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/currencies"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"code\":\"bngzmi\",\"name\":\"y\",\"name_ar\":\"v\",\"symbol\":\"dljnik\",\"rate_to_usd\":4326.41688,\"is_active\":true}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/currencies\/{id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/currencies\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/currencies\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the currency."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/currencies\/{id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/currencies\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/currencies\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the currency."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"code\":\"bngzmi\",\"name\":\"y\",\"name_ar\":\"v\",\"symbol\":\"dljnik\",\"rate_to_usd\":4326.41688,\"is_active\":true}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/currencies\/{id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/currencies\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/currencies\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the currency."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/exchange-rates\/bulk-update",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/exchange-rates\/bulk-update",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/exchange-rates\/bulk-update"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"rates\":[{\"code\":\"bngzmi\",\"rate\":4326.41688}]}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/exchange-rates",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/exchange-rates",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/exchange-rates"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/settings",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/settings",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/settings"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/settings\/{group}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/settings\/:group",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/settings\/:group",
+                            "variable": [
+                                {
+                                    "id": "group",
+                                    "key": "group",
+                                    "value": "architecto",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/settings",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/settings",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/settings"
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/settings\/reset\/{group}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/settings\/reset\/:group",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/settings\/reset\/:group",
+                            "variable": [
+                                {
+                                    "id": "group",
+                                    "key": "group",
+                                    "value": "architecto",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/notifications\/unread-count",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/notifications\/unread-count",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/notifications\/unread-count"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/notifications\/read-all",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/notifications\/read-all",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/notifications\/read-all"
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/notifications",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/notifications",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/notifications"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/notifications\/{notification_id}\/read",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/notifications\/:notification_id\/read",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/notifications\/:notification_id\/read",
+                            "variable": [
+                                {
+                                    "id": "notification_id",
+                                    "key": "notification_id",
+                                    "value": "16",
+                                    "description": "The ID of the notification."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/notifications\/{id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/notifications\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/notifications\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the notification."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PATCH api\/v1\/users\/{id}\/restore",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:id\/restore",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:id\/restore",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "architecto",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PATCH api\/v1\/users\/{user_id}\/toggle-active",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:user_id\/toggle-active",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:user_id\/toggle-active",
+                            "variable": [
+                                {
+                                    "id": "user_id",
+                                    "key": "user_id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PATCH api\/v1\/users\/{user_id}\/vault-balance",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:user_id\/vault-balance",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:user_id\/vault-balance",
+                            "variable": [
+                                {
+                                    "id": "user_id",
+                                    "key": "user_id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"initial_balance\":4326.41688}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/users",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/users",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"password\":\"-0pBNvYgxw\",\"phone\":\"a\",\"role\":\"manager\",\"initial_balance\":4326.41688,\"is_active\":true}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/users\/{id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/users\/{id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"password\":\"-0pBNvYgxw\",\"phone\":\"a\",\"is_active\":false}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/users\/{id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Transactions",
+            "description": "\nManage receive\/send transactions. Financial calculations are handled by TransactionService.",
+            "item": [
+                {
+                    "name": "Daily transaction summary",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/transactions\/daily-summary",
+                            "query": [
+                                {
+                                    "key": "date",
+                                    "value": "2026-05-03",
+                                    "description": "date Summary date.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/transactions\/daily-summary?date=2026-05-03"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Return receive, send, net, and count totals for the current user on a date."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List transactions",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/transactions",
+                            "query": [
+                                {
+                                    "key": "date_from",
+                                    "value": "2026-05-01",
+                                    "description": "date Filter from transaction date.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "date_to",
+                                    "value": "2026-05-31",
+                                    "description": "date Filter to transaction date.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "receive",
+                                    "description": "Filter by transaction type.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "customer_id",
+                                    "value": "12",
+                                    "description": "Filter by customer ID.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "currency",
+                                    "value": "USD",
+                                    "description": "Filter by currency code.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "user_id",
+                                    "value": "3",
+                                    "description": "Owner-only user filter.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "vault_id",
+                                    "value": "2",
+                                    "description": "Filter by vault ID.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "country",
+                                    "value": "Palestine",
+                                    "description": "Filter by country.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "min_usd",
+                                    "value": "10",
+                                    "description": "Minimum net USD value.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "max_usd",
+                                    "value": "5000",
+                                    "description": "Maximum net USD value.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "with_trashed",
+                                    "value": "",
+                                    "description": "Include soft-deleted rows.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "20",
+                                    "description": "Results per page.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/transactions?date_from=2026-05-01&date_to=2026-05-31&type=receive&customer_id=12&currency=USD&user_id=3&vault_id=2&country=Palestine&min_usd=10&max_usd=5000&with_trashed=&per_page=20"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owner users can see all transactions. Managers are scoped to their own transactions."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create transaction",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/transactions",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/transactions"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"type\":\"receive\",\"amount\":4326.41688,\"currency_code\":\"miyvdl\",\"exchange_rate\":4326.41688,\"customer_id\":16,\"commission_type\":\"percentage\",\"commission_rate\":4326.41688,\"commission_sign\":-1,\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-05-02T21:28:52\"}"
+                        },
+                        "description": "Create a receive or send transaction using the current user's vault. Commission is calculated in TransactionService."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0639\u0645\u0644\u064a\u0629\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show transaction",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/transactions\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/transactions\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the transaction."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Return one transaction if the current user is allowed to view it."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update transaction metadata",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/transactions\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/transactions\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the transaction."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-05-02T21:28:52\"}"
+                        },
+                        "description": "Update non-financial transaction fields only."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0639\u0645\u0644\u064a\u0629\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete transaction",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/transactions\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/transactions\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the transaction."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Soft-delete a transaction and reverse its balance effect through TransactionService."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062d\u0630\u0641 \u0627\u0644\u0639\u0645\u0644\u064a\u0629\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Restore transaction",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/transactions\/:id\/restore",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/transactions\/:id\/restore",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "10",
+                                    "description": "Transaction ID."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owner-only endpoint that restores a soft-deleted transaction and reapplies its balance effect."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Force delete transaction",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/transactions\/:id\/force",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/transactions\/:id\/force",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "10",
+                                    "description": "Transaction ID."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owner-only endpoint that permanently deletes a transaction."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Vaults",
+            "description": "\nView and manage user vault information. Balance changes remain service-driven.",
+            "item": [
+                {
+                    "name": "Set vault initial balance",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/vaults\/:vault_id\/set-balance",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/vaults\/:vault_id\/set-balance",
+                            "variable": [
+                                {
+                                    "id": "vault_id",
+                                    "key": "vault_id",
+                                    "value": "16",
+                                    "description": "The ID of the vault."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"initial_balance\":4326.41688}"
+                        },
+                        "description": "Owner-only endpoint that updates the vault initial balance and recalculates current balance."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0631\u0635\u064a\u062f \u0627\u0644\u0635\u0646\u062f\u0648\u0642\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Vault transactions",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/vaults\/:vault_id\/transactions",
+                            "query": [
+                                {
+                                    "key": "per_page",
+                                    "value": "20",
+                                    "description": "Results per page.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/vaults\/:vault_id\/transactions?per_page=20",
+                            "variable": [
+                                {
+                                    "id": "vault_id",
+                                    "key": "vault_id",
+                                    "value": "16",
+                                    "description": "The ID of the vault."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "List transactions linked to a vault."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Vault summary",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/vaults\/:vault_id\/summary",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/vaults\/:vault_id\/summary",
+                            "variable": [
+                                {
+                                    "id": "vault_id",
+                                    "key": "vault_id",
+                                    "value": "16",
+                                    "description": "The ID of the vault."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Return initial balance, receive totals, send totals, and current USD balance."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"initial_balance\":1000,\"total_receive\":500,\"total_send\":100,\"balance_usd\":1400}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "List vaults",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/vaults",
+                            "query": [
+                                {
+                                    "key": "per_page",
+                                    "value": "20",
+                                    "description": "Results per page.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/vaults?per_page=20"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owner users can see all vaults. Managers are scoped to their own vault."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show vault",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/vaults\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/vaults\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the vault."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Return one vault if the current user is allowed to view it."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update vault",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/vaults\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/vaults\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the vault."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"note\":\"architecto\",\"is_active\":false}"
+                        },
+                        "description": "Update editable vault metadata. Managers cannot update initial balance here."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0635\u0646\u062f\u0648\u0642\"}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "Authorization",
+                "type": "string"
+            }
+        ]
+    }
+}
