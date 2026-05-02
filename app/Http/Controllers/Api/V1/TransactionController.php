@@ -42,6 +42,8 @@ class TransactionController extends BaseApiController
      * @queryParam max_usd number Maximum net USD value. Example: 5000
      * @queryParam with_trashed boolean Include soft-deleted rows. Example: false
      * @queryParam per_page integer Results per page. Example: 20
+     *
+     * @response 200 {"success":true,"message":"Success","data":[{"id":1,"type":"receive","amount":"100.0000","currency_code":"USD","exchange_rate":"1.000000","usd_value":"100.0000","commission_usd":"2.0000","net_usd_value":"102.0000","direction":1}]}
      */
     public function index(Request $request): JsonResponse
     {
@@ -93,6 +95,9 @@ class TransactionController extends BaseApiController
      * Return one transaction if the current user is allowed to view it.
      *
      * @authenticated
+     *
+     * @response 200 {"success":true,"message":"Success","data":{"id":1,"type":"receive","amount":"100.0000","currency_code":"USD","net_usd_value":"102.0000","customer":null}}
+     * @response 403 {"success":false,"message":"غير مصرح"}
      */
     public function show(Request $request, Transaction $transaction): JsonResponse
     {
@@ -111,6 +116,8 @@ class TransactionController extends BaseApiController
      * @authenticated
      *
      * @response 200 {"success":true,"message":"تم تحديث العملية"}
+     * @response 403 {"success":false,"message":"غير مصرح"}
+     * @response 422 {"success":false,"message":"Validation Error"}
      */
     public function update(UpdateTransactionRequest $request, Transaction $transaction): JsonResponse
     {
@@ -131,6 +138,7 @@ class TransactionController extends BaseApiController
      * @authenticated
      *
      * @response 200 {"success":true,"message":"تم حذف العملية"}
+     * @response 403 {"success":false,"message":"غير مصرح"}
      */
     public function destroy(Request $request, Transaction $transaction): JsonResponse
     {
@@ -151,6 +159,9 @@ class TransactionController extends BaseApiController
      * @authenticated
      *
      * @urlParam id integer required Transaction ID. Example: 10
+     *
+     * @response 200 {"success":true,"message":"تم استعادة العملية","data":{"id":10,"deleted_at":null}}
+     * @response 403 {"success":false,"message":"غير مصرح"}
      */
     public function restore(Request $request, int $id): JsonResponse
     {
@@ -169,6 +180,9 @@ class TransactionController extends BaseApiController
      * @authenticated
      *
      * @urlParam id integer required Transaction ID. Example: 10
+     *
+     * @response 200 {"success":true,"message":"تم حذف العملية نهائياً"}
+     * @response 403 {"success":false,"message":"غير مصرح"}
      */
     public function forceDelete(Request $request, int $id): JsonResponse
     {
@@ -189,6 +203,8 @@ class TransactionController extends BaseApiController
      * @authenticated
      *
      * @queryParam date date Summary date. Example: 2026-05-03
+     *
+     * @response 200 {"success":true,"message":"Success","data":{"receive":500,"send":200,"net":300,"count":3}}
      */
     public function dailySummary(Request $request): JsonResponse
     {

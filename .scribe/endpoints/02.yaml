@@ -1,253 +1,25 @@
-name: Transactions
+name: Dashboard
 description: |-
 
-  Manage receive/send transactions. Financial calculations are handled by TransactionService.
+  Operational summaries and charts for the authenticated user's permitted scope.
 endpoints:
   -
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/transactions/daily-summary
+    uri: api/v1/dashboard/summary
     metadata:
       custom: []
-      groupName: Transactions
+      groupName: Dashboard
       groupDescription: |-
 
-        Manage receive/send transactions. Financial calculations are handled by TransactionService.
+        Operational summaries and charts for the authenticated user's permitted scope.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Daily transaction summary'
-      description: 'Return receive, send, net, and count totals for the current user on a date.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      date:
-        custom: []
-        name: date
-        description: 'date Summary date.'
-        required: false
-        example: '2026-05-03'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      date: '2026-05-03'
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/v1/transactions
-    metadata:
-      custom: []
-      groupName: Transactions
-      groupDescription: |-
-
-        Manage receive/send transactions. Financial calculations are handled by TransactionService.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'List transactions'
-      description: 'Owner users can see all transactions. Managers are scoped to their own transactions.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      date_from:
-        custom: []
-        name: date_from
-        description: 'date Filter from transaction date.'
-        required: false
-        example: '2026-05-01'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      date_to:
-        custom: []
-        name: date_to
-        description: 'date Filter to transaction date.'
-        required: false
-        example: '2026-05-31'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      type:
-        custom: []
-        name: type
-        description: 'Filter by transaction type.'
-        required: false
-        example: receive
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      customer_id:
-        custom: []
-        name: customer_id
-        description: 'Filter by customer ID.'
-        required: false
-        example: 12
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      currency:
-        custom: []
-        name: currency
-        description: 'Filter by currency code.'
-        required: false
-        example: USD
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      user_id:
-        custom: []
-        name: user_id
-        description: 'Owner-only user filter.'
-        required: false
-        example: 3
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      vault_id:
-        custom: []
-        name: vault_id
-        description: 'Filter by vault ID.'
-        required: false
-        example: 2
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      country:
-        custom: []
-        name: country
-        description: 'Filter by country.'
-        required: false
-        example: Palestine
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      min_usd:
-        custom: []
-        name: min_usd
-        description: 'Minimum net USD value.'
-        required: false
-        example: 10.0
-        type: number
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      max_usd:
-        custom: []
-        name: max_usd
-        description: 'Maximum net USD value.'
-        required: false
-        example: 5000.0
-        type: number
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      with_trashed:
-        custom: []
-        name: with_trashed
-        description: 'Include soft-deleted rows.'
-        required: false
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      per_page:
-        custom: []
-        name: per_page
-        description: 'Results per page.'
-        required: false
-        example: 20
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      date_from: '2026-05-01'
-      date_to: '2026-05-31'
-      type: receive
-      customer_id: 12
-      currency: USD
-      user_id: 3
-      vault_id: 2
-      country: Palestine
-      min_usd: 10.0
-      max_usd: 5000.0
-      with_trashed: false
-      per_page: 20
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: api/v1/transactions
-    metadata:
-      custom: []
-      groupName: Transactions
-      groupDescription: |-
-
-        Manage receive/send transactions. Financial calculations are handled by TransactionService.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Create transaction'
-      description: "Create a receive or send transaction using the current user's vault. Commission is calculated in TransactionService."
+      title: 'Dashboard summary'
+      description: |-
+        Return headline balances, today's net activity, customer counts, recent transactions, and top customers.
+        Owners receive the total balance across all vaults; managers receive data scoped to their own vault and customers.
       authenticated: true
       deprecated: false
     headers:
@@ -258,170 +30,14 @@ endpoints:
     cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters:
-      type:
-        custom: []
-        name: type
-        description: ''
-        required: true
-        example: receive
-        type: string
-        enumValues:
-          - receive
-          - send
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      amount:
-        custom: []
-        name: amount
-        description: ''
-        required: true
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      currency_code:
-        custom: []
-        name: currency_code
-        description: 'The <code>code</code> of an existing record in the currencies table. Must not be greater than 10 characters.'
-        required: true
-        example: miyvdl
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      exchange_rate:
-        custom: []
-        name: exchange_rate
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      customer_id:
-        custom: []
-        name: customer_id
-        description: 'The <code>id</code> of an existing record in the customers table.'
-        required: false
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      commission_type:
-        custom: []
-        name: commission_type
-        description: ''
-        required: false
-        example: percentage
-        type: string
-        enumValues:
-          - percentage
-          - fixed
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      commission_rate:
-        custom: []
-        name: commission_rate
-        description: 'This field is required when <code>commission_type</code> is present.'
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      commission_sign:
-        custom: []
-        name: commission_sign
-        description: 'This field is required when <code>commission_type</code> is present.'
-        required: false
-        example: -1
-        type: integer
-        enumValues:
-          - 1
-          - -1
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      note:
-        custom: []
-        name: note
-        description: ''
-        required: false
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      reference_number:
-        custom: []
-        name: reference_number
-        description: 'Must not be greater than 50 characters.'
-        required: false
-        example: 'n'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      country:
-        custom: []
-        name: country
-        description: 'Must not be greater than 50 characters.'
-        required: false
-        example: g
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      transaction_date:
-        custom: []
-        name: transaction_date
-        description: 'Must be a valid date.'
-        required: true
-        example: '2026-05-02T21:28:52'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanBodyParameters:
-      type: receive
-      amount: 4326.41688
-      currency_code: miyvdl
-      exchange_rate: 4326.41688
-      customer_id: 16
-      commission_type: percentage
-      commission_rate: 4326.41688
-      commission_sign: -1
-      note: architecto
-      reference_number: 'n'
-      country: g
-      transaction_date: '2026-05-02T21:28:52'
+    bodyParameters: []
+    cleanBodyParameters: []
     fileParameters: []
     responses:
       -
         custom: []
-        status: 201
-        content: '{"success":true,"message":"تم إنشاء العملية"}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 422
-        content: '{"success":false,"message":"Validation Error"}'
+        status: 200
+        content: '{"success":true,"message":"Success","data":{"total_balance_usd":15000.5,"my_vault_balance":4200,"today_net_usd":{"receive":500,"send":200,"net":300,"count":3},"customers_count":18,"transactions_today_count":3,"recent_transactions":[],"top_customers":[]}}'
         headers: []
         description: ''
     responseFields: []
@@ -436,192 +52,39 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/transactions/{id}'
+    uri: api/v1/dashboard/chart
     metadata:
       custom: []
-      groupName: Transactions
+      groupName: Dashboard
       groupDescription: |-
 
-        Manage receive/send transactions. Financial calculations are handled by TransactionService.
+        Operational summaries and charts for the authenticated user's permitted scope.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Show transaction'
-      description: 'Return one transaction if the current user is allowed to view it.'
+      title: 'Dashboard chart'
+      description: 'Return daily receive, send, and net totals for a chart period.'
       authenticated: true
       deprecated: false
     headers:
       Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
       Content-Type: application/json
       Accept: application/json
-    urlParameters:
-      id:
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      period:
         custom: []
-        name: id
-        description: 'The ID of the transaction.'
-        required: true
-        example: 16
-        type: integer
+        name: period
+        description: 'Chart period: 7d, 30d, or 3m.'
+        required: false
+        example: 7d
+        type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
-    cleanUrlParameters:
-      id: 16
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-      - PATCH
-    uri: 'api/v1/transactions/{id}'
-    metadata:
-      custom: []
-      groupName: Transactions
-      groupDescription: |-
-
-        Manage receive/send transactions. Financial calculations are handled by TransactionService.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Update transaction metadata'
-      description: 'Update non-financial transaction fields only.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The ID of the transaction.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 16
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      note:
-        custom: []
-        name: note
-        description: ''
-        required: false
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      reference_number:
-        custom: []
-        name: reference_number
-        description: 'Must not be greater than 50 characters.'
-        required: false
-        example: 'n'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      country:
-        custom: []
-        name: country
-        description: 'Must not be greater than 50 characters.'
-        required: false
-        example: g
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      transaction_date:
-        custom: []
-        name: transaction_date
-        description: 'Must be a valid date.'
-        required: false
-        example: '2026-05-02T21:28:52'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      note: architecto
-      reference_number: 'n'
-      country: g
-      transaction_date: '2026-05-02T21:28:52'
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم تحديث العملية"}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'api/v1/transactions/{id}'
-    metadata:
-      custom: []
-      groupName: Transactions
-      groupDescription: |-
-
-        Manage receive/send transactions. Financial calculations are handled by TransactionService.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Delete transaction'
-      description: 'Soft-delete a transaction and reverse its balance effect through TransactionService.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The ID of the transaction.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 16
-    queryParameters: []
-    cleanQueryParameters: []
+    cleanQueryParameters:
+      period: 7d
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
@@ -629,107 +92,9 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"تم حذف العملية"}'
+        content: '{"success":true,"message":"Success","data":{"labels":["2026-05-01","2026-05-02"],"receive":[100,250],"send":[50,75],"net":[50,175]}}'
         headers: []
         description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PATCH
-    uri: 'api/v1/transactions/{id}/restore'
-    metadata:
-      custom: []
-      groupName: Transactions
-      groupDescription: |-
-
-        Manage receive/send transactions. Financial calculations are handled by TransactionService.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Restore transaction'
-      description: 'Owner-only endpoint that restores a soft-deleted transaction and reapplies its balance effect.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'Transaction ID.'
-        required: true
-        example: 10
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 10
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'api/v1/transactions/{id}/force'
-    metadata:
-      custom: []
-      groupName: Transactions
-      groupDescription: |-
-
-        Manage receive/send transactions. Financial calculations are handled by TransactionService.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Force delete transaction'
-      description: 'Owner-only endpoint that permanently deletes a transaction.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'Transaction ID.'
-        required: true
-        example: 10
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 10
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
     responseFields: []
     auth:
       - headers

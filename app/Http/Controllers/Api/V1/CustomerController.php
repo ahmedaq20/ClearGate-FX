@@ -36,6 +36,8 @@ class CustomerController extends BaseApiController
      * @queryParam is_active boolean Filter active status. Example: true
      * @queryParam with_trashed boolean Include soft-deleted rows. Example: false
      * @queryParam per_page integer Results per page. Example: 20
+     *
+     * @response 200 {"success":true,"message":"Success","data":[{"id":1,"name":"Ahmed","category":"regular","balance_usd":"250.0000","is_active":true}]}
      */
     public function index(Request $request): JsonResponse
     {
@@ -66,6 +68,7 @@ class CustomerController extends BaseApiController
      * @authenticated
      *
      * @response 201 {"success":true,"message":"تم إنشاء العميل"}
+     * @response 422 {"success":false,"message":"Validation Error"}
      */
     public function store(StoreCustomerRequest $request): JsonResponse
     {
@@ -88,6 +91,9 @@ class CustomerController extends BaseApiController
      * Return one customer if the current user is allowed to view it.
      *
      * @authenticated
+     *
+     * @response 200 {"success":true,"message":"Success","data":{"id":1,"name":"Ahmed","balance_usd":"250.0000","vault":{"id":1}}}
+     * @response 403 {"success":false,"message":"غير مصرح"}
      */
     public function show(Request $request, Customer $customer): JsonResponse
     {
@@ -106,6 +112,8 @@ class CustomerController extends BaseApiController
      * @authenticated
      *
      * @response 200 {"success":true,"message":"تم تحديث العميل"}
+     * @response 403 {"success":false,"message":"غير مصرح"}
+     * @response 422 {"success":false,"message":"Validation Error"}
      */
     public function update(UpdateCustomerRequest $request, Customer $customer): JsonResponse
     {
@@ -126,6 +134,7 @@ class CustomerController extends BaseApiController
      * @authenticated
      *
      * @response 200 {"success":true,"message":"تم حذف العميل"}
+     * @response 403 {"success":false,"message":"غير مصرح"}
      */
     public function destroy(Request $request, Customer $customer): JsonResponse
     {
@@ -146,6 +155,9 @@ class CustomerController extends BaseApiController
      * @authenticated
      *
      * @urlParam id integer required Customer ID. Example: 7
+     *
+     * @response 200 {"success":true,"message":"تم استعادة العميل","data":{"id":7,"name":"Ahmed","deleted_at":null}}
+     * @response 403 {"success":false,"message":"غير مصرح"}
      */
     public function restore(Request $request, int $id): JsonResponse
     {
@@ -167,6 +179,9 @@ class CustomerController extends BaseApiController
      * @authenticated
      *
      * @urlParam id integer required Customer ID. Example: 7
+     *
+     * @response 200 {"success":true,"message":"تم حذف العميل نهائياً"}
+     * @response 403 {"success":false,"message":"غير مصرح"}
      */
     public function forceDelete(Request $request, int $id): JsonResponse
     {
@@ -187,6 +202,9 @@ class CustomerController extends BaseApiController
      * @authenticated
      *
      * @queryParam per_page integer Results per page. Example: 20
+     *
+     * @response 200 {"success":true,"message":"Success","data":[{"id":1,"type":"receive","net_usd_value":"100.0000"}]}
+     * @response 403 {"success":false,"message":"غير مصرح"}
      */
     public function transactions(Request $request, Customer $customer): JsonResponse
     {

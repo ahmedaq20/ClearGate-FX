@@ -1,0 +1,426 @@
+name: Vaults
+description: |-
+
+  View and manage user vault information. Balance changes remain service-driven.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/v1/vaults/{vault_id}/set-balance'
+    metadata:
+      custom: []
+      groupName: Vaults
+      groupDescription: |-
+
+        View and manage user vault information. Balance changes remain service-driven.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Set vault initial balance'
+      description: 'Owner-only endpoint that updates the vault initial balance and recalculates current balance.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      vault_id:
+        custom: []
+        name: vault_id
+        description: 'The ID of the vault.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      vault_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      initial_balance:
+        custom: []
+        name: initial_balance
+        description: ''
+        required: true
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      initial_balance: 4326.41688
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"تم تحديث رصيد الصندوق"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: '{"success":false,"message":"Validation Error"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/vaults/{vault_id}/transactions'
+    metadata:
+      custom: []
+      groupName: Vaults
+      groupDescription: |-
+
+        View and manage user vault information. Balance changes remain service-driven.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Vault transactions'
+      description: 'List transactions linked to a vault.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      vault_id:
+        custom: []
+        name: vault_id
+        description: 'The ID of the vault.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      vault_id: 16
+    queryParameters:
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Results per page.'
+        required: false
+        example: 20
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      per_page: 20
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"Success","data":[{"id":1,"type":"receive","net_usd_value":"100.0000"}]}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: '{"success":false,"message":"غير مصرح"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/vaults/{vault_id}/summary'
+    metadata:
+      custom: []
+      groupName: Vaults
+      groupDescription: |-
+
+        View and manage user vault information. Balance changes remain service-driven.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Vault summary'
+      description: 'Return initial balance, receive totals, send totals, and current USD balance.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      vault_id:
+        custom: []
+        name: vault_id
+        description: 'The ID of the vault.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      vault_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"Success","data":{"initial_balance":1000,"total_receive":500,"total_send":100,"balance_usd":1400}}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/vaults
+    metadata:
+      custom: []
+      groupName: Vaults
+      groupDescription: |-
+
+        View and manage user vault information. Balance changes remain service-driven.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List vaults'
+      description: 'Owner users can see all vaults. Managers are scoped to their own vault.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Results per page.'
+        required: false
+        example: 20
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      per_page: 20
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"Success","data":[{"id":1,"name":"Vault Manager","initial_balance":"1000.0000","balance_usd":"1250.0000"}]}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/vaults/{id}'
+    metadata:
+      custom: []
+      groupName: Vaults
+      groupDescription: |-
+
+        View and manage user vault information. Balance changes remain service-driven.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Show vault'
+      description: 'Return one vault if the current user is allowed to view it.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the vault.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"Success","data":{"id":1,"name":"Vault Manager","balance_usd":"1250.0000","user":{"id":2,"name":"Manager"}}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: '{"success":false,"message":"غير مصرح"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/v1/vaults/{id}'
+    metadata:
+      custom: []
+      groupName: Vaults
+      groupDescription: |-
+
+        View and manage user vault information. Balance changes remain service-driven.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update vault'
+      description: 'Update editable vault metadata. Managers cannot update initial balance here.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the vault.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Must not be greater than 100 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      note:
+        custom: []
+        name: note
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_active:
+        custom: []
+        name: is_active
+        description: ''
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: b
+      note: architecto
+      is_active: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"تم تحديث الصندوق"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: '{"success":false,"message":"غير مصرح"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: '{"success":false,"message":"Validation Error"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * @group Authentication
+ * @group Auth
  *
  * Endpoints for API token login, logout, profile lookup, and password changes.
  */

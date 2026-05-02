@@ -10,13 +10,13 @@
     ],
     "info": {
         "name": "ClearGate FX API Documentation",
-        "_postman_id": "309e889d-35ef-4c7f-b9d3-190ae250b774",
+        "_postman_id": "290abeed-7b9f-4823-8162-b67b7b57b2c6",
         "description": "API documentation for the ClearGate FX currency exchange backend.",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
     "item": [
         {
-            "name": "Authentication",
+            "name": "Auth",
             "description": "\nEndpoints for API token login, logout, profile lookup, and password changes.",
             "item": [
                 {
@@ -177,6 +177,233 @@
             ]
         },
         {
+            "name": "Currencies",
+            "description": "\nManage supported currencies and their current USD exchange rates.",
+            "item": [
+                {
+                    "name": "List currencies",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/currencies",
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "USD",
+                                    "description": "Search by code, English name, or Arabic name.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "is_active",
+                                    "value": "1",
+                                    "description": "Filter by active status.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "20",
+                                    "description": "Results per page.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/currencies?search=USD&is_active=1&per_page=20"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Return paginated currencies with optional search and active status filters."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":[{\"id\":1,\"code\":\"USD\",\"name\":\"US Dollar\",\"name_ar\":\"\u062f\u0648\u0644\u0627\u0631 \u0623\u0645\u0631\u064a\u0643\u064a\",\"symbol\":\"$\",\"rate_to_usd\":\"1.000000\",\"is_active\":true}]}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Create currency",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/currencies",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/currencies"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"code\":\"bngzmi\",\"name\":\"y\",\"name_ar\":\"v\",\"symbol\":\"dljnik\",\"rate_to_usd\":4326.41688,\"is_active\":true}"
+                        },
+                        "description": "Create a new currency with its initial exchange rate to USD."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0639\u0645\u0644\u0629\",\"data\":{\"id\":1,\"code\":\"USD\",\"name\":\"US Dollar\",\"rate_to_usd\":\"1.000000\",\"is_active\":true}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show currency",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/currencies\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/currencies\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the currency."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Return one currency and its exchange rate history."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"id\":1,\"code\":\"USD\",\"name\":\"US Dollar\",\"exchange_rates\":[]}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Update currency",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/currencies\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/currencies\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the currency."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"code\":\"bngzmi\",\"name\":\"y\",\"name_ar\":\"v\",\"symbol\":\"dljnik\",\"rate_to_usd\":4326.41688,\"is_active\":false}"
+                        },
+                        "description": "Update currency metadata or its active status."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0639\u0645\u0644\u0629\",\"data\":{\"id\":1,\"code\":\"USD\",\"name\":\"US Dollar\",\"is_active\":true}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Disable currency",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/currencies\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/currencies\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the currency."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Disable a currency by setting it inactive instead of deleting it."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u0639\u0637\u064a\u0644 \u0627\u0644\u0639\u0645\u0644\u0629\"}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "name": "Customers",
             "description": "\nManage customers owned by users and linked to their vaults.",
             "item": [
@@ -218,7 +445,20 @@
                         "body": null,
                         "description": "List transactions linked to a customer."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":[{\"id\":1,\"type\":\"receive\",\"net_usd_value\":\"100.0000\"}]}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
                     "name": "Customer balance",
@@ -320,7 +560,14 @@
                         "body": null,
                         "description": "Owner users can see all customers. Managers are scoped to their own customers."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":[{\"id\":1,\"name\":\"Ahmed\",\"category\":\"regular\",\"balance_usd\":\"250.0000\",\"is_active\":true}]}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
                     "name": "Create customer",
@@ -353,6 +600,12 @@
                             "header": [],
                             "code": 201,
                             "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0639\u0645\u064a\u0644\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
                             "name": ""
                         }
                     ]
@@ -388,7 +641,20 @@
                         "body": null,
                         "description": "Return one customer if the current user is allowed to view it."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"id\":1,\"name\":\"Ahmed\",\"balance_usd\":\"250.0000\",\"vault\":{\"id\":1}}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
                     "name": "Update customer",
@@ -420,7 +686,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"phone\":\"n\",\"note\":\"architecto\",\"category\":\"agent\",\"country\":\"n\",\"is_active\":true}"
+                            "raw": "{\"name\":\"b\",\"phone\":\"n\",\"note\":\"architecto\",\"category\":\"company\",\"country\":\"n\",\"is_active\":false}"
                         },
                         "description": "Update customer profile fields."
                     },
@@ -429,6 +695,18 @@
                             "header": [],
                             "code": 200,
                             "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0639\u0645\u064a\u0644\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
                             "name": ""
                         }
                     ]
@@ -470,6 +748,12 @@
                             "code": 200,
                             "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062d\u0630\u0641 \u0627\u0644\u0639\u0645\u064a\u0644\"}",
                             "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
                         }
                     ]
                 },
@@ -504,7 +788,20 @@
                         "body": null,
                         "description": "Owner-only endpoint that restores a soft-deleted customer."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u0627\u0633\u062a\u0639\u0627\u062f\u0629 \u0627\u0644\u0639\u0645\u064a\u0644\",\"data\":{\"id\":7,\"name\":\"Ahmed\",\"deleted_at\":null}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
                     "name": "Force delete customer",
@@ -537,41 +834,29 @@
                         "body": null,
                         "description": "Owner-only endpoint that permanently deletes a customer."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062d\u0630\u0641 \u0627\u0644\u0639\u0645\u064a\u0644 \u0646\u0647\u0627\u0626\u064a\u0627\u064b\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 }
             ]
         },
         {
-            "name": "Endpoints",
-            "description": "",
+            "name": "Dashboard",
+            "description": "\nOperational summaries and charts for the authenticated user's permitted scope.",
             "item": [
                 {
-                    "name": "GET api\/v1\/settings\/public",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/settings\/public",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/settings\/public"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "GET api\/v1\/dashboard\/summary",
+                    "name": "Dashboard summary",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
@@ -591,18 +876,32 @@
                             }
                         ],
                         "body": null,
-                        "description": ""
+                        "description": "Return headline balances, today's net activity, customer counts, recent transactions, and top customers.\nOwners receive the total balance across all vaults; managers receive data scoped to their own vault and customers."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"total_balance_usd\":15000.5,\"my_vault_balance\":4200,\"today_net_usd\":{\"receive\":500,\"send\":200,\"net\":300,\"count\":3},\"customers_count\":18,\"transactions_today_count\":3,\"recent_transactions\":[],\"top_customers\":[]}}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
-                    "name": "GET api\/v1\/dashboard\/chart",
+                    "name": "Dashboard chart",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
                             "path": "api\/v1\/dashboard\/chart",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/dashboard\/chart"
+                            "query": [
+                                {
+                                    "key": "period",
+                                    "value": "7d",
+                                    "description": "Chart period: 7d, 30d, or 3m.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/dashboard\/chart?period=7d"
                         },
                         "method": "GET",
                         "header": [
@@ -616,12 +915,25 @@
                             }
                         ],
                         "body": null,
-                        "description": ""
+                        "description": "Return daily receive, send, and net totals for a chart period."
                     },
-                    "response": []
-                },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"labels\":[\"2026-05-01\",\"2026-05-02\"],\"receive\":[100,250],\"send\":[50,75],\"net\":[50,175]}}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Exchange Rates",
+            "description": "\nView exchange-rate history and update current currency rates.",
+            "item": [
                 {
-                    "name": "PUT api\/v1\/currencies\/{code}\/rate",
+                    "name": "Update currency rate",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
@@ -632,8 +944,8 @@
                                 {
                                     "id": "code",
                                     "key": "code",
-                                    "value": "architecto",
-                                    "description": ""
+                                    "value": "USD",
+                                    "description": "Currency code."
                                 }
                             ]
                         },
@@ -650,169 +962,27 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"rate\":4326.41688,\"date\":\"2026-05-02T21:28:52\"}"
+                            "raw": "{\"rate\":4326.41688,\"date\":\"2026-05-02T21:38:12\"}"
                         },
-                        "description": ""
+                        "description": "Update the current exchange rate for a currency and append a historical exchange-rate row."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0633\u0639\u0631 \u0627\u0644\u0635\u0631\u0641\",\"data\":{\"code\":\"USD\",\"rate_to_usd\":\"1.000000\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
-                    "name": "GET api\/v1\/currencies",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/currencies",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/currencies"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "POST api\/v1\/currencies",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/currencies",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/currencies"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"code\":\"bngzmi\",\"name\":\"y\",\"name_ar\":\"v\",\"symbol\":\"dljnik\",\"rate_to_usd\":4326.41688,\"is_active\":true}"
-                        },
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "GET api\/v1\/currencies\/{id}",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/currencies\/:id",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/currencies\/:id",
-                            "variable": [
-                                {
-                                    "id": "id",
-                                    "key": "id",
-                                    "value": "16",
-                                    "description": "The ID of the currency."
-                                }
-                            ]
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "PUT api\/v1\/currencies\/{id}",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/currencies\/:id",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/currencies\/:id",
-                            "variable": [
-                                {
-                                    "id": "id",
-                                    "key": "id",
-                                    "value": "16",
-                                    "description": "The ID of the currency."
-                                }
-                            ]
-                        },
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"code\":\"bngzmi\",\"name\":\"y\",\"name_ar\":\"v\",\"symbol\":\"dljnik\",\"rate_to_usd\":4326.41688,\"is_active\":true}"
-                        },
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "DELETE api\/v1\/currencies\/{id}",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/currencies\/:id",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/currencies\/:id",
-                            "variable": [
-                                {
-                                    "id": "id",
-                                    "key": "id",
-                                    "value": "16",
-                                    "description": "The ID of the currency."
-                                }
-                            ]
-                        },
-                        "method": "DELETE",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "POST api\/v1\/exchange-rates\/bulk-update",
+                    "name": "Bulk update exchange rates",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
@@ -835,76 +1005,56 @@
                             "mode": "raw",
                             "raw": "{\"rates\":[{\"code\":\"bngzmi\",\"rate\":4326.41688}]}"
                         },
-                        "description": ""
+                        "description": "Update multiple currency rates in one request. Each item creates a historical exchange-rate row."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0623\u0633\u0639\u0627\u0631 \u0627\u0644\u0635\u0631\u0641\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
-                    "name": "GET api\/v1\/exchange-rates",
+                    "name": "List exchange rates",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
                             "path": "api\/v1\/exchange-rates",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/exchange-rates"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "GET api\/v1\/settings",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/settings",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/settings"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "GET api\/v1\/settings\/{group}",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/settings\/:group",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/settings\/:group",
-                            "variable": [
+                            "query": [
                                 {
-                                    "id": "group",
-                                    "key": "group",
-                                    "value": "architecto",
-                                    "description": ""
+                                    "key": "currency",
+                                    "value": "USD",
+                                    "description": "Filter by currency code.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "date_from",
+                                    "value": "2026-05-01",
+                                    "description": "date Filter from rate date.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "date_to",
+                                    "value": "2026-05-31",
+                                    "description": "date Filter to rate date.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "20",
+                                    "description": "Results per page.",
+                                    "disabled": false
                                 }
-                            ]
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/exchange-rates?currency=USD&date_from=2026-05-01&date_to=2026-05-31&per_page=20"
                         },
                         "method": "GET",
                         "header": [
@@ -918,73 +1068,25 @@
                             }
                         ],
                         "body": null,
-                        "description": ""
+                        "description": "Return paginated exchange-rate history with optional currency and date filters."
                     },
-                    "response": []
-                },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":[{\"id\":1,\"currency_code\":\"USD\",\"rate\":\"1.000000\",\"source\":\"manual\",\"date\":\"2026-05-03\"}]}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Notifications",
+            "description": "\nRead and manage in-app notifications for the authenticated user.",
+            "item": [
                 {
-                    "name": "PUT api\/v1\/settings",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/settings",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/settings"
-                        },
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "[]"
-                        },
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "POST api\/v1\/settings\/reset\/{group}",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/settings\/reset\/:group",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/settings\/reset\/:group",
-                            "variable": [
-                                {
-                                    "id": "group",
-                                    "key": "group",
-                                    "value": "architecto",
-                                    "description": ""
-                                }
-                            ]
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "GET api\/v1\/notifications\/unread-count",
+                    "name": "Unread notification count",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
@@ -1004,12 +1106,19 @@
                             }
                         ],
                         "body": null,
-                        "description": ""
+                        "description": "Return the number of unread notifications for the authenticated user."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"count\":3}}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
-                    "name": "PUT api\/v1\/notifications\/read-all",
+                    "name": "Mark all notifications as read",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
@@ -1029,18 +1138,44 @@
                             }
                         ],
                         "body": null,
-                        "description": ""
+                        "description": "Mark every unread notification for the authenticated user as read."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u0639\u0644\u064a\u0645 \u0643\u0644 \u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062a \u0643\u0645\u0642\u0631\u0648\u0621\u0629\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
-                    "name": "GET api\/v1\/notifications",
+                    "name": "List notifications",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
                             "path": "api\/v1\/notifications",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/notifications"
+                            "query": [
+                                {
+                                    "key": "is_read",
+                                    "value": "",
+                                    "description": "Filter by read status.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "report_ready",
+                                    "description": "Filter by notification type.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "20",
+                                    "description": "Results per page.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/notifications?is_read=&type=report_ready&per_page=20"
                         },
                         "method": "GET",
                         "header": [
@@ -1054,12 +1189,19 @@
                             }
                         ],
                         "body": null,
-                        "description": ""
+                        "description": "Return paginated notifications for the authenticated user."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":[{\"id\":1,\"type\":\"system\",\"title\":\"Notification title\",\"body\":\"Notification body\",\"is_read\":false}]}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
-                    "name": "PUT api\/v1\/notifications\/{notification_id}\/read",
+                    "name": "Mark notification as read",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
@@ -1087,12 +1229,25 @@
                             }
                         ],
                         "body": null,
-                        "description": ""
+                        "description": "Mark one notification as read if it belongs to the authenticated user."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u0639\u0644\u064a\u0645 \u0627\u0644\u0625\u0634\u0639\u0627\u0631 \u0643\u0645\u0642\u0631\u0648\u0621\",\"data\":{\"id\":1,\"is_read\":true}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
-                    "name": "DELETE api\/v1\/notifications\/{id}",
+                    "name": "Delete notification",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
@@ -1120,120 +1275,37 @@
                             }
                         ],
                         "body": null,
-                        "description": ""
+                        "description": "Delete one notification if it belongs to the authenticated user."
                     },
-                    "response": []
-                },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062d\u0630\u0641 \u0627\u0644\u0625\u0634\u0639\u0627\u0631\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Settings",
+            "description": "\nRead and manage application settings grouped by feature area.",
+            "item": [
                 {
-                    "name": "PATCH api\/v1\/users\/{id}\/restore",
+                    "name": "Public settings",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v1\/users\/:id\/restore",
+                            "path": "api\/v1\/settings\/public",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/users\/:id\/restore",
-                            "variable": [
-                                {
-                                    "id": "id",
-                                    "key": "id",
-                                    "value": "architecto",
-                                    "description": "The ID of the user."
-                                }
-                            ]
-                        },
-                        "method": "PATCH",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "PATCH api\/v1\/users\/{user_id}\/toggle-active",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/users\/:user_id\/toggle-active",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/users\/:user_id\/toggle-active",
-                            "variable": [
-                                {
-                                    "id": "user_id",
-                                    "key": "user_id",
-                                    "value": "16",
-                                    "description": "The ID of the user."
-                                }
-                            ]
-                        },
-                        "method": "PATCH",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "PATCH api\/v1\/users\/{user_id}\/vault-balance",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/users\/:user_id\/vault-balance",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/users\/:user_id\/vault-balance",
-                            "variable": [
-                                {
-                                    "id": "user_id",
-                                    "key": "user_id",
-                                    "value": "16",
-                                    "description": "The ID of the user."
-                                }
-                            ]
-                        },
-                        "method": "PATCH",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"initial_balance\":4326.41688}"
-                        },
-                        "description": ""
-                    },
-                    "response": []
-                },
-                {
-                    "name": "GET api\/v1\/users",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/v1\/users",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/users"
+                            "raw": "{{baseUrl}}\/api\/v1\/settings\/public"
                         },
                         "method": "GET",
                         "header": [
@@ -1247,20 +1319,30 @@
                             }
                         ],
                         "body": null,
-                        "description": ""
+                        "description": "Return settings marked as public. This endpoint is available without authentication.",
+                        "auth": {
+                            "type": "noauth"
+                        }
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"shop_name\":\"ClearGate FX\",\"default_currency\":\"USD\"}}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
-                    "name": "POST api\/v1\/users",
+                    "name": "List all settings",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v1\/users",
+                            "path": "api\/v1\/settings",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/users"
+                            "raw": "{{baseUrl}}\/api\/v1\/settings"
                         },
-                        "method": "POST",
+                        "method": "GET",
                         "header": [
                             {
                                 "key": "Content-Type",
@@ -1271,28 +1353,38 @@
                                 "value": "application\/json"
                             }
                         ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"password\":\"-0pBNvYgxw\",\"phone\":\"a\",\"role\":\"manager\",\"initial_balance\":4326.41688,\"is_active\":true}"
-                        },
-                        "description": ""
+                        "body": null,
+                        "description": "Owner-only endpoint returning every setting sorted by group and key."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":[{\"key\":\"shop_name\",\"value\":\"ClearGate FX\",\"group_name\":\"general\",\"is_public\":true}]}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
-                    "name": "GET api\/v1\/users\/{id}",
+                    "name": "Settings group",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v1\/users\/:id",
+                            "path": "api\/v1\/settings\/:group",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/users\/:id",
+                            "raw": "{{baseUrl}}\/api\/v1\/settings\/:group",
                             "variable": [
                                 {
-                                    "id": "id",
-                                    "key": "id",
-                                    "value": "16",
-                                    "description": "The ID of the user."
+                                    "id": "group",
+                                    "key": "group",
+                                    "value": "general",
+                                    "description": "Settings group name."
                                 }
                             ]
                         },
@@ -1308,26 +1400,31 @@
                             }
                         ],
                         "body": null,
-                        "description": ""
+                        "description": "Return settings for one group. Owners and users with settings.view may access it."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"shop_name\":\"ClearGate FX\",\"default_currency\":\"USD\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
-                    "name": "PUT api\/v1\/users\/{id}",
+                    "name": "Update settings",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v1\/users\/:id",
+                            "path": "api\/v1\/settings",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/users\/:id",
-                            "variable": [
-                                {
-                                    "id": "id",
-                                    "key": "id",
-                                    "value": "16",
-                                    "description": "The ID of the user."
-                                }
-                            ]
+                            "raw": "{{baseUrl}}\/api\/v1\/settings"
                         },
                         "method": "PUT",
                         "header": [
@@ -1342,30 +1439,43 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"password\":\"-0pBNvYgxw\",\"phone\":\"a\",\"is_active\":false}"
+                            "raw": "[]"
                         },
-                        "description": ""
+                        "description": "Owner-only endpoint for updating settings by key\/value pairs."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
-                    "name": "DELETE api\/v1\/users\/{id}",
+                    "name": "Reset settings group",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v1\/users\/:id",
+                            "path": "api\/v1\/settings\/reset\/:group",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v1\/users\/:id",
+                            "raw": "{{baseUrl}}\/api\/v1\/settings\/reset\/:group",
                             "variable": [
                                 {
-                                    "id": "id",
-                                    "key": "id",
-                                    "value": "16",
-                                    "description": "The ID of the user."
+                                    "id": "group",
+                                    "key": "group",
+                                    "value": "general",
+                                    "description": "Settings group name."
                                 }
                             ]
                         },
-                        "method": "DELETE",
+                        "method": "POST",
                         "header": [
                             {
                                 "key": "Content-Type",
@@ -1377,9 +1487,22 @@
                             }
                         ],
                         "body": null,
-                        "description": ""
+                        "description": "Owner-only endpoint that deletes all settings in a group so defaults can be recreated later."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645\u062a \u0625\u0639\u0627\u062f\u0629 \u0636\u0628\u0637 \u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 }
             ]
         },
@@ -1417,7 +1540,14 @@
                         "body": null,
                         "description": "Return receive, send, net, and count totals for the current user on a date."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"receive\":500,\"send\":200,\"net\":300,\"count\":3}}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
                     "name": "List transactions",
@@ -1515,7 +1645,14 @@
                         "body": null,
                         "description": "Owner users can see all transactions. Managers are scoped to their own transactions."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":[{\"id\":1,\"type\":\"receive\",\"amount\":\"100.0000\",\"currency_code\":\"USD\",\"exchange_rate\":\"1.000000\",\"usd_value\":\"100.0000\",\"commission_usd\":\"2.0000\",\"net_usd_value\":\"102.0000\",\"direction\":1}]}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
                     "name": "Create transaction",
@@ -1539,7 +1676,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"type\":\"receive\",\"amount\":4326.41688,\"currency_code\":\"miyvdl\",\"exchange_rate\":4326.41688,\"customer_id\":16,\"commission_type\":\"percentage\",\"commission_rate\":4326.41688,\"commission_sign\":-1,\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-05-02T21:28:52\"}"
+                            "raw": "{\"type\":\"send\",\"amount\":4326.41688,\"currency_code\":\"miyvdl\",\"exchange_rate\":4326.41688,\"customer_id\":16,\"commission_type\":\"fixed\",\"commission_rate\":4326.41688,\"commission_sign\":-1,\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-05-02T21:38:12\"}"
                         },
                         "description": "Create a receive or send transaction using the current user's vault. Commission is calculated in TransactionService."
                     },
@@ -1589,7 +1726,20 @@
                         "body": null,
                         "description": "Return one transaction if the current user is allowed to view it."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"id\":1,\"type\":\"receive\",\"amount\":\"100.0000\",\"currency_code\":\"USD\",\"net_usd_value\":\"102.0000\",\"customer\":null}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
                     "name": "Update transaction metadata",
@@ -1621,7 +1771,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-05-02T21:28:52\"}"
+                            "raw": "{\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-05-02T21:38:12\"}"
                         },
                         "description": "Update non-financial transaction fields only."
                     },
@@ -1630,6 +1780,18 @@
                             "header": [],
                             "code": 200,
                             "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0639\u0645\u0644\u064a\u0629\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
                             "name": ""
                         }
                     ]
@@ -1671,6 +1833,12 @@
                             "code": 200,
                             "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062d\u0630\u0641 \u0627\u0644\u0639\u0645\u0644\u064a\u0629\"}",
                             "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
                         }
                     ]
                 },
@@ -1705,7 +1873,20 @@
                         "body": null,
                         "description": "Owner-only endpoint that restores a soft-deleted transaction and reapplies its balance effect."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u0627\u0633\u062a\u0639\u0627\u062f\u0629 \u0627\u0644\u0639\u0645\u0644\u064a\u0629\",\"data\":{\"id\":10,\"deleted_at\":null}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
                     "name": "Force delete transaction",
@@ -1738,7 +1919,412 @@
                         "body": null,
                         "description": "Owner-only endpoint that permanently deletes a transaction."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062d\u0630\u0641 \u0627\u0644\u0639\u0645\u0644\u064a\u0629 \u0646\u0647\u0627\u0626\u064a\u0627\u064b\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Users",
+            "description": "\nOwner-only user management endpoints.",
+            "item": [
+                {
+                    "name": "Restore user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:id\/restore",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:id\/restore",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "2",
+                                    "description": "User ID."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owner-only endpoint that restores a soft-deleted user."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u0627\u0633\u062a\u0639\u0627\u062f\u0629 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\",\"data\":{\"id\":2,\"name\":\"Manager\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Toggle user active status",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:user_id\/toggle-active",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:user_id\/toggle-active",
+                            "variable": [
+                                {
+                                    "id": "user_id",
+                                    "key": "user_id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owner-only endpoint that activates or deactivates a user account."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u062d\u0627\u0644\u0629 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\",\"data\":{\"id\":2,\"is_active\":false}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Set user vault balance",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:user_id\/vault-balance",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:user_id\/vault-balance",
+                            "variable": [
+                                {
+                                    "id": "user_id",
+                                    "key": "user_id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"initial_balance\":4326.41688}"
+                        },
+                        "description": "Owner-only endpoint that updates a user's initial balance, updates their vault, and recalculates current vault balance."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0631\u0635\u064a\u062f \u0635\u0646\u062f\u0648\u0642 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\",\"data\":{\"id\":2,\"vault\":{\"id\":2,\"initial_balance\":\"5000.0000\",\"balance_usd\":\"5000.0000\"}}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "List users",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users",
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "manager",
+                                    "description": "Search by user name or email.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "is_active",
+                                    "value": "1",
+                                    "description": "Filter by active status.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "with_trashed",
+                                    "value": "",
+                                    "description": "Include soft-deleted users.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "20",
+                                    "description": "Results per page.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/users?search=manager&is_active=1&with_trashed=&per_page=20"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owner-only endpoint returning paginated users with their vaults."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":[{\"id\":2,\"name\":\"Manager\",\"email\":\"manager@example.com\",\"is_active\":true,\"vault\":{\"id\":2,\"balance_usd\":\"1000.0000\"}}]}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Create user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"password\":\"-0pBNvYgxw\",\"phone\":\"a\",\"role\":\"manager\",\"initial_balance\":4326.41688,\"is_active\":false}"
+                        },
+                        "description": "Owner-only endpoint that creates a user, creates their vault, and optionally assigns the manager role."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\",\"data\":{\"id\":2,\"name\":\"Manager\",\"email\":\"manager@example.com\",\"vault\":{\"id\":2,\"balance_usd\":1000}}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owner-only endpoint returning a user with vault and customers."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"id\":2,\"name\":\"Manager\",\"email\":\"manager@example.com\",\"vault\":{\"id\":2},\"customers\":[]}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Update user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"password\":\"-0pBNvYgxw\",\"phone\":\"a\",\"is_active\":false}"
+                        },
+                        "description": "Owner-only endpoint for updating user profile fields and active status."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\",\"data\":{\"id\":2,\"name\":\"Manager\",\"email\":\"manager@example.com\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/users\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/users\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owner-only endpoint that soft-deletes a user."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062d\u0630\u0641 \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 }
             ]
         },
@@ -1786,6 +2372,12 @@
                             "code": 200,
                             "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0631\u0635\u064a\u062f \u0627\u0644\u0635\u0646\u062f\u0648\u0642\"}",
                             "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
+                            "name": ""
                         }
                     ]
                 },
@@ -1827,7 +2419,20 @@
                         "body": null,
                         "description": "List transactions linked to a vault."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":[{\"id\":1,\"type\":\"receive\",\"net_usd_value\":\"100.0000\"}]}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
                     "name": "Vault summary",
@@ -1899,7 +2504,14 @@
                         "body": null,
                         "description": "Owner users can see all vaults. Managers are scoped to their own vault."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":[{\"id\":1,\"name\":\"Vault Manager\",\"initial_balance\":\"1000.0000\",\"balance_usd\":\"1250.0000\"}]}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
                     "name": "Show vault",
@@ -1932,7 +2544,20 @@
                         "body": null,
                         "description": "Return one vault if the current user is allowed to view it."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"id\":1,\"name\":\"Vault Manager\",\"balance_usd\":\"1250.0000\",\"user\":{\"id\":2,\"name\":\"Manager\"}}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
                 },
                 {
                     "name": "Update vault",
@@ -1973,6 +2598,18 @@
                             "header": [],
                             "code": 200,
                             "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0635\u0646\u062f\u0648\u0642\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"Validation Error\"}",
                             "name": ""
                         }
                     ]

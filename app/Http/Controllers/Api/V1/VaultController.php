@@ -31,6 +31,8 @@ class VaultController extends BaseApiController
      * @authenticated
      *
      * @queryParam per_page integer Results per page. Example: 20
+     *
+     * @response 200 {"success":true,"message":"Success","data":[{"id":1,"name":"Vault Manager","initial_balance":"1000.0000","balance_usd":"1250.0000"}]}
      */
     public function index(Request $request): JsonResponse
     {
@@ -46,6 +48,9 @@ class VaultController extends BaseApiController
      * Return one vault if the current user is allowed to view it.
      *
      * @authenticated
+     *
+     * @response 200 {"success":true,"message":"Success","data":{"id":1,"name":"Vault Manager","balance_usd":"1250.0000","user":{"id":2,"name":"Manager"}}}
+     * @response 403 {"success":false,"message":"غير مصرح"}
      */
     public function show(Request $request, Vault $vault): JsonResponse
     {
@@ -64,6 +69,8 @@ class VaultController extends BaseApiController
      * @authenticated
      *
      * @response 200 {"success":true,"message":"تم تحديث الصندوق"}
+     * @response 403 {"success":false,"message":"غير مصرح"}
+     * @response 422 {"success":false,"message":"Validation Error"}
      */
     public function update(UpdateVaultRequest $request, Vault $vault): JsonResponse
     {
@@ -84,6 +91,7 @@ class VaultController extends BaseApiController
      * @authenticated
      *
      * @response 200 {"success":true,"message":"تم تحديث رصيد الصندوق"}
+     * @response 422 {"success":false,"message":"Validation Error"}
      */
     public function setBalance(SetVaultBalanceRequest $request, Vault $vault): JsonResponse
     {
@@ -101,6 +109,9 @@ class VaultController extends BaseApiController
      * @authenticated
      *
      * @queryParam per_page integer Results per page. Example: 20
+     *
+     * @response 200 {"success":true,"message":"Success","data":[{"id":1,"type":"receive","net_usd_value":"100.0000"}]}
+     * @response 403 {"success":false,"message":"غير مصرح"}
      */
     public function transactions(Request $request, Vault $vault): JsonResponse
     {

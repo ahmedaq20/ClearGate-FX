@@ -8,17 +8,32 @@ servers:
     url: 'http://exhange.test'
 tags:
   -
-    name: Authentication
+    name: Auth
     description: "\nEndpoints for API token login, logout, profile lookup, and password changes."
+  -
+    name: Currencies
+    description: "\nManage supported currencies and their current USD exchange rates."
   -
     name: Customers
     description: "\nManage customers owned by users and linked to their vaults."
   -
-    name: Endpoints
-    description: ''
+    name: Dashboard
+    description: "\nOperational summaries and charts for the authenticated user's permitted scope."
+  -
+    name: 'Exchange Rates'
+    description: "\nView exchange-rate history and update current currency rates."
+  -
+    name: Notifications
+    description: "\nRead and manage in-app notifications for the authenticated user."
+  -
+    name: Settings
+    description: "\nRead and manage application settings grouped by feature area."
   -
     name: Transactions
     description: "\nManage receive/send transactions. Financial calculations are handled by TransactionService."
+  -
+    name: Users
+    description: "\nOwner-only user management endpoints."
   -
     name: Vaults
     description: "\nView and manage user vault information. Balance changes remain service-driven."
@@ -112,7 +127,7 @@ paths:
                     type: string
                     example: 'الحساب موقوف'
       tags:
-        - Authentication
+        - Auth
       requestBody:
         required: true
         content:
@@ -156,7 +171,7 @@ paths:
                     type: string
                     example: 'تم تسجيل الخروج'
       tags:
-        - Authentication
+        - Auth
   /api/v1/auth/me:
     get:
       summary: 'Current user'
@@ -197,7 +212,7 @@ paths:
                         type: string
                         example: owner@example.com
       tags:
-        - Authentication
+        - Auth
   /api/v1/auth/change-password:
     put:
       summary: 'Change password'
@@ -238,7 +253,7 @@ paths:
                     type: string
                     example: 'كلمة المرور الحالية غير صحيحة'
       tags:
-        - Authentication
+        - Auth
       requestBody:
         required: true
         content:
@@ -257,6 +272,377 @@ paths:
               required:
                 - current_password
                 - password
+  /api/v1/currencies:
+    get:
+      summary: 'List currencies'
+      operationId: listCurrencies
+      description: 'Return paginated currencies with optional search and active status filters.'
+      parameters:
+        -
+          in: query
+          name: search
+          description: 'Search by code, English name, or Arabic name.'
+          example: USD
+          required: false
+          schema:
+            type: string
+            description: 'Search by code, English name, or Arabic name.'
+            example: USD
+        -
+          in: query
+          name: is_active
+          description: 'Filter by active status.'
+          example: true
+          required: false
+          schema:
+            type: boolean
+            description: 'Filter by active status.'
+            example: true
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      id: 1
+                      code: USD
+                      name: 'US Dollar'
+                      name_ar: 'دولار أمريكي'
+                      symbol: $
+                      rate_to_usd: '1.000000'
+                      is_active: true
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        code: USD
+                        name: 'US Dollar'
+                        name_ar: 'دولار أمريكي'
+                        symbol: $
+                        rate_to_usd: '1.000000'
+                        is_active: true
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        code:
+                          type: string
+                          example: USD
+                        name:
+                          type: string
+                          example: 'US Dollar'
+                        name_ar:
+                          type: string
+                          example: 'دولار أمريكي'
+                        symbol:
+                          type: string
+                          example: $
+                        rate_to_usd:
+                          type: string
+                          example: '1.000000'
+                        is_active:
+                          type: boolean
+                          example: true
+      tags:
+        - Currencies
+    post:
+      summary: 'Create currency'
+      operationId: createCurrency
+      description: 'Create a new currency with its initial exchange rate to USD.'
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم إنشاء العملة'
+                  data:
+                    id: 1
+                    code: USD
+                    name: 'US Dollar'
+                    rate_to_usd: '1.000000'
+                    is_active: true
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم إنشاء العملة'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      code:
+                        type: string
+                        example: USD
+                      name:
+                        type: string
+                        example: 'US Dollar'
+                      rate_to_usd:
+                        type: string
+                        example: '1.000000'
+                      is_active:
+                        type: boolean
+                        example: true
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
+      tags:
+        - Currencies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: bngzmi
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: 'y'
+                name_ar:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: v
+                symbol:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: dljnik
+                rate_to_usd:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                is_active:
+                  type: boolean
+                  description: ''
+                  example: true
+                  nullable: true
+              required:
+                - code
+                - name
+                - name_ar
+                - symbol
+                - rate_to_usd
+  '/api/v1/currencies/{id}':
+    get:
+      summary: 'Show currency'
+      operationId: showCurrency
+      description: 'Return one currency and its exchange rate history.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    id: 1
+                    code: USD
+                    name: 'US Dollar'
+                    exchange_rates: []
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      code:
+                        type: string
+                        example: USD
+                      name:
+                        type: string
+                        example: 'US Dollar'
+                      exchange_rates:
+                        type: array
+                        example: []
+      tags:
+        - Currencies
+    put:
+      summary: 'Update currency'
+      operationId: updateCurrency
+      description: 'Update currency metadata or its active status.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث العملة'
+                  data:
+                    id: 1
+                    code: USD
+                    name: 'US Dollar'
+                    is_active: true
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث العملة'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      code:
+                        type: string
+                        example: USD
+                      name:
+                        type: string
+                        example: 'US Dollar'
+                      is_active:
+                        type: boolean
+                        example: true
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
+      tags:
+        - Currencies
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: bngzmi
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: 'y'
+                name_ar:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: v
+                symbol:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: dljnik
+                rate_to_usd:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                is_active:
+                  type: boolean
+                  description: ''
+                  example: false
+                  nullable: true
+    delete:
+      summary: 'Disable currency'
+      operationId: disableCurrency
+      description: 'Disable a currency by setting it inactive instead of deleting it.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تعطيل العملة'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تعطيل العملة'
+      tags:
+        - Currencies
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the currency.'
+        example: 16
+        required: true
+        schema:
+          type: integer
   '/api/v1/customers/{customer_id}/transactions':
     get:
       summary: 'Customer transactions'
@@ -273,7 +659,63 @@ paths:
             type: integer
             description: 'Results per page.'
             example: 20
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      id: 1
+                      type: receive
+                      net_usd_value: '100.0000'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        type: receive
+                        net_usd_value: '100.0000'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        type:
+                          type: string
+                          example: receive
+                        net_usd_value:
+                          type: string
+                          example: '100.0000'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
         - Customers
     parameters:
@@ -393,7 +835,57 @@ paths:
             type: integer
             description: 'Results per page.'
             example: 20
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      id: 1
+                      name: Ahmed
+                      category: regular
+                      balance_usd: '250.0000'
+                      is_active: true
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        name: Ahmed
+                        category: regular
+                        balance_usd: '250.0000'
+                        is_active: true
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: Ahmed
+                        category:
+                          type: string
+                          example: regular
+                        balance_usd:
+                          type: string
+                          example: '250.0000'
+                        is_active:
+                          type: boolean
+                          example: true
       tags:
         - Customers
     post:
@@ -418,6 +910,22 @@ paths:
                   message:
                     type: string
                     example: 'تم إنشاء العميل'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
       tags:
         - Customers
       requestBody:
@@ -469,7 +977,63 @@ paths:
       operationId: showCustomer
       description: 'Return one customer if the current user is allowed to view it.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    id: 1
+                    name: Ahmed
+                    balance_usd: '250.0000'
+                    vault:
+                      id: 1
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: Ahmed
+                      balance_usd:
+                        type: string
+                        example: '250.0000'
+                      vault:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
         - Customers
     put:
@@ -494,6 +1058,38 @@ paths:
                   message:
                     type: string
                     example: 'تم تحديث العميل'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
       tags:
         - Customers
       requestBody:
@@ -520,7 +1116,7 @@ paths:
                 category:
                   type: string
                   description: ''
-                  example: agent
+                  example: company
                   enum:
                     - regular
                     - vip
@@ -535,7 +1131,7 @@ paths:
                 is_active:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
     delete:
       summary: 'Delete customer'
@@ -559,6 +1155,22 @@ paths:
                   message:
                     type: string
                     example: 'تم حذف العميل'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
         - Customers
     parameters:
@@ -576,7 +1188,56 @@ paths:
       operationId: restoreCustomer
       description: 'Owner-only endpoint that restores a soft-deleted customer.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم استعادة العميل'
+                  data:
+                    id: 7
+                    name: Ahmed
+                    deleted_at: null
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم استعادة العميل'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 7
+                      name:
+                        type: string
+                        example: Ahmed
+                      deleted_at:
+                        type: string
+                        example: null
+                        nullable: true
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
         - Customers
     parameters:
@@ -594,7 +1255,39 @@ paths:
       operationId: forceDeleteCustomer
       description: 'Owner-only endpoint that permanently deletes a customer.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم حذف العميل نهائياً'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم حذف العميل نهائياً'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
         - Customers
     parameters:
@@ -606,42 +1299,211 @@ paths:
         required: true
         schema:
           type: integer
-  /api/v1/settings/public:
-    get:
-      summary: ''
-      operationId: getApiV1SettingsPublic
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
   /api/v1/dashboard/summary:
     get:
-      summary: ''
-      operationId: getApiV1DashboardSummary
-      description: ''
+      summary: 'Dashboard summary'
+      operationId: dashboardSummary
+      description: "Return headline balances, today's net activity, customer counts, recent transactions, and top customers.\nOwners receive the total balance across all vaults; managers receive data scoped to their own vault and customers."
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    total_balance_usd: 15000.5
+                    my_vault_balance: 4200
+                    today_net_usd:
+                      receive: 500
+                      send: 200
+                      net: 300
+                      count: 3
+                    customers_count: 18
+                    transactions_today_count: 3
+                    recent_transactions: []
+                    top_customers: []
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      total_balance_usd:
+                        type: number
+                        example: 15000.5
+                      my_vault_balance:
+                        type: integer
+                        example: 4200
+                      today_net_usd:
+                        type: object
+                        properties:
+                          receive:
+                            type: integer
+                            example: 500
+                          send:
+                            type: integer
+                            example: 200
+                          net:
+                            type: integer
+                            example: 300
+                          count:
+                            type: integer
+                            example: 3
+                      customers_count:
+                        type: integer
+                        example: 18
+                      transactions_today_count:
+                        type: integer
+                        example: 3
+                      recent_transactions:
+                        type: array
+                        example: []
+                      top_customers:
+                        type: array
+                        example: []
       tags:
-        - Endpoints
+        - Dashboard
   /api/v1/dashboard/chart:
     get:
-      summary: ''
-      operationId: getApiV1DashboardChart
-      description: ''
-      parameters: []
-      responses: {  }
+      summary: 'Dashboard chart'
+      operationId: dashboardChart
+      description: 'Return daily receive, send, and net totals for a chart period.'
+      parameters:
+        -
+          in: query
+          name: period
+          description: 'Chart period: 7d, 30d, or 3m.'
+          example: 7d
+          required: false
+          schema:
+            type: string
+            description: 'Chart period: 7d, 30d, or 3m.'
+            example: 7d
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    labels:
+                      - '2026-05-01'
+                      - '2026-05-02'
+                    receive:
+                      - 100
+                      - 250
+                    send:
+                      - 50
+                      - 75
+                    net:
+                      - 50
+                      - 175
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      labels:
+                        type: array
+                        example:
+                          - '2026-05-01'
+                          - '2026-05-02'
+                        items:
+                          type: string
+                      receive:
+                        type: array
+                        example:
+                          - 100
+                          - 250
+                        items:
+                          type: integer
+                      send:
+                        type: array
+                        example:
+                          - 50
+                          - 75
+                        items:
+                          type: integer
+                      net:
+                        type: array
+                        example:
+                          - 50
+                          - 175
+                        items:
+                          type: integer
       tags:
-        - Endpoints
+        - Dashboard
   '/api/v1/currencies/{code}/rate':
     put:
-      summary: ''
-      operationId: putApiV1CurrenciesCodeRate
-      description: ''
+      summary: 'Update currency rate'
+      operationId: updateCurrencyRate
+      description: 'Update the current exchange rate for a currency and append a historical exchange-rate row.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث سعر الصرف'
+                  data:
+                    code: USD
+                    rate_to_usd: '1.000000'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث سعر الصرف'
+                  data:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: USD
+                      rate_to_usd:
+                        type: string
+                        example: '1.000000'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
       tags:
-        - Endpoints
+        - 'Exchange Rates'
       requestBody:
         required: true
         content:
@@ -656,7 +1518,7 @@ paths:
                 date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-05-02T21:28:52'
+                  example: '2026-05-02T21:38:12'
                   nullable: true
               required:
                 - rate
@@ -664,141 +1526,52 @@ paths:
       -
         in: path
         name: code
-        description: ''
-        example: architecto
+        description: 'Currency code.'
+        example: USD
         required: true
         schema:
           type: string
-  /api/v1/currencies:
-    get:
-      summary: ''
-      operationId: getApiV1Currencies
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    post:
-      summary: ''
-      operationId: postApiV1Currencies
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                code:
-                  type: string
-                  description: 'Must not be greater than 10 characters.'
-                  example: bngzmi
-                name:
-                  type: string
-                  description: 'Must not be greater than 100 characters.'
-                  example: 'y'
-                name_ar:
-                  type: string
-                  description: 'Must not be greater than 100 characters.'
-                  example: v
-                symbol:
-                  type: string
-                  description: 'Must not be greater than 10 characters.'
-                  example: dljnik
-                rate_to_usd:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                is_active:
-                  type: boolean
-                  description: ''
-                  example: true
-                  nullable: true
-              required:
-                - code
-                - name
-                - name_ar
-                - symbol
-                - rate_to_usd
-  '/api/v1/currencies/{id}':
-    get:
-      summary: ''
-      operationId: getApiV1CurrenciesId
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    put:
-      summary: ''
-      operationId: putApiV1CurrenciesId
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                code:
-                  type: string
-                  description: 'Must not be greater than 10 characters.'
-                  example: bngzmi
-                name:
-                  type: string
-                  description: 'Must not be greater than 100 characters.'
-                  example: 'y'
-                name_ar:
-                  type: string
-                  description: 'Must not be greater than 100 characters.'
-                  example: v
-                symbol:
-                  type: string
-                  description: 'Must not be greater than 10 characters.'
-                  example: dljnik
-                rate_to_usd:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                is_active:
-                  type: boolean
-                  description: ''
-                  example: true
-                  nullable: true
-    delete:
-      summary: ''
-      operationId: deleteApiV1CurrenciesId
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    parameters:
-      -
-        in: path
-        name: id
-        description: 'The ID of the currency.'
-        example: 16
-        required: true
-        schema:
-          type: integer
   /api/v1/exchange-rates/bulk-update:
     post:
-      summary: ''
-      operationId: postApiV1ExchangeRatesBulkUpdate
-      description: ''
+      summary: 'Bulk update exchange rates'
+      operationId: bulkUpdateExchangeRates
+      description: 'Update multiple currency rates in one request. Each item creates a historical exchange-rate row.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث أسعار الصرف'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث أسعار الصرف'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
       tags:
-        - Endpoints
+        - 'Exchange Rates'
       requestBody:
         required: true
         content:
@@ -829,30 +1602,510 @@ paths:
                 - rates
   /api/v1/exchange-rates:
     get:
-      summary: ''
-      operationId: getApiV1ExchangeRates
-      description: ''
-      parameters: []
-      responses: {  }
+      summary: 'List exchange rates'
+      operationId: listExchangeRates
+      description: 'Return paginated exchange-rate history with optional currency and date filters.'
+      parameters:
+        -
+          in: query
+          name: currency
+          description: 'Filter by currency code.'
+          example: USD
+          required: false
+          schema:
+            type: string
+            description: 'Filter by currency code.'
+            example: USD
+        -
+          in: query
+          name: date_from
+          description: 'date Filter from rate date.'
+          example: '2026-05-01'
+          required: false
+          schema:
+            type: string
+            description: 'date Filter from rate date.'
+            example: '2026-05-01'
+        -
+          in: query
+          name: date_to
+          description: 'date Filter to rate date.'
+          example: '2026-05-31'
+          required: false
+          schema:
+            type: string
+            description: 'date Filter to rate date.'
+            example: '2026-05-31'
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      id: 1
+                      currency_code: USD
+                      rate: '1.000000'
+                      source: manual
+                      date: '2026-05-03'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        currency_code: USD
+                        rate: '1.000000'
+                        source: manual
+                        date: '2026-05-03'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        currency_code:
+                          type: string
+                          example: USD
+                        rate:
+                          type: string
+                          example: '1.000000'
+                        source:
+                          type: string
+                          example: manual
+                        date:
+                          type: string
+                          example: '2026-05-03'
       tags:
-        - Endpoints
+        - 'Exchange Rates'
+  /api/v1/notifications/unread-count:
+    get:
+      summary: 'Unread notification count'
+      operationId: unreadNotificationCount
+      description: 'Return the number of unread notifications for the authenticated user.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    count: 3
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        example: 3
+      tags:
+        - Notifications
+  /api/v1/notifications/read-all:
+    put:
+      summary: 'Mark all notifications as read'
+      operationId: markAllNotificationsAsRead
+      description: 'Mark every unread notification for the authenticated user as read.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تعليم كل الإشعارات كمقروءة'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تعليم كل الإشعارات كمقروءة'
+      tags:
+        - Notifications
+  /api/v1/notifications:
+    get:
+      summary: 'List notifications'
+      operationId: listNotifications
+      description: 'Return paginated notifications for the authenticated user.'
+      parameters:
+        -
+          in: query
+          name: is_read
+          description: 'Filter by read status.'
+          example: false
+          required: false
+          schema:
+            type: boolean
+            description: 'Filter by read status.'
+            example: false
+        -
+          in: query
+          name: type
+          description: 'Filter by notification type.'
+          example: report_ready
+          required: false
+          schema:
+            type: string
+            description: 'Filter by notification type.'
+            example: report_ready
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      id: 1
+                      type: system
+                      title: 'Notification title'
+                      body: 'Notification body'
+                      is_read: false
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        type: system
+                        title: 'Notification title'
+                        body: 'Notification body'
+                        is_read: false
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        type:
+                          type: string
+                          example: system
+                        title:
+                          type: string
+                          example: 'Notification title'
+                        body:
+                          type: string
+                          example: 'Notification body'
+                        is_read:
+                          type: boolean
+                          example: false
+      tags:
+        - Notifications
+  '/api/v1/notifications/{notification_id}/read':
+    put:
+      summary: 'Mark notification as read'
+      operationId: markNotificationAsRead
+      description: 'Mark one notification as read if it belongs to the authenticated user.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تعليم الإشعار كمقروء'
+                  data:
+                    id: 1
+                    is_read: true
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تعليم الإشعار كمقروء'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      is_read:
+                        type: boolean
+                        example: true
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Notifications
+    parameters:
+      -
+        in: path
+        name: notification_id
+        description: 'The ID of the notification.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v1/notifications/{id}':
+    delete:
+      summary: 'Delete notification'
+      operationId: deleteNotification
+      description: 'Delete one notification if it belongs to the authenticated user.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم حذف الإشعار'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم حذف الإشعار'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Notifications
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the notification.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/v1/settings/public:
+    get:
+      summary: 'Public settings'
+      operationId: publicSettings
+      description: 'Return settings marked as public. This endpoint is available without authentication.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    shop_name: 'ClearGate FX'
+                    default_currency: USD
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      shop_name:
+                        type: string
+                        example: 'ClearGate FX'
+                      default_currency:
+                        type: string
+                        example: USD
+      tags:
+        - Settings
+      security: []
   /api/v1/settings:
     get:
-      summary: ''
-      operationId: getApiV1Settings
-      description: ''
+      summary: 'List all settings'
+      operationId: listAllSettings
+      description: 'Owner-only endpoint returning every setting sorted by group and key.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      key: shop_name
+                      value: 'ClearGate FX'
+                      group_name: general
+                      is_public: true
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        key: shop_name
+                        value: 'ClearGate FX'
+                        group_name: general
+                        is_public: true
+                    items:
+                      type: object
+                      properties:
+                        key:
+                          type: string
+                          example: shop_name
+                        value:
+                          type: string
+                          example: 'ClearGate FX'
+                        group_name:
+                          type: string
+                          example: general
+                        is_public:
+                          type: boolean
+                          example: true
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
-        - Endpoints
+        - Settings
     put:
-      summary: ''
-      operationId: putApiV1Settings
-      description: ''
+      summary: 'Update settings'
+      operationId: updateSettings
+      description: 'Owner-only endpoint for updating settings by key/value pairs.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث الإعدادات'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث الإعدادات'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
       tags:
-        - Endpoints
+        - Settings
       requestBody:
         required: false
         content:
@@ -869,296 +2122,116 @@ paths:
                     nullable: true
   '/api/v1/settings/{group}':
     get:
-      summary: ''
-      operationId: getApiV1SettingsGroup
-      description: ''
+      summary: 'Settings group'
+      operationId: settingsGroup
+      description: 'Return settings for one group. Owners and users with settings.view may access it.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    shop_name: 'ClearGate FX'
+                    default_currency: USD
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      shop_name:
+                        type: string
+                        example: 'ClearGate FX'
+                      default_currency:
+                        type: string
+                        example: USD
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
-        - Endpoints
+        - Settings
     parameters:
       -
         in: path
         name: group
-        description: ''
-        example: architecto
+        description: 'Settings group name.'
+        example: general
         required: true
         schema:
           type: string
   '/api/v1/settings/reset/{group}':
     post:
-      summary: ''
-      operationId: postApiV1SettingsResetGroup
-      description: ''
+      summary: 'Reset settings group'
+      operationId: resetSettingsGroup
+      description: 'Owner-only endpoint that deletes all settings in a group so defaults can be recreated later.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تمت إعادة ضبط الإعدادات'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تمت إعادة ضبط الإعدادات'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
-        - Endpoints
+        - Settings
     parameters:
       -
         in: path
         name: group
-        description: ''
-        example: architecto
+        description: 'Settings group name.'
+        example: general
         required: true
         schema:
           type: string
-  /api/v1/notifications/unread-count:
-    get:
-      summary: ''
-      operationId: getApiV1NotificationsUnreadCount
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-  /api/v1/notifications/read-all:
-    put:
-      summary: ''
-      operationId: putApiV1NotificationsReadAll
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-  /api/v1/notifications:
-    get:
-      summary: ''
-      operationId: getApiV1Notifications
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-  '/api/v1/notifications/{notification_id}/read':
-    put:
-      summary: ''
-      operationId: putApiV1NotificationsNotification_idRead
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    parameters:
-      -
-        in: path
-        name: notification_id
-        description: 'The ID of the notification.'
-        example: 16
-        required: true
-        schema:
-          type: integer
-  '/api/v1/notifications/{id}':
-    delete:
-      summary: ''
-      operationId: deleteApiV1NotificationsId
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    parameters:
-      -
-        in: path
-        name: id
-        description: 'The ID of the notification.'
-        example: 16
-        required: true
-        schema:
-          type: integer
-  '/api/v1/users/{id}/restore':
-    patch:
-      summary: ''
-      operationId: patchApiV1UsersIdRestore
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    parameters:
-      -
-        in: path
-        name: id
-        description: 'The ID of the user.'
-        example: architecto
-        required: true
-        schema:
-          type: string
-  '/api/v1/users/{user_id}/toggle-active':
-    patch:
-      summary: ''
-      operationId: patchApiV1UsersUser_idToggleActive
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    parameters:
-      -
-        in: path
-        name: user_id
-        description: 'The ID of the user.'
-        example: 16
-        required: true
-        schema:
-          type: integer
-  '/api/v1/users/{user_id}/vault-balance':
-    patch:
-      summary: ''
-      operationId: patchApiV1UsersUser_idVaultBalance
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                initial_balance:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-              required:
-                - initial_balance
-    parameters:
-      -
-        in: path
-        name: user_id
-        description: 'The ID of the user.'
-        example: 16
-        required: true
-        schema:
-          type: integer
-  /api/v1/users:
-    get:
-      summary: ''
-      operationId: getApiV1Users
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    post:
-      summary: ''
-      operationId: postApiV1Users
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: 'Must not be greater than 100 characters.'
-                  example: b
-                email:
-                  type: string
-                  description: 'Must be a valid email address. Must not be greater than 150 characters.'
-                  example: zbailey@example.net
-                password:
-                  type: string
-                  description: 'Must be at least 8 characters.'
-                  example: '-0pBNvYgxw'
-                phone:
-                  type: string
-                  description: 'Must not be greater than 30 characters.'
-                  example: a
-                  nullable: true
-                role:
-                  type: string
-                  description: ''
-                  example: manager
-                  enum:
-                    - manager
-                  nullable: true
-                initial_balance:
-                  type: number
-                  description: ''
-                  example: 4326.41688
-                  nullable: true
-                is_active:
-                  type: boolean
-                  description: ''
-                  example: true
-                  nullable: true
-              required:
-                - name
-                - email
-                - password
-  '/api/v1/users/{id}':
-    get:
-      summary: ''
-      operationId: getApiV1UsersId
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    put:
-      summary: ''
-      operationId: putApiV1UsersId
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: 'Must not be greater than 100 characters.'
-                  example: b
-                email:
-                  type: string
-                  description: 'Must be a valid email address. Must not be greater than 150 characters.'
-                  example: zbailey@example.net
-                password:
-                  type: string
-                  description: 'Must be at least 8 characters.'
-                  example: '-0pBNvYgxw'
-                  nullable: true
-                phone:
-                  type: string
-                  description: 'Must not be greater than 30 characters.'
-                  example: a
-                  nullable: true
-                is_active:
-                  type: boolean
-                  description: ''
-                  example: false
-                  nullable: true
-    delete:
-      summary: ''
-      operationId: deleteApiV1UsersId
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-    parameters:
-      -
-        in: path
-        name: id
-        description: 'The ID of the user.'
-        example: 16
-        required: true
-        schema:
-          type: integer
   /api/v1/transactions/daily-summary:
     get:
       summary: 'Daily transaction summary'
@@ -1175,7 +2248,43 @@ paths:
             type: string
             description: 'date Summary date.'
             example: '2026-05-03'
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    receive: 500
+                    send: 200
+                    net: 300
+                    count: 3
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      receive:
+                        type: integer
+                        example: 500
+                      send:
+                        type: integer
+                        example: 200
+                      net:
+                        type: integer
+                        example: 300
+                      count:
+                        type: integer
+                        example: 3
       tags:
         - Transactions
   /api/v1/transactions:
@@ -1304,7 +2413,77 @@ paths:
             type: integer
             description: 'Results per page.'
             example: 20
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      id: 1
+                      type: receive
+                      amount: '100.0000'
+                      currency_code: USD
+                      exchange_rate: '1.000000'
+                      usd_value: '100.0000'
+                      commission_usd: '2.0000'
+                      net_usd_value: '102.0000'
+                      direction: 1
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        type: receive
+                        amount: '100.0000'
+                        currency_code: USD
+                        exchange_rate: '1.000000'
+                        usd_value: '100.0000'
+                        commission_usd: '2.0000'
+                        net_usd_value: '102.0000'
+                        direction: 1
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        type:
+                          type: string
+                          example: receive
+                        amount:
+                          type: string
+                          example: '100.0000'
+                        currency_code:
+                          type: string
+                          example: USD
+                        exchange_rate:
+                          type: string
+                          example: '1.000000'
+                        usd_value:
+                          type: string
+                          example: '100.0000'
+                        commission_usd:
+                          type: string
+                          example: '2.0000'
+                        net_usd_value:
+                          type: string
+                          example: '102.0000'
+                        direction:
+                          type: integer
+                          example: 1
       tags:
         - Transactions
     post:
@@ -1357,7 +2536,7 @@ paths:
                 type:
                   type: string
                   description: ''
-                  example: receive
+                  example: send
                   enum:
                     - receive
                     - send
@@ -1382,7 +2561,7 @@ paths:
                 commission_type:
                   type: string
                   description: ''
-                  example: percentage
+                  example: fixed
                   enum:
                     - percentage
                     - fixed
@@ -1418,7 +2597,7 @@ paths:
                 transaction_date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-05-02T21:28:52'
+                  example: '2026-05-02T21:38:12'
               required:
                 - type
                 - amount
@@ -1430,7 +2609,68 @@ paths:
       operationId: showTransaction
       description: 'Return one transaction if the current user is allowed to view it.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    id: 1
+                    type: receive
+                    amount: '100.0000'
+                    currency_code: USD
+                    net_usd_value: '102.0000'
+                    customer: null
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      type:
+                        type: string
+                        example: receive
+                      amount:
+                        type: string
+                        example: '100.0000'
+                      currency_code:
+                        type: string
+                        example: USD
+                      net_usd_value:
+                        type: string
+                        example: '102.0000'
+                      customer:
+                        type: string
+                        example: null
+                        nullable: true
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
         - Transactions
     put:
@@ -1455,6 +2695,38 @@ paths:
                   message:
                     type: string
                     example: 'تم تحديث العملية'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
       tags:
         - Transactions
       requestBody:
@@ -1482,7 +2754,7 @@ paths:
                 transaction_date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-05-02T21:28:52'
+                  example: '2026-05-02T21:38:12'
                   nullable: true
     delete:
       summary: 'Delete transaction'
@@ -1506,6 +2778,22 @@ paths:
                   message:
                     type: string
                     example: 'تم حذف العملية'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
         - Transactions
     parameters:
@@ -1523,7 +2811,52 @@ paths:
       operationId: restoreTransaction
       description: 'Owner-only endpoint that restores a soft-deleted transaction and reapplies its balance effect.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم استعادة العملية'
+                  data:
+                    id: 10
+                    deleted_at: null
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم استعادة العملية'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 10
+                      deleted_at:
+                        type: string
+                        example: null
+                        nullable: true
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
         - Transactions
     parameters:
@@ -1541,7 +2874,39 @@ paths:
       operationId: forceDeleteTransaction
       description: 'Owner-only endpoint that permanently deletes a transaction.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم حذف العملية نهائياً'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم حذف العملية نهائياً'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
         - Transactions
     parameters:
@@ -1550,6 +2915,659 @@ paths:
         name: id
         description: 'Transaction ID.'
         example: 10
+        required: true
+        schema:
+          type: integer
+  '/api/v1/users/{id}/restore':
+    patch:
+      summary: 'Restore user'
+      operationId: restoreUser
+      description: 'Owner-only endpoint that restores a soft-deleted user.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم استعادة المستخدم'
+                  data:
+                    id: 2
+                    name: Manager
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم استعادة المستخدم'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 2
+                      name:
+                        type: string
+                        example: Manager
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Users
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'User ID.'
+        example: 2
+        required: true
+        schema:
+          type: integer
+  '/api/v1/users/{user_id}/toggle-active':
+    patch:
+      summary: 'Toggle user active status'
+      operationId: toggleUserActiveStatus
+      description: 'Owner-only endpoint that activates or deactivates a user account.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث حالة المستخدم'
+                  data:
+                    id: 2
+                    is_active: false
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث حالة المستخدم'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 2
+                      is_active:
+                        type: boolean
+                        example: false
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Users
+    parameters:
+      -
+        in: path
+        name: user_id
+        description: 'The ID of the user.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v1/users/{user_id}/vault-balance':
+    patch:
+      summary: 'Set user vault balance'
+      operationId: setUserVaultBalance
+      description: "Owner-only endpoint that updates a user's initial balance, updates their vault, and recalculates current vault balance."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث رصيد صندوق المستخدم'
+                  data:
+                    id: 2
+                    vault:
+                      id: 2
+                      initial_balance: '5000.0000'
+                      balance_usd: '5000.0000'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث رصيد صندوق المستخدم'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 2
+                      vault:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 2
+                          initial_balance:
+                            type: string
+                            example: '5000.0000'
+                          balance_usd:
+                            type: string
+                            example: '5000.0000'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                initial_balance:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+              required:
+                - initial_balance
+    parameters:
+      -
+        in: path
+        name: user_id
+        description: 'The ID of the user.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/v1/users:
+    get:
+      summary: 'List users'
+      operationId: listUsers
+      description: 'Owner-only endpoint returning paginated users with their vaults.'
+      parameters:
+        -
+          in: query
+          name: search
+          description: 'Search by user name or email.'
+          example: manager
+          required: false
+          schema:
+            type: string
+            description: 'Search by user name or email.'
+            example: manager
+        -
+          in: query
+          name: is_active
+          description: 'Filter by active status.'
+          example: true
+          required: false
+          schema:
+            type: boolean
+            description: 'Filter by active status.'
+            example: true
+        -
+          in: query
+          name: with_trashed
+          description: 'Include soft-deleted users.'
+          example: false
+          required: false
+          schema:
+            type: boolean
+            description: 'Include soft-deleted users.'
+            example: false
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      id: 2
+                      name: Manager
+                      email: manager@example.com
+                      is_active: true
+                      vault:
+                        id: 2
+                        balance_usd: '1000.0000'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 2
+                        name: Manager
+                        email: manager@example.com
+                        is_active: true
+                        vault:
+                          id: 2
+                          balance_usd: '1000.0000'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 2
+                        name:
+                          type: string
+                          example: Manager
+                        email:
+                          type: string
+                          example: manager@example.com
+                        is_active:
+                          type: boolean
+                          example: true
+                        vault:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 2
+                            balance_usd:
+                              type: string
+                              example: '1000.0000'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Users
+    post:
+      summary: 'Create user'
+      operationId: createUser
+      description: 'Owner-only endpoint that creates a user, creates their vault, and optionally assigns the manager role.'
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم إنشاء المستخدم'
+                  data:
+                    id: 2
+                    name: Manager
+                    email: manager@example.com
+                    vault:
+                      id: 2
+                      balance_usd: 1000
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم إنشاء المستخدم'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 2
+                      name:
+                        type: string
+                        example: Manager
+                      email:
+                        type: string
+                        example: manager@example.com
+                      vault:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 2
+                          balance_usd:
+                            type: integer
+                            example: 1000
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: b
+                email:
+                  type: string
+                  description: 'Must be a valid email address. Must not be greater than 150 characters.'
+                  example: zbailey@example.net
+                password:
+                  type: string
+                  description: 'Must be at least 8 characters.'
+                  example: '-0pBNvYgxw'
+                phone:
+                  type: string
+                  description: 'Must not be greater than 30 characters.'
+                  example: a
+                  nullable: true
+                role:
+                  type: string
+                  description: ''
+                  example: manager
+                  enum:
+                    - manager
+                  nullable: true
+                initial_balance:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                is_active:
+                  type: boolean
+                  description: ''
+                  example: false
+                  nullable: true
+              required:
+                - name
+                - email
+                - password
+  '/api/v1/users/{id}':
+    get:
+      summary: 'Show user'
+      operationId: showUser
+      description: 'Owner-only endpoint returning a user with vault and customers.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    id: 2
+                    name: Manager
+                    email: manager@example.com
+                    vault:
+                      id: 2
+                    customers: []
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 2
+                      name:
+                        type: string
+                        example: Manager
+                      email:
+                        type: string
+                        example: manager@example.com
+                      vault:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 2
+                      customers:
+                        type: array
+                        example: []
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Users
+    put:
+      summary: 'Update user'
+      operationId: updateUser
+      description: 'Owner-only endpoint for updating user profile fields and active status.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث المستخدم'
+                  data:
+                    id: 2
+                    name: Manager
+                    email: manager@example.com
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث المستخدم'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 2
+                      name:
+                        type: string
+                        example: Manager
+                      email:
+                        type: string
+                        example: manager@example.com
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
+      tags:
+        - Users
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: b
+                email:
+                  type: string
+                  description: 'Must be a valid email address. Must not be greater than 150 characters.'
+                  example: zbailey@example.net
+                password:
+                  type: string
+                  description: 'Must be at least 8 characters.'
+                  example: '-0pBNvYgxw'
+                  nullable: true
+                phone:
+                  type: string
+                  description: 'Must not be greater than 30 characters.'
+                  example: a
+                  nullable: true
+                is_active:
+                  type: boolean
+                  description: ''
+                  example: false
+                  nullable: true
+    delete:
+      summary: 'Delete user'
+      operationId: deleteUser
+      description: 'Owner-only endpoint that soft-deletes a user.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم حذف المستخدم'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم حذف المستخدم'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Users
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the user.'
+        example: 16
         required: true
         schema:
           type: integer
@@ -1576,6 +3594,22 @@ paths:
                   message:
                     type: string
                     example: 'تم تحديث رصيد الصندوق'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
       tags:
         - Vaults
       requestBody:
@@ -1616,7 +3650,63 @@ paths:
             type: integer
             description: 'Results per page.'
             example: 20
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      id: 1
+                      type: receive
+                      net_usd_value: '100.0000'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        type: receive
+                        net_usd_value: '100.0000'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        type:
+                          type: string
+                          example: receive
+                        net_usd_value:
+                          type: string
+                          example: '100.0000'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
         - Vaults
     parameters:
@@ -1698,7 +3788,52 @@ paths:
             type: integer
             description: 'Results per page.'
             example: 20
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      id: 1
+                      name: 'Vault Manager'
+                      initial_balance: '1000.0000'
+                      balance_usd: '1250.0000'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        name: 'Vault Manager'
+                        initial_balance: '1000.0000'
+                        balance_usd: '1250.0000'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: 'Vault Manager'
+                        initial_balance:
+                          type: string
+                          example: '1000.0000'
+                        balance_usd:
+                          type: string
+                          example: '1250.0000'
       tags:
         - Vaults
   '/api/v1/vaults/{id}':
@@ -1707,7 +3842,67 @@ paths:
       operationId: showVault
       description: 'Return one vault if the current user is allowed to view it.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    id: 1
+                    name: 'Vault Manager'
+                    balance_usd: '1250.0000'
+                    user:
+                      id: 2
+                      name: Manager
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: 'Vault Manager'
+                      balance_usd:
+                        type: string
+                        example: '1250.0000'
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 2
+                          name:
+                            type: string
+                            example: Manager
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
       tags:
         - Vaults
     put:
@@ -1732,6 +3927,38 @@ paths:
                   message:
                     type: string
                     example: 'تم تحديث الصندوق'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
       tags:
         - Vaults
       requestBody:
