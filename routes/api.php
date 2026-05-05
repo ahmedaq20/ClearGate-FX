@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ExchangeRateController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\ReceiptController;
+use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\SettingController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -55,6 +57,17 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         Route::post('exchange-rates/bulk-update', [ExchangeRateController::class, 'bulkUpdate'])->name('exchange-rates.bulk-update');
         Route::get('exchange-rates', [ExchangeRateController::class, 'index'])->name('exchange-rates.index');
+
+        Route::get('reports/daily', [ReportController::class, 'daily'])->name('reports.daily');
+        Route::get('reports/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
+        Route::get('reports/users-comparison', [ReportController::class, 'usersComparison'])
+            ->middleware('role:owner,sanctum')
+            ->name('reports.users-comparison');
+        Route::get('reports/customer/{id}/statement', [ReportController::class, 'customerStatement'])->name('reports.customer.statement');
+        Route::post('reports/export', [ReportController::class, 'export'])->name('reports.export');
+        Route::get('reports/export/{job_id}/status', [ReportController::class, 'status'])->name('reports.export.status');
+        Route::get('reports/export/{job_id}/download', [ReportController::class, 'download'])->name('reports.export.download');
+        Route::get('receipts/{transaction_id}', [ReceiptController::class, 'show'])->name('receipts.show');
 
         Route::get('settings', [SettingController::class, 'index'])
             ->middleware('role:owner,sanctum')

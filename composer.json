@@ -10,10 +10,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "barryvdh/laravel-dompdf": "^3.1",
         "knuckleswtf/scribe": "^5.9",
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
+        "maatwebsite/excel": "4.x-dev",
         "spatie/laravel-permission": "^7.4"
     },
     "require-dev": {
@@ -21,6 +23,7 @@
         "laravel/boost": "^2.2",
         "laravel/pail": "^1.2.5",
         "laravel/pint": "^1.27",
+        "laravel/sail": "^1.58",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^4.6",
