@@ -46,9 +46,7 @@ class AuthController extends BaseApiController
 
         $user->update(['last_login_at' => now()]);
 
-        $token = method_exists($user, 'createToken')
-            ? $user->createToken('api')->plainTextToken
-            : null;
+        $token = $user->createToken('api')->plainTextToken;
 
         return $this->sendResponse([
             'user' => $user,
@@ -107,11 +105,11 @@ class AuthController extends BaseApiController
         /** @var User $user */
         $user = $request->user();
 
-        if (! Hash::check($request->string('current_password')->toString(), $user->password)) {
+        if (! Hash::check($request->password, $user->password)) {
             return $this->sendError('كلمة المرور الحالية غير صحيحة', [], 422);
         }
 
-        $user->update(['password' => $request->string('password')->toString()]);
+        $user->update(['password' => $request->password]);
 
         return $this->sendResponse(null, 'تم تغيير كلمة المرور');
     }
