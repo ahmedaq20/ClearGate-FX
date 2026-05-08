@@ -2,10 +2,14 @@
 
 namespace App\Services;
 
+use App\Events\TransactionCreated;
+use App\Events\TransactionDeleted;
+use App\Events\TransactionRestored;
 use App\Models\Customer;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Vault;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -47,13 +51,13 @@ class TransactionService
         $netUsdValue = $this->calculateNetUsdValue($usdValue, $commissionUsd, $commissionSign);
         $direction = $this->resolveDirection($data['type']);
 
-        return DB::transaction(function () use ($data, $user, $exchangeRate, $usdValue, $commissionUsd, $commissionSign, $netUsdValue, $direction): Transaction {
+        $transaction = DB::transaction(function () use ($data, $user, $exchangeRate, $usdValue, $commissionUsd, $commissionSign, $netUsdValue, $direction): Transaction {
             $vault = Vault::query()
                 ->where('user_id', $user->id)
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $customer = $this->resolveCustomer($data['customer_id'] ?? null, $vault);
+            $customer = $this->resolveCustomer($data['customer_id'] ?? null, $user);
 
             if ($direction === -1) {
                 $this->ensureSufficientBalance($vault, $customer, $netUsdValue);
@@ -84,11 +88,15 @@ class TransactionService
 
             return $transaction;
         }, attempts: 3);
+
+        event(new TransactionCreated($transaction, $user));
+
+        return $transaction;
     }
 
     public function softDelete(Transaction $transaction, User $user): void
     {
-        DB::transaction(function () use ($transaction): void {
+        $deletedTransaction = DB::transaction(function () use ($transaction): Transaction {
             $transaction = Transaction::query()
                 ->whereKey($transaction->id)
                 ->lockForUpdate()
@@ -102,20 +110,20 @@ class TransactionService
             $this->applyBalanceEffect($vault, $customer, (float) $transaction->net_usd_value, (int) $transaction->direction * -1);
 
             $transaction->delete();
+
+            return $transaction;
         }, attempts: 3);
+
+        event(new TransactionDeleted($deletedTransaction, $user));
     }
 
-    public function restore(int $id): Transaction
+    public function restore(int $id, ?User $actor = null): Transaction
     {
-        return DB::transaction(function () use ($id): Transaction {
+        $transaction = DB::transaction(function () use ($id): Transaction {
             $transaction = Transaction::withTrashed()
                 ->whereKey($id)
                 ->lockForUpdate()
                 ->firstOrFail();
-
-            if (! $transaction->trashed()) {
-                return $transaction;
-            }
 
             $vault = Vault::query()->whereKey($transaction->vault_id)->lockForUpdate()->firstOrFail();
             $customer = $transaction->customer_id
@@ -128,6 +136,12 @@ class TransactionService
 
             return $transaction;
         }, attempts: 3);
+
+        if ($actor !== null) {
+            event(new TransactionRestored($transaction, $actor));
+        }
+
+        return $transaction;
     }
 
     private function calculateCommissionUsd(float $usdValue, ?string $commissionType, ?float $commissionRate): float
@@ -184,17 +198,28 @@ class TransactionService
         return round($usdValue + ($commissionUsd * ($commissionSign ?? 0)), 4);
     }
 
-    private function resolveCustomer(?int $customerId, Vault $vault): ?Customer
+    private function resolveCustomer(?int $customerId, User $user): ?Customer
     {
         if ($customerId === null) {
             return null;
         }
 
-        return Customer::query()
+        $customer = Customer::query()
             ->whereKey($customerId)
-            ->where('vault_id', $vault->id)
             ->lockForUpdate()
-            ->firstOrFail();
+            ->first();
+
+        if ($customer === null) {
+            throw ValidationException::withMessages([
+                'customer_id' => ['العميل المحدد غير موجود'],
+            ]);
+        }
+
+        if (! $user->isOwner() && $customer->user_id !== $user->id) {
+            throw new AuthorizationException('لا يمكنك تنفيذ عملية لهذا العميل لأنه غير تابع لحسابك');
+        }
+
+        return $customer;
     }
 
     private function ensureSufficientBalance(Vault $vault, ?Customer $customer, float $netUsdValue): void

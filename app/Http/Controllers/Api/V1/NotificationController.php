@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Notification;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,6 +15,10 @@ use Illuminate\Http\Request;
  */
 class NotificationController extends BaseApiController
 {
+    public function __construct(
+        private NotificationService $notificationService,
+    ) {}
+
     /**
      * List notifications
      *
@@ -52,10 +57,7 @@ class NotificationController extends BaseApiController
     public function unreadCount(Request $request): JsonResponse
     {
         return $this->sendResponse([
-            'count' => Notification::query()
-                ->where('user_id', $request->user()?->id)
-                ->where('is_read', false)
-                ->count(),
+            'count' => $this->notificationService->getUnreadCount((int) $request->user()?->id),
         ]);
     }
 
@@ -75,12 +77,10 @@ class NotificationController extends BaseApiController
             return $this->sendError('غير مصرح', [], 403);
         }
 
-        $notification->update([
-            'is_read' => true,
-            'read_at' => now(),
-        ]);
-
-        return $this->sendResponse($notification->refresh(), 'تم تعليم الإشعار كمقروء');
+        return $this->sendResponse(
+            $this->notificationService->markAsRead($notification->id, (int) $request->user()?->id),
+            'تم تعليم الإشعار كمقروء'
+        );
     }
 
     /**
@@ -94,13 +94,7 @@ class NotificationController extends BaseApiController
      */
     public function readAll(Request $request): JsonResponse
     {
-        Notification::query()
-            ->where('user_id', $request->user()?->id)
-            ->where('is_read', false)
-            ->update([
-                'is_read' => true,
-                'read_at' => now(),
-            ]);
+        $this->notificationService->markAllAsRead((int) $request->user()?->id);
 
         return $this->sendResponse(null, 'تم تعليم كل الإشعارات كمقروءة');
     }
@@ -122,6 +116,7 @@ class NotificationController extends BaseApiController
         }
 
         $notification->delete();
+        $this->notificationService->forgetUnreadCount((int) $request->user()?->id);
 
         return $this->sendResponse(null, 'تم حذف الإشعار');
     }

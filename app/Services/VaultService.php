@@ -22,13 +22,25 @@ class VaultService
 
     public function createForUser(User $user, float $initialBalance = 0): Vault
     {
-        return Vault::query()->create([
-            'user_id' => $user->id,
+        $vault = Vault::withTrashed()->firstOrNew(['user_id' => $user->id]);
+
+        if ($vault->exists) {
+            if ($vault->trashed()) {
+                $vault->restore();
+            }
+
+            return $vault;
+        }
+
+        $vault->fill([
             'name' => "Vault {$user->name}",
             'initial_balance' => $initialBalance,
             'balance_usd' => $initialBalance,
             'currency_code' => 'USD',
             'is_active' => true,
         ]);
+        $vault->save();
+
+        return $vault;
     }
 }

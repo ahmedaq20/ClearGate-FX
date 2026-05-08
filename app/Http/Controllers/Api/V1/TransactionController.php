@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Http\Requests\Transaction\UpdateTransactionRequest;
+use App\Models\Customer;
 use App\Models\Transaction;
 use App\Services\BalanceService;
 use App\Services\TransactionService;
@@ -84,6 +85,22 @@ class TransactionController extends BaseApiController
      */
     public function store(StoreTransactionRequest $request): JsonResponse
     {
+        if ($request->filled('customer_id') && ! $this->isOwner($request->user())) {
+            $customer = Customer::query()
+                ->whereKey($request->integer('customer_id'))
+                ->first();
+
+            if ($customer === null) {
+                return $this->sendError('Validation Error', [
+                    'customer_id' => ['العميل المحدد غير موجود'],
+                ], 422);
+            }
+
+            if ($customer->user_id !== $request->user()?->id) {
+                return $this->sendError('لا يمكنك تنفيذ عملية لهذا العميل لأنه غير تابع لحسابك', [], 403);
+            }
+        }
+
         $transaction = $this->transactionService->store($request->validated(), $this->currentUser($request));
 
         return $this->sendResponse($transaction->load(['user', 'vault', 'customer', 'currency']), 'تم إنشاء العملية', 201);
@@ -169,7 +186,17 @@ class TransactionController extends BaseApiController
             return $error;
         }
 
-        return $this->sendResponse($this->transactionService->restore($id), 'تم استعادة العملية');
+        $transaction = Transaction::withTrashed()->find($id);
+
+        if ($transaction === null) {
+            return $this->sendError('العملية غير موجودة', [], 404);
+        }
+
+        if (! $transaction->trashed()) {
+            return $this->sendError('لا يمكن استعادة عملية غير محذوفة', [], 422);
+        }
+
+        return $this->sendResponse($this->transactionService->restore($id, $this->currentUser($request)), 'تم استعادة العملية');
     }
 
     /**

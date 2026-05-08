@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Requests\Customer\StoreCustomerRequest;
 use App\Http\Requests\Customer\UpdateCustomerRequest;
+use App\Models\AuditLog;
 use App\Models\Customer;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Services\ArchiveService;
 use App\Services\BalanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,6 +23,7 @@ class CustomerController extends BaseApiController
 {
     public function __construct(
         private BalanceService $balanceService,
+        private ArchiveService $archiveService,
     ) {}
 
     /**
@@ -77,7 +80,12 @@ class CustomerController extends BaseApiController
             ? User::query()->findOrFail($request->integer('user_id'))
             : $this->currentUser($request);
 
-        $vault = $user->vault()->firstOrFail();
+        $vault = $user->vault()->first();
+
+        if ($vault === null) {
+            return $this->sendError('صندوق المستخدم غير موجود. يرجى التواصل مع المسؤول.', [], 409);
+        }
+
         $data = $request->validated();
         $data['user_id'] = $user->id;
         $data['vault_id'] = $vault->id;
@@ -142,7 +150,17 @@ class CustomerController extends BaseApiController
             return $this->sendError('غير مصرح', [], 403);
         }
 
+        $snapshot = $customer->attributesToArray();
         $customer->delete();
+
+        AuditLog::record(
+            action: 'customer.deleted',
+            model: $customer,
+            userId: (int) $request->user()?->id,
+            oldValues: $snapshot
+        );
+
+        $this->archiveService->archive($customer, $this->currentUser($request), 'customer.deleted', $snapshot);
 
         return $this->sendResponse(null, 'تم حذف العميل');
     }
@@ -165,8 +183,24 @@ class CustomerController extends BaseApiController
             return $error;
         }
 
-        $customer = Customer::withTrashed()->findOrFail($id);
+        $customer = Customer::withTrashed()->find($id);
+
+        if ($customer === null) {
+            return $this->sendError('العميل غير موجود', [], 404);
+        }
+
+        if (! $customer->trashed()) {
+            return $this->sendError('لا يمكن استعادة عميل غير محذوف', [], 422);
+        }
+
         $customer->restore();
+
+        AuditLog::record(
+            action: 'customer.restored',
+            model: $customer,
+            userId: (int) $request->user()?->id,
+            newValues: $customer->attributesToArray()
+        );
 
         return $this->sendResponse($customer, 'تم استعادة العميل');
     }

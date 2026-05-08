@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Events\ExchangeRateUpdated;
 use App\Models\Currency;
 use App\Models\ExchangeRate;
+use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -25,14 +27,16 @@ class ExchangeRateService
 
     public function updateRate(string $code, float $rate, int $userId, ?string $date = null): void
     {
-        DB::transaction(function () use ($code, $rate, $userId, $date): void {
-            Currency::query()
+        [$exchangeRate, $oldRate] = DB::transaction(function () use ($code, $rate, $userId, $date): array {
+            $currency = Currency::query()
                 ->where('code', $code)
                 ->lockForUpdate()
-                ->firstOrFail()
-                ->update(['rate_to_usd' => $rate]);
+                ->firstOrFail();
 
-            ExchangeRate::query()->create([
+            $oldRate = (float) $currency->rate_to_usd;
+            $currency->update(['rate_to_usd' => $rate]);
+
+            $exchangeRate = ExchangeRate::query()->create([
                 'currency_code' => $code,
                 'rate' => $rate,
                 'source' => 'manual',
@@ -41,7 +45,11 @@ class ExchangeRateService
             ]);
 
             Cache::forget("rate.{$code}");
+
+            return [$exchangeRate, $oldRate];
         }, attempts: 3);
+
+        event(new ExchangeRateUpdated($exchangeRate, User::query()->findOrFail($userId), $oldRate));
     }
 
     public function calculateUsdValue(float $amount, float $rate): float

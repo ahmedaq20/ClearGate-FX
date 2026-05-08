@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Services\VaultService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
@@ -112,6 +113,7 @@ class RolePermissionSeeder extends Seeder
         );
 
         $user->assignRole($owner);
+        app(VaultService::class)->createForUser($user, (float) $user->initial_balance);
 
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }

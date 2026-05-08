@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ArchiveController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CurrencyController;
 use App\Http\Controllers\Api\V1\CustomerController;
@@ -18,7 +19,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::get('settings/public', [SettingController::class, 'publicSettings'])->name('settings.public');
     Route::post('auth/login', [AuthController::class, 'login'])->name('auth.login');
 
-    Route::middleware(['auth:sanctum', 'active'])->group(function (): void {
+    Route::middleware(['auth:sanctum', 'active', 'api.audit'])->group(function (): void {
         Route::post('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
         Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');
         Route::put('auth/change-password', [AuthController::class, 'changePassword'])->name('auth.change-password');
@@ -36,8 +37,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             ->name('transactions.force-delete');
 
         Route::get('customers/{customer}/transactions', [CustomerController::class, 'transactions'])->name('customers.transactions');
+        Route::post('customers', [CustomerController::class, 'store'])->name('customers.store');
         Route::get('customers/{customer}/balance', [CustomerController::class, 'balance'])->name('customers.balance');
-        Route::apiResource('customers', CustomerController::class);
         Route::patch('customers/{id}/restore', [CustomerController::class, 'restore'])
             ->middleware('role:owner,sanctum')
             ->name('customers.restore');
@@ -85,6 +86,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::put('notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
         Route::delete('notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+        Route::get('archive', [ArchiveController::class, 'index'])->name('archive.index');
+        Route::get('archive/{archive}', [ArchiveController::class, 'show'])->name('archive.show');
+        Route::post('archive/{archive}/restore', [ArchiveController::class, 'restore'])
+            ->middleware('role:owner,sanctum')
+            ->name('archive.restore');
 
         Route::middleware('role:owner,sanctum')->group(function (): void {
             Route::patch('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');

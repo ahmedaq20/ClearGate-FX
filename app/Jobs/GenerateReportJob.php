@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Models\Notification;
 use App\Models\User;
 use App\Services\ExcelService;
+use App\Services\NotificationService;
 use App\Services\PdfService;
 use App\Services\ReportService;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -32,8 +32,12 @@ class GenerateReportJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(ReportService $reportService, PdfService $pdfService, ExcelService $excelService): void
-    {
+    public function handle(
+        ReportService $reportService,
+        PdfService $pdfService,
+        ExcelService $excelService,
+        NotificationService $notificationService
+    ): void {
         $this->putStatus(['status' => 'processing']);
 
         $user = User::query()->findOrFail($this->userId);
@@ -56,18 +60,18 @@ class GenerateReportJob implements ShouldQueue
             'expires_at' => $expiresAt->toIso8601String(),
         ], $expiresAt);
 
-        Notification::query()->create([
-            'user_id' => $this->userId,
-            'type' => 'report_ready',
-            'title' => 'تقريرك جاهز',
-            'body' => 'تم إنشاء ملف التقرير المطلوب.',
-            'data' => [
+        $notificationService->send(
+            $this->userId,
+            'report_ready',
+            'تقريرك جاهز',
+            'تم إنشاء ملف التقرير المطلوب.',
+            [
                 'job_id' => $this->jobId,
                 'type' => $this->type,
                 'format' => $this->format,
                 'path' => $path,
-            ],
-        ]);
+            ]
+        );
     }
 
     public function failed(Throwable $exception): void

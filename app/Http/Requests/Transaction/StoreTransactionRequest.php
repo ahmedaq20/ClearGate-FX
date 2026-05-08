@@ -32,4 +32,14 @@ class StoreTransactionRequest extends ApiFormRequest
             'transaction_date' => ['required', 'date'],
         ];
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return array_merge(parent::messages(), [
+            'customer_id.exists' => 'العميل المحدد غير موجود',
+        ]);
+    }
 }
