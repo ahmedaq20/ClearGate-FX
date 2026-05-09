@@ -1,0 +1,19 @@
+meta {
+  name: Restore Customer
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrlApi}}/customers/1/restore
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

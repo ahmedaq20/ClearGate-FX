@@ -1,0 +1,19 @@
+meta {
+  name: Show Role
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrlApi}}/roles/3
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

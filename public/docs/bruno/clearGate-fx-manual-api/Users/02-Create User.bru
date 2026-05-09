@@ -1,0 +1,32 @@
+meta {
+  name: Create User
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrlApi}}/users
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Nadia Manager",
+    "email": "nadia.manager@example.com",
+    "password": "password123",
+    "phone": "+970599000111",
+    "role": "manager",
+    "initial_balance": 2500,
+    "is_active": true
+  }
+}

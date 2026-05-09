@@ -217,7 +217,13 @@ class TransactionController extends BaseApiController
             return $error;
         }
 
-        Transaction::withTrashed()->findOrFail($id)->forceDelete();
+        $transaction = Transaction::withTrashed()->findOrFail($id);
+
+        if (! $transaction->trashed()) {
+            return $this->sendError('لا يمكن حذف عملية نهائياً قبل حذفها مؤقتاً', [], 422);
+        }
+
+        $transaction->forceDelete();
 
         return $this->sendResponse(null, 'تم حذف العملية نهائياً');
     }

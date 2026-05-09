@@ -1,0 +1,30 @@
+meta {
+  name: Update Custom Role Name
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrlApi}}/roles/3
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "senior_auditor"
+  }
+}
+
+docs {
+  System roles owner and manager cannot be renamed.
+}

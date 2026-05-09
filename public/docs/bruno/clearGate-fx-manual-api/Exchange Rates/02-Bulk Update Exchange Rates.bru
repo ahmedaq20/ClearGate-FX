@@ -1,0 +1,35 @@
+meta {
+  name: Bulk Update Exchange Rates
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrlApi}}/exchange-rates/bulk-update
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "rates": [
+      {
+        "code": "USD",
+        "rate": 1
+      },
+      {
+        "code": "EUR",
+        "rate": 0.92
+      }
+    ]
+  }
+}

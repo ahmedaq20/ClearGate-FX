@@ -1,0 +1,19 @@
+meta {
+  name: Daily Report
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrlApi}}/reports/daily?date=2026-05-09
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

@@ -78,6 +78,8 @@ abstract class ApiFormRequest extends FormRequest
             'rates.*.code' => 'رمز العملة',
             'rates.*.rate' => 'سعر الصرف',
             'settings.*' => 'قيمة الإعداد',
+            'permissions' => 'الصلاحيات',
+            'permissions.*' => 'الصلاحية',
         ];
     }
 }

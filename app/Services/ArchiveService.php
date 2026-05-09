@@ -32,7 +32,7 @@ class ArchiveService
             'transaction' => app(TransactionService::class)->restore((int) $archive->archivable_id, $actor),
             'customer' => $this->restoreCustomer((int) $archive->archivable_id, $actor),
             default => throw ValidationException::withMessages([
-                'archive' => 'Unsupported archive type.',
+                'archive' => 'نوع الأرشيف غير مدعوم.',
             ]),
         };
     }
@@ -40,6 +40,13 @@ class ArchiveService
     private function restoreCustomer(int $id, User $actor): Customer
     {
         $customer = Customer::withTrashed()->findOrFail($id);
+
+        if (! $customer->trashed()) {
+            throw ValidationException::withMessages([
+                'customer' => 'لا يمكن استعادة عميل غير محذوف',
+            ]);
+        }
+
         $customer->restore();
 
         AuditLog::record(
@@ -66,7 +73,7 @@ class ArchiveService
             $model instanceof Transaction => 'transaction',
             $model instanceof Customer => 'customer',
             default => throw ValidationException::withMessages([
-                'archive' => 'Unsupported archive model.',
+                'archive' => 'نموذج الأرشيف غير مدعوم.',
             ]),
         };
     }

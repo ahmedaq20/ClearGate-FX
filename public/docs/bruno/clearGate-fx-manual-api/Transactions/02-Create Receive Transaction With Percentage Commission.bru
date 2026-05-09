@@ -1,0 +1,37 @@
+meta {
+  name: Create Receive Transaction With Percentage Commission
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrlApi}}/transactions
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "type": "receive",
+    "amount": 200,
+    "currency_code": "USD",
+    "exchange_rate": 1,
+    "customer_id": 1,
+    "commission_type": "percentage",
+    "commission_rate": 2.5,
+    "commission_sign": 1,
+    "note": "Incoming transfer with customer-paid commission",
+    "reference_number": "RCV-2026-0001",
+    "country": "Palestine",
+    "transaction_date": "2026-05-09"
+  }
+}

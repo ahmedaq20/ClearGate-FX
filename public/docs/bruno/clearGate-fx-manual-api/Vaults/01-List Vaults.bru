@@ -1,0 +1,19 @@
+meta {
+  name: List Vaults
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrlApi}}/vaults?per_page=20
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

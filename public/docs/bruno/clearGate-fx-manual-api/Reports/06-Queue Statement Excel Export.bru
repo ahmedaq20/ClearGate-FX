@@ -1,0 +1,32 @@
+meta {
+  name: Queue Statement Excel Export
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrlApi}}/reports/export
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "type": "statement",
+    "format": "excel",
+    "params": {
+      "customer_id": 1,
+      "date_from": "2026-05-01",
+      "date_to": "2026-05-31"
+    }
+  }
+}

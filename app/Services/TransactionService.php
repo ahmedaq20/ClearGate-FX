@@ -125,6 +125,12 @@ class TransactionService
                 ->lockForUpdate()
                 ->firstOrFail();
 
+            if (! $transaction->trashed()) {
+                throw ValidationException::withMessages([
+                    'transaction' => 'لا يمكن استعادة عملية غير محذوفة',
+                ]);
+            }
+
             $vault = Vault::query()->whereKey($transaction->vault_id)->lockForUpdate()->firstOrFail();
             $customer = $transaction->customer_id
                 ? Customer::query()->whereKey($transaction->customer_id)->lockForUpdate()->first()
@@ -152,7 +158,7 @@ class TransactionService
 
         if ($commissionRate === null) {
             throw ValidationException::withMessages([
-                'commission_rate' => 'Commission rate is required when commission type is present.',
+                'commission_rate' => 'قيمة العمولة مطلوبة عند تحديد نوع العمولة.',
             ]);
         }
 
@@ -160,7 +166,7 @@ class TransactionService
             'percentage' => round($usdValue * ($commissionRate / 100), 4),
             'fixed' => round($commissionRate, 4),
             default => throw ValidationException::withMessages([
-                'commission_type' => 'Commission type must be percentage or fixed.',
+                'commission_type' => 'نوع العمولة يجب أن يكون نسبة أو قيمة ثابتة.',
             ]),
         };
     }
@@ -171,7 +177,7 @@ class TransactionService
             'receive' => 1,
             'send' => -1,
             default => throw ValidationException::withMessages([
-                'type' => 'Transaction type must be receive or send.',
+                'type' => 'نوع العملية يجب أن يكون استقبال أو إرسال.',
             ]),
         };
     }
@@ -186,7 +192,7 @@ class TransactionService
 
         if (! in_array($commissionSign, [1, -1], true)) {
             throw ValidationException::withMessages([
-                'commission_sign' => 'Commission sign must be 1 or -1 when commission type is present.',
+                'commission_sign' => 'إشارة العمولة يجب أن تكون 1 أو -1 عند تحديد نوع العمولة.',
             ]);
         }
 
@@ -226,13 +232,13 @@ class TransactionService
     {
         if ((float) $vault->balance_usd < $netUsdValue) {
             throw ValidationException::withMessages([
-                'vault' => 'Vault does not have enough money.',
+                'vault' => 'رصيد الصندوق غير كافٍ.',
             ]);
         }
 
         if ($customer !== null && (float) $customer->balance_usd < $netUsdValue) {
             throw ValidationException::withMessages([
-                'customer' => 'Customer does not have enough money.',
+                'customer' => 'رصيد العميل غير كافٍ.',
             ]);
         }
     }

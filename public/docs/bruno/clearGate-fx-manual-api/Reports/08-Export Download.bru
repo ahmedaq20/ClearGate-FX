@@ -1,0 +1,19 @@
+meta {
+  name: Export Download
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrlApi}}/reports/export/replace-with-job-id/download
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

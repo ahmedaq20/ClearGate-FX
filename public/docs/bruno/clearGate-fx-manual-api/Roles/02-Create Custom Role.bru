@@ -1,0 +1,31 @@
+meta {
+  name: Create Custom Role
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrlApi}}/roles
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "auditor",
+    "permissions": [
+      "transaction.viewAny",
+      "customer.viewAny",
+      "report.daily"
+    ]
+  }
+}

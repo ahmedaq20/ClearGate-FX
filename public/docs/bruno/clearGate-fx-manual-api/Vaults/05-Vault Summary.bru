@@ -1,0 +1,19 @@
+meta {
+  name: Vault Summary
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrlApi}}/vaults/1/summary
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

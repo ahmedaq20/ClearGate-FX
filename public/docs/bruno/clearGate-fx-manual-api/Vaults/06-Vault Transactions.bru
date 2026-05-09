@@ -1,0 +1,19 @@
+meta {
+  name: Vault Transactions
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrlApi}}/vaults/1/transactions?per_page=20
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

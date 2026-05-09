@@ -1,0 +1,19 @@
+meta {
+  name: Settings Group
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrlApi}}/settings/general
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

@@ -1,0 +1,35 @@
+meta {
+  name: Assign Permissions To Role
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrlApi}}/roles/3/permissions
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "permissions": [
+      "transaction.viewAny",
+      "customer.viewAny",
+      "report.daily",
+      "report.monthly"
+    ]
+  }
+}
+
+docs {
+  Owner role cannot lose critical owner permissions.
+}

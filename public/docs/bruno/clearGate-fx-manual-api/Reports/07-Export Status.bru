@@ -1,0 +1,19 @@
+meta {
+  name: Export Status
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrlApi}}/reports/export/replace-with-job-id/status
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

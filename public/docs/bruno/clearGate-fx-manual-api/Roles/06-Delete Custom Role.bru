@@ -1,0 +1,23 @@
+meta {
+  name: Delete Custom Role
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrlApi}}/roles/3
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Owner and default manager roles are protected from deletion.
+}

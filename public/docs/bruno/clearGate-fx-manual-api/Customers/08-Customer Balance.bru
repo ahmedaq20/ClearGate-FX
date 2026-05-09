@@ -1,0 +1,19 @@
+meta {
+  name: Customer Balance
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrlApi}}/customers/1/balance
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

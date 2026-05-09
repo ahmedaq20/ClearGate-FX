@@ -1,0 +1,23 @@
+meta {
+  name: Delete Transaction
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrlApi}}/transactions/1
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Soft-deletes a transaction and reverses its balance effect.
+}

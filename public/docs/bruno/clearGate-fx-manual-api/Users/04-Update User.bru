@@ -1,0 +1,28 @@
+meta {
+  name: Update User
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrlApi}}/users/2
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Nadia Manager Updated",
+    "phone": "+970599000222",
+    "is_active": true
+  }
+}

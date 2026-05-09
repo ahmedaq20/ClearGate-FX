@@ -1,0 +1,19 @@
+meta {
+  name: Reset Settings Group
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrlApi}}/settings/reset/general
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

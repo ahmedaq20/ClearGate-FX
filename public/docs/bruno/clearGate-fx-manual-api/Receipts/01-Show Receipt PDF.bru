@@ -1,0 +1,19 @@
+meta {
+  name: Show Receipt PDF
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrlApi}}/receipts/1
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/pdf
+}
+
+auth:bearer {
+  token: {{token}}
+}

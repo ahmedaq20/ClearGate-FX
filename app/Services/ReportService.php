@@ -24,7 +24,7 @@ class ReportService
             'statement' => $this->statement($params, $user),
             'comparison' => $this->comparison($params, $user),
             default => throw ValidationException::withMessages([
-                'type' => 'Unsupported report type.',
+                'type' => 'نوع التقرير غير مدعوم.',
             ]),
         };
     }
@@ -89,7 +89,7 @@ class ReportService
     {
         if (! isset($params['customer_id'])) {
             throw ValidationException::withMessages([
-                'params.customer_id' => 'Customer ID is required for statement reports.',
+                'params.customer_id' => 'معرف العميل مطلوب لتقرير كشف الحساب.',
             ]);
         }
 

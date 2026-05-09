@@ -1,0 +1,19 @@
+meta {
+  name: Summary
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrlApi}}/dashboard/summary
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

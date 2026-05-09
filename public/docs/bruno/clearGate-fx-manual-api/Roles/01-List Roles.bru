@@ -1,0 +1,23 @@
+meta {
+  name: List Roles
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrlApi}}/roles
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Owner-only role list with permissions and Arabic role labels.
+}

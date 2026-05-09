@@ -1,0 +1,27 @@
+meta {
+  name: Update Currency Rate
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrlApi}}/currencies/USD/rate
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "rate": 1,
+    "date": "2026-05-09"
+  }
+}

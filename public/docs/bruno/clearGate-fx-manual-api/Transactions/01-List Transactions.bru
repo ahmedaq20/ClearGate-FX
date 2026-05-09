@@ -1,0 +1,19 @@
+meta {
+  name: List Transactions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrlApi}}/transactions?date_from=2026-05-01&date_to=2026-05-31&type=receive&per_page=20
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

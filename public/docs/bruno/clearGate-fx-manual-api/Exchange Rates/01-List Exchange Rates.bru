@@ -1,0 +1,19 @@
+meta {
+  name: List Exchange Rates
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrlApi}}/exchange-rates?currency=USD&date_from=2026-05-01&date_to=2026-05-31
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Delete Customer
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrlApi}}/customers/1
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Soft-deletes a customer. Use Restore Customer to restore it.
+}

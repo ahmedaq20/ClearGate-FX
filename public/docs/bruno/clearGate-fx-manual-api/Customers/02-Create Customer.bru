@@ -1,0 +1,30 @@
+meta {
+  name: Create Customer
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrlApi}}/customers
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Ahmed Khalil",
+    "phone": "+970599123456",
+    "note": "Regular remittance customer",
+    "category": "regular",
+    "country": "Palestine"
+  }
+}

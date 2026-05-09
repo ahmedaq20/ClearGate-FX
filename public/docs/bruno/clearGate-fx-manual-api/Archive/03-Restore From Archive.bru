@@ -1,0 +1,19 @@
+meta {
+  name: Restore From Archive
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrlApi}}/archive/1/restore
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

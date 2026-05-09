@@ -1,0 +1,23 @@
+meta {
+  name: Restore Transaction
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{baseUrlApi}}/transactions/1/restore
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Owner-only restore example for a soft-deleted transaction.
+}

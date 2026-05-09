@@ -1,0 +1,23 @@
+meta {
+  name: Force Delete Customer
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrlApi}}/customers/1/force
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Permanently deletes a previously soft-deleted customer when no transactions are linked.
+}

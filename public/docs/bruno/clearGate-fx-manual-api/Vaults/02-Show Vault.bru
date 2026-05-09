@@ -1,0 +1,19 @@
+meta {
+  name: Show Vault
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrlApi}}/vaults/1
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

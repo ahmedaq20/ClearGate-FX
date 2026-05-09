@@ -1,0 +1,23 @@
+meta {
+  name: Force Delete Transaction
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrlApi}}/transactions/1/force
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Owner-only permanent delete example after soft delete.
+}

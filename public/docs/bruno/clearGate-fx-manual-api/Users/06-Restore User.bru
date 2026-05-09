@@ -1,0 +1,19 @@
+meta {
+  name: Restore User
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrlApi}}/users/2/restore
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

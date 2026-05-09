@@ -1,0 +1,23 @@
+meta {
+  name: List Permissions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrlApi}}/permissions
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Owner-only permission list grouped with Arabic display labels.
+}

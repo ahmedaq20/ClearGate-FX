@@ -1,0 +1,30 @@
+meta {
+  name: Update Currency
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrlApi}}/currencies/USD
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "US Dollar",
+    "name_ar": "دولار أمريكي",
+    "symbol": "$",
+    "rate_to_usd": 1,
+    "is_active": true
+  }
+}

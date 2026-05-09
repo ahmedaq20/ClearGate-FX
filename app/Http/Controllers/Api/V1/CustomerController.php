@@ -223,7 +223,17 @@ class CustomerController extends BaseApiController
             return $error;
         }
 
-        Customer::withTrashed()->findOrFail($id)->forceDelete();
+        $customer = Customer::withTrashed()->findOrFail($id);
+
+        if (! $customer->trashed()) {
+            return $this->sendError('لا يمكن حذف عميل نهائياً قبل حذفه مؤقتاً', [], 422);
+        }
+
+        if ($customer->transactions()->withTrashed()->exists()) {
+            return $this->sendError('لا يمكن حذف عميل نهائياً لوجود عمليات مرتبطة به', [], 409);
+        }
+
+        $customer->forceDelete();
 
         return $this->sendResponse(null, 'تم حذف العميل نهائياً');
     }

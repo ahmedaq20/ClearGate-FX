@@ -1,0 +1,26 @@
+meta {
+  name: Set Vault Balance
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrlApi}}/vaults/1/set-balance
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "initial_balance": 10000
+  }
+}

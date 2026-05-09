@@ -7,8 +7,10 @@ use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ExchangeRateController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\PermissionController;
 use App\Http\Controllers\Api\V1\ReceiptController;
 use App\Http\Controllers\Api\V1\ReportController;
+use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\SettingController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -39,6 +41,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('customers/{customer}/transactions', [CustomerController::class, 'transactions'])->name('customers.transactions');
         Route::post('customers', [CustomerController::class, 'store'])->name('customers.store');
         Route::get('customers/{customer}/balance', [CustomerController::class, 'balance'])->name('customers.balance');
+        Route::apiResource('customers', CustomerController::class)->except(['store']);
         Route::patch('customers/{id}/restore', [CustomerController::class, 'restore'])
             ->middleware('role:owner,sanctum')
             ->name('customers.restore');
@@ -94,7 +97,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             ->name('archive.restore');
 
         Route::middleware('role:owner,sanctum')->group(function (): void {
+            Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
+            Route::put('roles/{role}/permissions', [RoleController::class, 'syncPermissions'])->name('roles.permissions');
+            Route::apiResource('roles', RoleController::class);
+
             Route::patch('users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
+            Route::put('users/{user}/role', [UserController::class, 'changeRole'])->name('users.role');
             Route::patch('users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');
             Route::patch('users/{user}/vault-balance', [UserController::class, 'setVaultBalance'])->name('users.vault-balance');
             Route::apiResource('users', UserController::class);

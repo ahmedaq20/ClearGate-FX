@@ -1,0 +1,30 @@
+meta {
+  name: Change User Role
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrlApi}}/users/2/role
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "role": "manager"
+  }
+}
+
+docs {
+  Owner-only endpoint to replace a user role using Spatie syncRoles. Last owner cannot be changed to another role.
+}

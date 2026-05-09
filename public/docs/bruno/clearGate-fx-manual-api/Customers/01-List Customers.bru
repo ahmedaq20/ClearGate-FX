@@ -1,0 +1,19 @@
+meta {
+  name: List Customers
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrlApi}}/customers?search=Ahmed&per_page=20&with_trashed=false
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

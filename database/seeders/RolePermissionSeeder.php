@@ -57,6 +57,9 @@ class RolePermissionSeeder extends Seeder
             'settings.manage',
             'archive.view',
             'archive.restore',
+            'notification.viewAny',
+            'notification.read',
+            'notification.delete',
         ];
 
         foreach ($permissions as $permission) {
@@ -101,6 +104,9 @@ class RolePermissionSeeder extends Seeder
             'report.export',
             'settings.view',
             'archive.view',
+            'notification.viewAny',
+            'notification.read',
+            'notification.delete',
         ]);
 
         $user = User::query()->firstOrCreate(

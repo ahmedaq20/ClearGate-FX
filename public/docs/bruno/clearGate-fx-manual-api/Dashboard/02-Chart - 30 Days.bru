@@ -1,0 +1,19 @@
+meta {
+  name: Chart - 30 Days
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrlApi}}/dashboard/chart?period=30d
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

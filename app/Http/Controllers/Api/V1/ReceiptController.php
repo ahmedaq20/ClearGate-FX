@@ -9,6 +9,11 @@ use App\Services\SettingsService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @group Receipts
+ *
+ * Generate transaction receipt PDFs.
+ */
 class ReceiptController extends BaseApiController
 {
     public function __construct(
@@ -16,6 +21,17 @@ class ReceiptController extends BaseApiController
         private SettingsService $settingsService,
     ) {}
 
+    /**
+     * Show transaction receipt
+     *
+     * Return a PDF receipt for one transaction if the current user is allowed to view it.
+     *
+     * @authenticated
+     *
+     * @urlParam transaction_id integer required Transaction ID. Example: 10
+     *
+     * @response 403 {"success":false,"message":"غير مصرح"}
+     */
     public function show(Request $request, int $transactionId): Response
     {
         $transaction = Transaction::withTrashed()

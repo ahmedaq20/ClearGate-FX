@@ -1,0 +1,29 @@
+meta {
+  name: Update Transaction Metadata
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrlApi}}/transactions/1
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "note": "Updated teller note",
+    "reference_number": "RCV-2026-0001-A",
+    "country": "Palestine",
+    "transaction_date": "2026-05-09"
+  }
+}

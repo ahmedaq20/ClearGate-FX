@@ -1,0 +1,30 @@
+meta {
+  name: Queue Daily PDF Export
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrlApi}}/reports/export
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "type": "daily",
+    "format": "pdf",
+    "params": {
+      "date": "2026-05-09"
+    }
+  }
+}

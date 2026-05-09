@@ -1,0 +1,29 @@
+meta {
+  name: Update Customer
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrlApi}}/customers/1
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Ahmed Khalil Updated",
+    "category": "vip",
+    "country": "Jordan",
+    "is_active": true
+  }
+}

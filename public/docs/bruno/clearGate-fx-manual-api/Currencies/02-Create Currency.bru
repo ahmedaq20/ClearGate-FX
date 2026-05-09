@@ -1,0 +1,31 @@
+meta {
+  name: Create Currency
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrlApi}}/currencies
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "code": "EUR",
+    "name": "Euro",
+    "name_ar": "يورو",
+    "symbol": "€",
+    "rate_to_usd": 0.92,
+    "is_active": true
+  }
+}

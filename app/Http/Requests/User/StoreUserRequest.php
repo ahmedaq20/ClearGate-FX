@@ -22,7 +22,7 @@ class StoreUserRequest extends ApiFormRequest
             'email' => ['required', 'email', 'max:150', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
             'phone' => ['nullable', 'string', 'max:30'],
-            'role' => ['nullable', Rule::in(['manager'])],
+            'role' => ['required', 'string', Rule::exists('roles', 'name')->where('guard_name', 'sanctum')],
             'initial_balance' => ['nullable', 'numeric'],
             'is_active' => ['nullable', 'boolean'],
         ];

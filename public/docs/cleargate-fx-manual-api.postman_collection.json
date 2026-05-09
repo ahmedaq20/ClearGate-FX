@@ -1,0 +1,2165 @@
+{
+  "info": {
+    "name": "ClearGate FX Manual API Testing",
+    "_postman_id": "9c6bb3aa-ff20-4a5d-97de-5f2c76cda111",
+    "description": "Manual testing collection for all ClearGate FX /api/v1 endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrlApi",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let json = {};",
+                  "if (typeof pm !== 'undefined') {",
+                  "  json = pm.response.json();",
+                  "}",
+                  "if (typeof res !== 'undefined') {",
+                  "  json = res.getBody();",
+                  "}",
+                  "if (json.data && json.data.token) {",
+                  "  if (typeof pm !== 'undefined') {",
+                  "    pm.collectionVariables.set('token', json.data.token);",
+                  "    pm.environment.set('token', json.data.token);",
+                  "  }",
+                  "  if (typeof bru !== 'undefined') {",
+                  "    bru.setEnvVar('token', json.data.token);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner@example.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/auth/login",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates an active user and saves the returned Sanctum token into the token collection variable."
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/auth/me",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"password\",\n  \"password\": \"new-password-123\",\n  \"password_confirmation\": \"new-password-123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/auth/change-password",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/auth/logout",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/dashboard/summary",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "dashboard",
+                "summary"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Chart - 30 Days",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/dashboard/chart?period=30d",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "dashboard",
+                "chart"
+              ],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "30d"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/users?per_page=20&with_trashed=false",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "20"
+                },
+                {
+                  "key": "with_trashed",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nadia Manager\",\n  \"email\": \"nadia.manager@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+970599000111\",\n  \"role\": \"manager\",\n  \"initial_balance\": 2500,\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/users",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/users/2",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "users",
+                "2"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nadia Manager Updated\",\n  \"phone\": \"+970599000222\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/users/2",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "users",
+                "2"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/users/2",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "users",
+                "2"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/users/2/restore",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "users",
+                "2",
+                "restore"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Change User Role",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/users/2/role",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "users",
+                "2",
+                "role"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"manager\"\n}"
+            },
+            "description": "Owner-only endpoint to replace a user role using Spatie syncRoles. Last owner cannot be changed to another role."
+          }
+        },
+        {
+          "name": "Toggle User Active",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/users/2/toggle-active",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "users",
+                "2",
+                "toggle-active"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Set User Vault Balance",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"initial_balance\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/users/2/vault-balance",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "users",
+                "2",
+                "vault-balance"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "List Customers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/customers?search=Ahmed&per_page=20&with_trashed=false",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "customers"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Ahmed"
+                },
+                {
+                  "key": "per_page",
+                  "value": "20"
+                },
+                {
+                  "key": "with_trashed",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ahmed Khalil\",\n  \"phone\": \"+970599123456\",\n  \"note\": \"Regular remittance customer\",\n  \"category\": \"regular\",\n  \"country\": \"Palestine\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/customers",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "customers"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show Customer",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/customers/1",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "customers",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ahmed Khalil Updated\",\n  \"category\": \"vip\",\n  \"country\": \"Jordan\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/customers/1",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "customers",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Customer",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/customers/1",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "customers",
+                "1"
+              ]
+            },
+            "description": "Soft-deletes a customer. Use Restore Customer to restore it."
+          }
+        },
+        {
+          "name": "Restore Customer",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/customers/1/restore",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "customers",
+                "1",
+                "restore"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Force Delete Customer",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/customers/1/force",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "customers",
+                "1",
+                "force"
+              ]
+            },
+            "description": "Permanently deletes a previously soft-deleted customer when no transactions are linked."
+          }
+        },
+        {
+          "name": "Customer Balance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/customers/1/balance",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "customers",
+                "1",
+                "balance"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Customer Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/customers/1/transactions?per_page=20",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "customers",
+                "1",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vaults",
+      "item": [
+        {
+          "name": "List Vaults",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/vaults?per_page=20",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "vaults"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show Vault",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/vaults/1",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "vaults",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Vault",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Main USD Vault\",\n  \"note\": \"Primary cash drawer\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/vaults/1",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "vaults",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Set Vault Balance",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"initial_balance\": 10000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/vaults/1/set-balance",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "vaults",
+                "1",
+                "set-balance"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Vault Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/vaults/1/summary",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "vaults",
+                "1",
+                "summary"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Vault Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/vaults/1/transactions?per_page=20",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "vaults",
+                "1",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/transactions?date_from=2026-05-01&date_to=2026-05-31&type=receive&per_page=20",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "date_from",
+                  "value": "2026-05-01"
+                },
+                {
+                  "key": "date_to",
+                  "value": "2026-05-31"
+                },
+                {
+                  "key": "type",
+                  "value": "receive"
+                },
+                {
+                  "key": "per_page",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Receive Transaction With Percentage Commission",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"receive\",\n  \"amount\": 200,\n  \"currency_code\": \"USD\",\n  \"exchange_rate\": 1,\n  \"customer_id\": 1,\n  \"commission_type\": \"percentage\",\n  \"commission_rate\": 2.5,\n  \"commission_sign\": 1,\n  \"note\": \"Incoming transfer with customer-paid commission\",\n  \"reference_number\": \"RCV-2026-0001\",\n  \"country\": \"Palestine\",\n  \"transaction_date\": \"2026-05-09\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/transactions",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "transactions"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Send Transaction With Fixed Commission",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"send\",\n  \"amount\": 150,\n  \"currency_code\": \"USD\",\n  \"exchange_rate\": 1,\n  \"customer_id\": 1,\n  \"commission_type\": \"fixed\",\n  \"commission_rate\": 5,\n  \"commission_sign\": -1,\n  \"note\": \"Outgoing transfer with absorbed commission\",\n  \"reference_number\": \"SND-2026-0001\",\n  \"country\": \"Jordan\",\n  \"transaction_date\": \"2026-05-09\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/transactions",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "transactions"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show Transaction",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/transactions/1",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "transactions",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Transaction Metadata",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Updated teller note\",\n  \"reference_number\": \"RCV-2026-0001-A\",\n  \"country\": \"Palestine\",\n  \"transaction_date\": \"2026-05-09\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/transactions/1",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "transactions",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Transaction",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/transactions/1",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "transactions",
+                "1"
+              ]
+            },
+            "description": "Soft-deletes a transaction and reverses its balance effect."
+          }
+        },
+        {
+          "name": "Restore Transaction",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/transactions/1/restore",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "transactions",
+                "1",
+                "restore"
+              ]
+            },
+            "description": "Owner-only restore example for a soft-deleted transaction."
+          }
+        },
+        {
+          "name": "Force Delete Transaction",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/transactions/1/force",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "transactions",
+                "1",
+                "force"
+              ]
+            },
+            "description": "Owner-only permanent delete example after soft delete."
+          }
+        },
+        {
+          "name": "Daily Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/transactions/daily-summary?date=2026-05-09",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "transactions",
+                "daily-summary"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-05-09"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Currencies",
+      "item": [
+        {
+          "name": "List Currencies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/currencies?search=USD&is_active=true",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "currencies"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "USD"
+                },
+                {
+                  "key": "is_active",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Currency",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"EUR\",\n  \"name\": \"Euro\",\n  \"name_ar\": \"يورو\",\n  \"symbol\": \"€\",\n  \"rate_to_usd\": 0.92,\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/currencies",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "currencies"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show Currency",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/currencies/USD",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "currencies",
+                "USD"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Currency",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"US Dollar\",\n  \"name_ar\": \"دولار أمريكي\",\n  \"symbol\": \"$\",\n  \"rate_to_usd\": 1,\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/currencies/USD",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "currencies",
+                "USD"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Disable Currency",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/currencies/EUR",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "currencies",
+                "EUR"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Currency Rate",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rate\": 1,\n  \"date\": \"2026-05-09\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/currencies/USD/rate",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "currencies",
+                "USD",
+                "rate"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exchange Rates",
+      "item": [
+        {
+          "name": "List Exchange Rates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/exchange-rates?currency=USD&date_from=2026-05-01&date_to=2026-05-31",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "exchange-rates"
+              ],
+              "query": [
+                {
+                  "key": "currency",
+                  "value": "USD"
+                },
+                {
+                  "key": "date_from",
+                  "value": "2026-05-01"
+                },
+                {
+                  "key": "date_to",
+                  "value": "2026-05-31"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bulk Update Exchange Rates",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rates\": [\n    {\n      \"code\": \"USD\",\n      \"rate\": 1\n    },\n    {\n      \"code\": \"EUR\",\n      \"rate\": 0.92\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/exchange-rates/bulk-update",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "exchange-rates",
+                "bulk-update"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Daily Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/reports/daily?date=2026-05-09",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "reports",
+                "daily"
+              ],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-05-09"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Monthly Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/reports/monthly?year=2026&month=5",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "reports",
+                "monthly"
+              ],
+              "query": [
+                {
+                  "key": "year",
+                  "value": "2026"
+                },
+                {
+                  "key": "month",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Users Comparison Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/reports/users-comparison?date_from=2026-05-01&date_to=2026-05-31",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "reports",
+                "users-comparison"
+              ],
+              "query": [
+                {
+                  "key": "date_from",
+                  "value": "2026-05-01"
+                },
+                {
+                  "key": "date_to",
+                  "value": "2026-05-31"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Customer Statement",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/reports/customer/1/statement?date_from=2026-05-01&date_to=2026-05-31",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "reports",
+                "customer",
+                "1",
+                "statement"
+              ],
+              "query": [
+                {
+                  "key": "date_from",
+                  "value": "2026-05-01"
+                },
+                {
+                  "key": "date_to",
+                  "value": "2026-05-31"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Queue Daily PDF Export",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"daily\",\n  \"format\": \"pdf\",\n  \"params\": {\n    \"date\": \"2026-05-09\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/reports/export",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "reports",
+                "export"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Queue Statement Excel Export",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"statement\",\n  \"format\": \"excel\",\n  \"params\": {\n    \"customer_id\": 1,\n    \"date_from\": \"2026-05-01\",\n    \"date_to\": \"2026-05-31\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/reports/export",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "reports",
+                "export"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/reports/export/replace-with-job-id/status",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "reports",
+                "export",
+                "replace-with-job-id",
+                "status"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Download",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/reports/export/replace-with-job-id/download",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "reports",
+                "export",
+                "replace-with-job-id",
+                "download"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Receipts",
+      "item": [
+        {
+          "name": "Show Receipt PDF",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/pdf"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/receipts/1",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "receipts",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "Public Settings",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/settings/public",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "settings",
+                "public"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Settings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/settings",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "settings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Settings Group",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/settings/general",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "settings",
+                "general"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"settings\": {\n    \"shop_name\": \"ClearGate FX\",\n    \"default_currency\": \"USD\",\n    \"low_balance_alert_usd\": 100\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrlApi}}/settings",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "settings"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reset Settings Group",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/settings/reset/general",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "settings",
+                "reset",
+                "general"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "List Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/notifications?is_read=false&per_page=20",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "notifications"
+              ],
+              "query": [
+                {
+                  "key": "is_read",
+                  "value": "false"
+                },
+                {
+                  "key": "per_page",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/notifications/unread-count",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "notifications",
+                "unread-count"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mark Notification Read",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/notifications/1/read",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "notifications",
+                "1",
+                "read"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mark All Notifications Read",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/notifications/read-all",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "notifications",
+                "read-all"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/notifications/1",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "notifications",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Permissions",
+      "item": [
+        {
+          "name": "List Permissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/permissions",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "permissions"
+              ]
+            },
+            "description": "Owner-only permission list grouped with Arabic display labels."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "List Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/roles",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "roles"
+              ]
+            },
+            "description": "Owner-only role list with permissions and Arabic role labels."
+          }
+        },
+        {
+          "name": "Create Custom Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/roles",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "roles"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"auditor\",\n  \"permissions\": [\n    \"transaction.viewAny\",\n    \"customer.viewAny\",\n    \"report.daily\"\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Show Role",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/roles/3",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "roles",
+                "3"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Custom Role Name",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/roles/3",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "roles",
+                "3"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"senior_auditor\"\n}"
+            },
+            "description": "System roles owner and manager cannot be renamed."
+          }
+        },
+        {
+          "name": "Assign Permissions To Role",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/roles/3/permissions",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "roles",
+                "3",
+                "permissions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissions\": [\n    \"transaction.viewAny\",\n    \"customer.viewAny\",\n    \"report.daily\",\n    \"report.monthly\"\n  ]\n}"
+            },
+            "description": "Owner role cannot lose critical owner permissions."
+          }
+        },
+        {
+          "name": "Delete Custom Role",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/roles/3",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "roles",
+                "3"
+              ]
+            },
+            "description": "Owner and default manager roles are protected from deletion."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Archive",
+      "item": [
+        {
+          "name": "List Archive",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/archive?type=transaction&per_page=20",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "archive"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "transaction"
+                },
+                {
+                  "key": "per_page",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show Archive Entry",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/archive/1",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "archive",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore From Archive",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlApi}}/archive/1/restore",
+              "host": [
+                "{{baseUrlApi}}"
+              ],
+              "path": [
+                "archive",
+                "1",
+                "restore"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

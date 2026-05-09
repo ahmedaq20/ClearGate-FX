@@ -105,11 +105,11 @@ class AuthController extends BaseApiController
         /** @var User $user */
         $user = $request->user();
 
-        if (! Hash::check($request->password, $user->password)) {
+        if (! Hash::check($request->string('current_password')->toString(), $user->password)) {
             return $this->sendError('كلمة المرور الحالية غير صحيحة', [], 422);
         }
 
-        $user->update(['password' => $request->password]);
+        $user->update(['password' => $request->string('password')->toString()]);
 
         return $this->sendResponse(null, 'تم تغيير كلمة المرور');
     }

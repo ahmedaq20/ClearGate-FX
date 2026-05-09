@@ -1,0 +1,19 @@
+meta {
+  name: Daily Summary
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrlApi}}/transactions/daily-summary?date=2026-05-09
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
