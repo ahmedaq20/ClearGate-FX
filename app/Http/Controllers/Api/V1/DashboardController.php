@@ -46,6 +46,13 @@ class DashboardController extends BaseApiController
             $customers->where('user_id', $user->id);
         }
 
+        $totalsQuery = Transaction::query();
+        if (! $isOwner) {
+            $totalsQuery->where('user_id', $user->id);
+        }
+        $totalReceive = round((float) (clone $totalsQuery)->where('type', 'receive')->sum('net_usd_value'), 4);
+        $totalSend = round((float) (clone $totalsQuery)->where('type', 'send')->sum('net_usd_value'), 4);
+
         return $this->sendResponse([
             'total_balance_usd' => $isOwner ? (float) Vault::query()->sum('balance_usd') : null,
             'my_vault_balance' => (float) $user->vault()->value('balance_usd'),
@@ -54,6 +61,12 @@ class DashboardController extends BaseApiController
             'transactions_today_count' => (clone $transactions)->whereDate('transaction_date', $today)->count(),
             'recent_transactions' => $transactions->get(),
             'top_customers' => $customers->orderByDesc('balance_usd')->limit(5)->get(),
+            'total_summary' => [
+                'receive' => $totalReceive,
+                'send' => $totalSend,
+                'net' => round($totalReceive - $totalSend, 4),
+                'count' => (clone $totalsQuery)->count(),
+            ],
         ]);
     }
 
