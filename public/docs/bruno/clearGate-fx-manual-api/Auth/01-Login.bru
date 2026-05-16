@@ -17,14 +17,14 @@ headers {
 
 body:json {
   {
-    "email": "owner@example.com",
+    "email": "owner@exchange.com",
     "password": "password"
   }
 }
 
 script:post-response {
   const json = res.getBody();
-
+  
   if (json.data && json.data.token) {
     bru.setEnvVar('token', json.data.token);
   }

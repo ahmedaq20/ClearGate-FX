@@ -41,24 +41,17 @@ class BalanceService
     /**
      * @return array{receive: float, send: float, net: float, count: int}
      */
-    public function getDailyNet(int $userId, string $date): array
+    public function getDailyNet(?int $userId, string $date): array
     {
-        $receive = (float) Transaction::query()
-            ->where('user_id', $userId)
-            ->whereDate('transaction_date', $date)
-            ->where('type', 'receive')
-            ->sum('net_usd_value');
+        $base = Transaction::query()->whereDate('transaction_date', $date);
 
-        $send = (float) Transaction::query()
-            ->where('user_id', $userId)
-            ->whereDate('transaction_date', $date)
-            ->where('type', 'send')
-            ->sum('net_usd_value');
+        if ($userId !== null) {
+            $base->where('user_id', $userId);
+        }
 
-        $count = Transaction::query()
-            ->where('user_id', $userId)
-            ->whereDate('transaction_date', $date)
-            ->count();
+        $receive = (float) (clone $base)->where('type', 'receive')->sum('net_usd_value');
+        $send    = (float) (clone $base)->where('type', 'send')->sum('net_usd_value');
+        $count   = (clone $base)->count();
 
         return [
             'receive' => round($receive, 4),

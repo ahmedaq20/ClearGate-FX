@@ -49,7 +49,7 @@ class DashboardController extends BaseApiController
         return $this->sendResponse([
             'total_balance_usd' => $isOwner ? (float) Vault::query()->sum('balance_usd') : null,
             'my_vault_balance' => (float) $user->vault()->value('balance_usd'),
-            'today_net_usd' => $this->balanceService->getDailyNet($user->id, $today),
+            'today_net_usd' => $this->balanceService->getDailyNet($isOwner ? null : $user->id, $today),
             'customers_count' => (clone $customers)->count(),
             'transactions_today_count' => (clone $transactions)->whereDate('transaction_date', $today)->count(),
             'recent_transactions' => $transactions->get(),
