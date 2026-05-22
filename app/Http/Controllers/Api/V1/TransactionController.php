@@ -48,7 +48,7 @@ class TransactionController extends BaseApiController
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Transaction::query()->with(['user', 'vault', 'customer', 'currency'])->latest('transaction_date');
+        $query = Transaction::query()->with(['user', 'vault', 'customer', 'fromCustomer', 'toCustomer', 'currency'])->latest('transaction_date');
         $query = $this->scopeToCurrentUser($query, $request);
 
         if ($request->boolean('with_trashed')) {
@@ -76,15 +76,43 @@ class TransactionController extends BaseApiController
     /**
      * Create transaction
      *
-     * Create a receive or send transaction using the current user's vault. Commission is calculated in TransactionService.
+     * Create a receive, send, or transfer transaction using the current user's vault. Commission is calculated in TransactionService.
+     * For transfer type, provide `from_customer_id`, `to_customer_id`, and `exchange_rate`. No vault balance is affected for transfers — only customer balances.
      *
      * @authenticated
      *
      * @response 201 {"success":true,"message":"تم إنشاء العملية"}
+     * @response 201 {"success":true,"message":"تم تنفيذ التحويل بنجاح"}
+     * @response 403 {"success":false,"message":"غير مصرح بتنفيذ التحويل، العميل المُحوَّل منه غير تابع لحسابك"}
      * @response 422 {"success":false,"message":"Validation Error"}
      */
     public function store(StoreTransactionRequest $request): JsonResponse
     {
+        $data = $request->validated();
+
+        if ($data['type'] === 'transfer') {
+            if (! $this->isOwner($request->user())) {
+                $fromCustomer = Customer::query()->whereKey($data['from_customer_id'])->first();
+                $toCustomer = Customer::query()->whereKey($data['to_customer_id'])->first();
+
+                if ($fromCustomer?->user_id !== $request->user()?->id) {
+                    return $this->sendError('غير مصرح بتنفيذ التحويل، العميل المُحوَّل منه غير تابع لحسابك', [], 403);
+                }
+
+                if ($toCustomer?->user_id !== $request->user()?->id) {
+                    return $this->sendError('غير مصرح بتنفيذ التحويل، العميل المُحوَّل إليه غير تابع لحسابك', [], 403);
+                }
+            }
+
+            $transaction = $this->transactionService->store($data, $this->currentUser($request));
+
+            return $this->sendResponse(
+                $transaction->load(['user', 'vault', 'fromCustomer', 'toCustomer', 'currency']),
+                'تم تنفيذ التحويل بنجاح',
+                201
+            );
+        }
+
         if ($request->filled('customer_id') && ! $this->isOwner($request->user())) {
             $customer = Customer::query()
                 ->whereKey($request->integer('customer_id'))
@@ -101,7 +129,7 @@ class TransactionController extends BaseApiController
             }
         }
 
-        $transaction = $this->transactionService->store($request->validated(), $this->currentUser($request));
+        $transaction = $this->transactionService->store($data, $this->currentUser($request));
 
         return $this->sendResponse($transaction->load(['user', 'vault', 'customer', 'currency']), 'تم إنشاء العملية', 201);
     }
@@ -122,7 +150,7 @@ class TransactionController extends BaseApiController
             return $this->sendError('غير مصرح', [], 403);
         }
 
-        return $this->sendResponse($transaction->load(['user', 'vault', 'customer', 'currency']));
+        return $this->sendResponse($transaction->load(['user', 'vault', 'customer', 'fromCustomer', 'toCustomer', 'currency']));
     }
 
     /**

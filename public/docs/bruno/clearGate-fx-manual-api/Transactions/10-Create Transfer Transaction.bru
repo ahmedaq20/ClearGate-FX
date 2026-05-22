@@ -1,0 +1,34 @@
+meta {
+  name: Create Transfer Transaction
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrlApi}}/transactions
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: 2|VC9iCbGHFDAryE1XUVZApYYl0rIUxzqspQ8o01pwfec350c2
+}
+
+body:json {
+  {
+    "type": "transfer",
+    "from_customer_id": 1,
+    "to_customer_id": 2,
+    "amount": 500,
+    "currency_code": "USD",
+    "exchange_rate": 1,
+    "note": "Internal balance transfer between two customers",
+    "reference_number": "TRF-2026-0001",
+    "transaction_date": "2026-05-22"
+  }
+}

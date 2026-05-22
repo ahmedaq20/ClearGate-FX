@@ -37,6 +37,13 @@ class TransactionService
      */
     public function store(array $data, User $user): Transaction
     {
+        if ($data['type'] === 'transfer') {
+            $transaction = $this->executeTransfer($data, $user);
+            event(new TransactionCreated($transaction, $user));
+
+            return $transaction;
+        }
+
         $exchangeRate = isset($data['exchange_rate']) && $data['exchange_rate'] !== null
             ? (float) $data['exchange_rate']
             : $this->exchangeRateService->getRate($data['currency_code']);
@@ -102,6 +109,13 @@ class TransactionService
                 ->lockForUpdate()
                 ->firstOrFail();
 
+            if ($transaction->type === 'transfer') {
+                $this->reverseTransferBalances($transaction);
+                $transaction->delete();
+
+                return $transaction;
+            }
+
             $vault = Vault::query()->whereKey($transaction->vault_id)->lockForUpdate()->firstOrFail();
             $customer = $transaction->customer_id
                 ? Customer::query()->whereKey($transaction->customer_id)->lockForUpdate()->first()
@@ -131,12 +145,18 @@ class TransactionService
                 ]);
             }
 
+            $transaction->restore();
+
+            if ($transaction->type === 'transfer') {
+                $this->applyTransferBalances($transaction);
+
+                return $transaction;
+            }
+
             $vault = Vault::query()->whereKey($transaction->vault_id)->lockForUpdate()->firstOrFail();
             $customer = $transaction->customer_id
                 ? Customer::query()->whereKey($transaction->customer_id)->lockForUpdate()->first()
                 : null;
-
-            $transaction->restore();
 
             $this->applyBalanceEffect($vault, $customer, (float) $transaction->net_usd_value, (int) $transaction->direction);
 
@@ -256,5 +276,99 @@ class TransactionService
                 'balance_usd' => round((float) $customer->balance_usd + $balanceChange, 4),
             ]);
         }
+    }
+
+    private function executeTransfer(array $data, User $user): Transaction
+    {
+        $exchangeRate = isset($data['exchange_rate']) && $data['exchange_rate'] !== null
+            ? (float) $data['exchange_rate']
+            : $this->exchangeRateService->getRate($data['currency_code']);
+
+        $usdValue = $this->exchangeRateService->calculateUsdValue((float) $data['amount'], $exchangeRate);
+
+        return DB::transaction(function () use ($data, $user, $exchangeRate, $usdValue): Transaction {
+            $vault = Vault::query()
+                ->where('user_id', $user->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $fromCustomer = $this->resolveTransferCustomer((int) $data['from_customer_id'], $user, 'from_customer_id');
+            $toCustomer = $this->resolveTransferCustomer((int) $data['to_customer_id'], $user, 'to_customer_id');
+
+            $transaction = Transaction::query()->create([
+                'user_id' => $user->id,
+                'vault_id' => $vault->id,
+                'customer_id' => null,
+                'from_customer_id' => $fromCustomer->id,
+                'to_customer_id' => $toCustomer->id,
+                'type' => 'transfer',
+                'amount' => (float) $data['amount'],
+                'currency_code' => $data['currency_code'],
+                'exchange_rate' => $exchangeRate,
+                'usd_value' => $usdValue,
+                'commission_type' => null,
+                'commission_rate' => null,
+                'commission_sign' => null,
+                'commission_usd' => 0,
+                'net_usd_value' => $usdValue,
+                'direction' => 0,
+                'note' => $data['note'] ?? null,
+                'reference_number' => $data['reference_number'] ?? null,
+                'country' => null,
+                'transaction_date' => $data['transaction_date'],
+            ]);
+
+            $fromCustomer->update([
+                'balance_usd' => round((float) $fromCustomer->balance_usd - $usdValue, 4),
+            ]);
+
+            $toCustomer->update([
+                'balance_usd' => round((float) $toCustomer->balance_usd + $usdValue, 4),
+            ]);
+
+            return $transaction;
+        }, attempts: 3);
+    }
+
+    private function resolveTransferCustomer(int $customerId, User $user, string $field): Customer
+    {
+        $customer = Customer::query()
+            ->whereKey($customerId)
+            ->lockForUpdate()
+            ->first();
+
+        if ($customer === null) {
+            throw ValidationException::withMessages([
+                $field => ['العميل المحدد غير موجود'],
+            ]);
+        }
+
+        if (! $user->isOwner() && $customer->user_id !== $user->id) {
+            throw new AuthorizationException('غير مصرح بتنفيذ التحويل لعملاء غير تابعين لحسابك');
+        }
+
+        return $customer;
+    }
+
+    private function applyTransferBalances(Transaction $transaction): void
+    {
+        $usdValue = (float) $transaction->usd_value;
+
+        $fromCustomer = Customer::query()->whereKey($transaction->from_customer_id)->lockForUpdate()->firstOrFail();
+        $toCustomer = Customer::query()->whereKey($transaction->to_customer_id)->lockForUpdate()->firstOrFail();
+
+        $fromCustomer->update(['balance_usd' => round((float) $fromCustomer->balance_usd - $usdValue, 4)]);
+        $toCustomer->update(['balance_usd' => round((float) $toCustomer->balance_usd + $usdValue, 4)]);
+    }
+
+    private function reverseTransferBalances(Transaction $transaction): void
+    {
+        $usdValue = (float) $transaction->usd_value;
+
+        $fromCustomer = Customer::query()->whereKey($transaction->from_customer_id)->lockForUpdate()->firstOrFail();
+        $toCustomer = Customer::query()->whereKey($transaction->to_customer_id)->lockForUpdate()->firstOrFail();
+
+        $fromCustomer->update(['balance_usd' => round((float) $fromCustomer->balance_usd + $usdValue, 4)]);
+        $toCustomer->update(['balance_usd' => round((float) $toCustomer->balance_usd - $usdValue, 4)]);
     }
 }

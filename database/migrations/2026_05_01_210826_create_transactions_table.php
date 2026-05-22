@@ -16,7 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->foreignId('vault_id')->constrained();
             $table->foreignId('customer_id')->nullable()->constrained();
-            $table->enum('type', ['receive', 'send']);
+            $table->unsignedBigInteger('from_customer_id')->nullable();
+            $table->unsignedBigInteger('to_customer_id')->nullable();
+            $table->enum('type', ['receive', 'send', 'transfer']);
             $table->decimal('amount', 18, 4);
             $table->string('currency_code', 10);
             $table->decimal('exchange_rate', 18, 6);
@@ -35,6 +37,8 @@ return new class extends Migration
             $table->softDeletes()->index();
 
             $table->foreign('currency_code')->references('code')->on('currencies');
+            $table->foreign('from_customer_id')->references('id')->on('customers');
+            $table->foreign('to_customer_id')->references('id')->on('customers');
             $table->index(['user_id', 'transaction_date']);
             $table->index('vault_id');
             $table->index('customer_id');

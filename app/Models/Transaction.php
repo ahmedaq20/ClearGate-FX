@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'user_id',
     'vault_id',
     'customer_id',
+    'from_customer_id',
+    'to_customer_id',
     'type',
     'amount',
     'currency_code',
@@ -54,6 +56,16 @@ class Transaction extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function fromCustomer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class, 'from_customer_id');
+    }
+
+    public function toCustomer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class, 'to_customer_id');
     }
 
     public function currency(): BelongsTo

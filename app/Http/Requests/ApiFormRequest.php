@@ -45,6 +45,8 @@ abstract class ApiFormRequest extends FormRequest
             'currency_code' => 'رمز العملة',
             'current_password' => 'كلمة المرور الحالية',
             'customer_id' => 'العميل',
+            'from_customer_id' => 'العميل المُحوَّل منه',
+            'to_customer_id' => 'العميل المُحوَّل إليه',
             'date' => 'التاريخ',
             'email' => 'البريد الإلكتروني',
             'exchange_rate' => 'سعر الصرف',
