@@ -24,6 +24,7 @@ class StoreCustomerRequest extends ApiFormRequest
             'category' => ['nullable', Rule::in(['regular', 'vip', 'agent', 'company'])],
             'country' => ['nullable', 'string', 'max:50'],
             'user_id' => ['nullable', 'integer', 'exists:users,id'],
+            'balance_usd' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }
