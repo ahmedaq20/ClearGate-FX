@@ -1,0 +1,26 @@
+meta {
+  name: Get report status
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrlApi}}/reports/export/replace-with-job-id/status
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+}

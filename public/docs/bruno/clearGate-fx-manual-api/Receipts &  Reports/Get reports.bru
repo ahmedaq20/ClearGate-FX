@@ -1,0 +1,36 @@
+meta {
+  name: Get reports
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrlApi}}/reports/export
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "type": "daily",
+    "format": "pdf",
+    "params": {
+      "date": "2026-05-06"
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+}
