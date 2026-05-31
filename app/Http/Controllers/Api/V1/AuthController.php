@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
+use App\Support\PermissionDisplay;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +26,7 @@ class AuthController extends BaseApiController
      *
      * @unauthenticated
      *
-     * @response 200 {"success":true,"message":"تم تسجيل الدخول","data":{"user":{"id":1,"name":"Owner","email":"owner@example.com"},"token":"1|example-token"}}
+     * @response 200 {"success":true,"message":"تم تسجيل الدخول","data":{"user":{"id":1,"name":"Owner","email":"owner@example.com","roles":[{"name":"owner","label":"مالك"}],"permissions":[{"name":"transaction.viewAny","label":"عرض كل العمليات المالية","group":"transactions","group_label":"العمليات المالية"}]},"token":"1|example-token"}}
      * @response 401 {"success":false,"message":"بيانات الدخول غير صحيحة"}
      * @response 403 {"success":false,"message":"الحساب موقوف"}
      */
@@ -49,7 +50,7 @@ class AuthController extends BaseApiController
         $token = $user->createToken('api')->plainTextToken;
 
         return $this->sendResponse([
-            'user' => $user,
+            'user' => $this->userPayload($user->load('roles')),
             'token' => $token,
         ], 'تم تسجيل الدخول');
     }
@@ -83,11 +84,14 @@ class AuthController extends BaseApiController
      *
      * @authenticated
      *
-     * @response 200 {"success":true,"message":"Success","data":{"id":1,"name":"Owner","email":"owner@example.com"}}
+     * @response 200 {"success":true,"message":"Success","data":{"id":1,"name":"Owner","email":"owner@example.com","roles":[{"name":"owner","label":"مالك"}],"permissions":[{"name":"transaction.viewAny","label":"عرض كل العمليات المالية","group":"transactions","group_label":"العمليات المالية"}]}}
      */
     public function me(Request $request): JsonResponse
     {
-        return $this->sendResponse($request->user());
+        /** @var User $user */
+        $user = $request->user();
+
+        return $this->sendResponse($this->userPayload($user->load('roles')));
     }
 
     /**
@@ -112,5 +116,23 @@ class AuthController extends BaseApiController
         $user->update(['password' => $request->string('password')->toString()]);
 
         return $this->sendResponse(null, 'تم تغيير كلمة المرور');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function userPayload(User $user): array
+    {
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'initial_balance' => $user->initial_balance,
+            'is_active' => $user->is_active,
+            'last_login_at' => $user->last_login_at,
+            'roles' => PermissionDisplay::roles($user->roles),
+            'permissions' => PermissionDisplay::permissions($user->getAllPermissions()),
+        ];
     }
 }

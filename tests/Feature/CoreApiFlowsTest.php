@@ -76,7 +76,31 @@ test('login returns token', function (): void {
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonPath('message', 'تم تسجيل الدخول')
-        ->assertJsonStructure(['data' => ['token', 'user']]);
+        ->assertJsonStructure(['data' => ['token', 'user' => ['roles', 'permissions']]])
+        ->assertJsonPath('data.user.roles.0.name', 'manager')
+        ->assertJsonPath('data.user.roles.0.label', 'مدير')
+        ->assertJsonFragment([
+            'name' => 'transaction.viewAny',
+            'label' => 'عرض كل العمليات المالية',
+            'group' => 'transactions',
+            'group_label' => 'العمليات المالية',
+        ]);
+});
+
+test('current authenticated user returns roles and permissions', function (): void {
+    actingAsUserWithRole();
+
+    $this->getJson('/api/v1/auth/me')
+        ->assertOk()
+        ->assertJsonStructure(['data' => ['roles', 'permissions']])
+        ->assertJsonPath('data.roles.0.name', 'manager')
+        ->assertJsonPath('data.roles.0.label', 'مدير')
+        ->assertJsonFragment([
+            'name' => 'transaction.viewAny',
+            'label' => 'عرض كل العمليات المالية',
+            'group' => 'transactions',
+            'group_label' => 'العمليات المالية',
+        ]);
 });
 
 test('change password validates the current password before updating', function (): void {
