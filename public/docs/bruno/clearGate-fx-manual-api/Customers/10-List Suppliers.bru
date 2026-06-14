@@ -1,11 +1,11 @@
 meta {
-  name: List Customers
+  name: List Suppliers
   type: http
-  seq: 1
+  seq: 10
 }
 
 get {
-  url: {{baseUrlApi}}/customers?search=Ahmed&type=customer&per_page=20&with_trashed=false
+  url: {{baseUrlApi}}/customers?type=supplier&per_page=20&with_trashed=false
   body: none
   auth: bearer
 }

@@ -484,7 +484,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrlApi}}/customers?search=Ahmed&per_page=20&with_trashed=false",
+              "raw": "{{baseUrlApi}}/customers?search=Ahmed&type=customer&per_page=20&with_trashed=false",
               "host": [
                 "{{baseUrlApi}}"
               ],
@@ -495,6 +495,10 @@
                 {
                   "key": "search",
                   "value": "Ahmed"
+                },
+                {
+                  "key": "type",
+                  "value": "customer"
                 },
                 {
                   "key": "per_page",
@@ -524,7 +528,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Ahmed Khalil\",\n  \"phone\": \"+970599123456\",\n  \"note\": \"Regular remittance customer\",\n  \"category\": \"regular\",\n  \"country\": \"Palestine\"\n}"
+              "raw": "{\n  \"customer_code\": \"3301\",\n  \"name\": \"Ahmed Khalil\",\n  \"phone\": \"+970599123456\",\n  \"type\": \"customer\",\n  \"note\": \"Regular remittance customer\",\n  \"category\": \"regular\",\n  \"country\": \"Palestine\"\n}"
             },
             "url": {
               "raw": "{{baseUrlApi}}/customers",
@@ -575,7 +579,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Ahmed Khalil Updated\",\n  \"category\": \"vip\",\n  \"country\": \"Jordan\",\n  \"is_active\": true\n}"
+              "raw": "{\n  \"customer_code\": \"3302\",\n  \"name\": \"Ahmed Khalil Updated\",\n  \"type\": \"supplier\",\n  \"category\": \"vip\",\n  \"country\": \"Jordan\",\n  \"is_active\": true\n}"
             },
             "url": {
               "raw": "{{baseUrlApi}}/customers/1",

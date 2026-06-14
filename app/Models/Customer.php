@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CustomerType;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,8 +13,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[Fillable([
     'user_id',
     'vault_id',
+    'customer_code',
     'name',
     'phone',
+    'type',
     'note',
     'category',
     'balance_usd',
@@ -30,6 +33,7 @@ class Customer extends Model
      * @var array<string, mixed>
      */
     protected $attributes = [
+        'type' => 'customer',
         'category' => 'regular',
         'balance_usd' => 0,
         'is_active' => true,
@@ -58,6 +62,7 @@ class Customer extends Model
     protected function casts(): array
     {
         return [
+            'type' => CustomerType::class,
             'balance_usd' => 'decimal:4',
             'is_active' => 'boolean',
         ];

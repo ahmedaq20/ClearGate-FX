@@ -1,109 +1,23 @@
-name: Notifications
+name: Reports
 description: |-
 
-  Read and manage in-app notifications for the authenticated user.
+  Generate JSON reports and queue report exports.
 endpoints:
   -
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/notifications/unread-count
+    uri: api/v1/reports/daily
     metadata:
       custom: []
-      groupName: Notifications
+      groupName: Reports
       groupDescription: |-
 
-        Read and manage in-app notifications for the authenticated user.
+        Generate JSON reports and queue report exports.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Unread notification count'
-      description: 'Return the number of unread notifications for the authenticated user.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":{"count":3}}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-    uri: api/v1/notifications/read-all
-    metadata:
-      custom: []
-      groupName: Notifications
-      groupDescription: |-
-
-        Read and manage in-app notifications for the authenticated user.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Mark all notifications as read'
-      description: 'Mark every unread notification for the authenticated user as read.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم تعليم كل الإشعارات كمقروءة"}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/v1/notifications
-    metadata:
-      custom: []
-      groupName: Notifications
-      groupDescription: |-
-
-        Read and manage in-app notifications for the authenticated user.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'List notifications'
-      description: 'Return paginated notifications for the authenticated user.'
+      title: 'Daily report'
+      description: 'Return totals, currency totals, and transactions for one day.'
       authenticated: true
       deprecated: false
     headers:
@@ -113,43 +27,31 @@ endpoints:
     urlParameters: []
     cleanUrlParameters: []
     queryParameters:
-      is_read:
+      date:
         custom: []
-        name: is_read
-        description: 'Filter by read status.'
+        name: date
+        description: 'date Report date.'
         required: false
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      type:
-        custom: []
-        name: type
-        description: 'Filter by notification type.'
-        required: false
-        example: report_ready
+        example: '2026-05-03'
         type: string
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
-      per_page:
+      user_id:
         custom: []
-        name: per_page
-        description: 'Results per page.'
+        name: user_id
+        description: 'Owner-only user filter.'
         required: false
-        example: 20
+        example: 2
         type: integer
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      is_read: false
-      type: report_ready
-      per_page: 20
+      date: '2026-05-03'
+      user_id: 2
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
@@ -157,7 +59,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Success","data":[{"id":1,"type":"system","title":"Notification title","body":"Notification body","is_read":false}]}'
+        content: '{"success":true,"message":"Success","data":{"type":"daily","title":"التقرير اليومي","totals":{"receive":500,"send":200,"net":300,"count":3}}}'
         headers: []
         description: ''
     responseFields: []
@@ -171,40 +73,64 @@ endpoints:
   -
     custom: []
     httpMethods:
-      - PUT
-    uri: 'api/v1/notifications/{notification_id}/read'
+      - GET
+    uri: api/v1/reports/monthly
     metadata:
       custom: []
-      groupName: Notifications
+      groupName: Reports
       groupDescription: |-
 
-        Read and manage in-app notifications for the authenticated user.
+        Generate JSON reports and queue report exports.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Mark notification as read'
-      description: 'Mark one notification as read if it belongs to the authenticated user.'
+      title: 'Monthly report'
+      description: 'Return totals, daily totals, currency totals, and transactions for one month.'
       authenticated: true
       deprecated: false
     headers:
       Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
       Content-Type: application/json
       Accept: application/json
-    urlParameters:
-      notification_id:
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      year:
         custom: []
-        name: notification_id
-        description: 'The ID of the notification.'
-        required: true
-        example: 16
+        name: year
+        description: 'Report year.'
+        required: false
+        example: 2026
         type: integer
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
-    cleanUrlParameters:
-      notification_id: 16
-    queryParameters: []
-    cleanQueryParameters: []
+      month:
+        custom: []
+        name: month
+        description: 'Report month.'
+        required: false
+        example: 5
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      user_id:
+        custom: []
+        name: user_id
+        description: 'Owner-only user filter.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      year: 2026
+      month: 5
+      user_id: 2
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
@@ -212,7 +138,74 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"تم تعليم الإشعار كمقروء","data":{"id":1,"is_read":true}}'
+        content: '{"success":true,"message":"Success","data":{"type":"monthly","title":"التقرير الشهري","totals":{"receive":500,"send":200,"net":300,"count":3}}}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/reports/users-comparison
+    metadata:
+      custom: []
+      groupName: Reports
+      groupDescription: |-
+
+        Generate JSON reports and queue report exports.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Users comparison report'
+      description: 'Owner-only comparison of user activity over a date range.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      date_from:
+        custom: []
+        name: date_from
+        description: 'date Filter from transaction date.'
+        required: false
+        example: '2026-05-01'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      date_to:
+        custom: []
+        name: date_to
+        description: 'date Filter to transaction date.'
+        required: false
+        example: '2026-05-31'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      date_from: '2026-05-01'
+      date_to: '2026-05-31'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"Success","data":{"type":"comparison","title":"مقارنة المستخدمين","rows":[]}}'
         headers: []
         description: ''
       -
@@ -232,18 +225,18 @@ endpoints:
   -
     custom: []
     httpMethods:
-      - DELETE
-    uri: 'api/v1/notifications/{id}'
+      - GET
+    uri: 'api/v1/reports/customer/{id}/statement'
     metadata:
       custom: []
-      groupName: Notifications
+      groupName: Reports
       groupDescription: |-
 
-        Read and manage in-app notifications for the authenticated user.
+        Generate JSON reports and queue report exports.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Delete notification'
-      description: 'Delete one notification if it belongs to the authenticated user.'
+      title: 'Customer statement'
+      description: 'Return a customer statement over a date range.'
       authenticated: true
       deprecated: false
     headers:
@@ -254,16 +247,197 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the notification.'
+        description: 'Customer ID.'
         required: true
-        example: 16
+        example: 5
         type: integer
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 16
+      id: 5
+    queryParameters:
+      date_from:
+        custom: []
+        name: date_from
+        description: 'date Filter from transaction date.'
+        required: false
+        example: '2026-05-01'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      date_to:
+        custom: []
+        name: date_to
+        description: 'date Filter to transaction date.'
+        required: false
+        example: '2026-05-31'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      date_from: '2026-05-01'
+      date_to: '2026-05-31'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"Success","data":{"type":"statement","title":"كشف حساب عميل","transactions":[]}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: '{"success":false,"message":"غير مصرح"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/reports/export
+    metadata:
+      custom: []
+      groupName: Reports
+      groupDescription: |-
+
+        Generate JSON reports and queue report exports.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Queue report export'
+      description: 'Queue a PDF or Excel export and return a job ID for polling.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      type:
+        custom: []
+        name: type
+        description: ''
+        required: true
+        example: daily
+        type: string
+        enumValues:
+          - daily
+          - monthly
+          - statement
+          - comparison
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      format:
+        custom: []
+        name: format
+        description: ''
+        required: true
+        example: excel
+        type: string
+        enumValues:
+          - pdf
+          - excel
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      params:
+        custom: []
+        name: params
+        description: ''
+        required: false
+        example: null
+        type: object
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      type: daily
+      format: excel
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 202
+        content: '{"success":true,"message":"تمت إضافة التقرير إلى قائمة التصدير","data":{"job_id":"uuid","status":"queued"}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: '{"success":false,"message":"غير مصرح"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: '{"success":false,"message":"معرف العميل مطلوب لتصدير كشف الحساب"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/reports/export/{job_id}/status'
+    metadata:
+      custom: []
+      groupName: Reports
+      groupDescription: |-
+
+        Generate JSON reports and queue report exports.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Report export status'
+      description: 'Return the current status for a queued report export.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      job_id:
+        custom: []
+        name: job_id
+        description: 'Export job ID.'
+        required: true
+        example: 01909392-9d6f-7000-9c65-89f0f1234567
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      job_id: 01909392-9d6f-7000-9c65-89f0f1234567
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -273,13 +447,86 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"تم حذف الإشعار"}'
+        content: '{"success":true,"message":"Success","data":{"job_id":"uuid","status":"ready"}}'
         headers: []
         description: ''
       -
         custom: []
         status: 403
         content: '{"success":false,"message":"غير مصرح"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: '{"success":false,"message":"مهمة التصدير غير موجودة"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/reports/export/{job_id}/download'
+    metadata:
+      custom: []
+      groupName: Reports
+      groupDescription: |-
+
+        Generate JSON reports and queue report exports.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Download report export'
+      description: 'Download a ready report export file.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      job_id:
+        custom: []
+        name: job_id
+        description: 'Export job ID.'
+        required: true
+        example: 01909392-9d6f-7000-9c65-89f0f1234567
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      job_id: 01909392-9d6f-7000-9c65-89f0f1234567
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 403
+        content: '{"success":false,"message":"غير مصرح"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: '{"success":false,"message":"مهمة التصدير غير موجودة"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 409
+        content: '{"success":false,"message":"ملف التصدير غير جاهز بعد"}'
         headers: []
         description: ''
     responseFields: []

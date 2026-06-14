@@ -58,7 +58,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"تم تسجيل الدخول","data":{"user":{"id":1,"name":"Owner","email":"owner@example.com"},"token":"1|example-token"}}'
+        content: '{"success":true,"message":"تم تسجيل الدخول","data":{"user":{"id":1,"name":"Owner","email":"owner@example.com","roles":[{"name":"owner","label":"مالك"}],"permissions":[{"name":"transaction.viewAny","label":"عرض كل العمليات المالية","group":"transactions","group_label":"العمليات المالية"}]},"token":"1|example-token"}}'
         headers: []
         description: ''
       -
@@ -153,7 +153,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Success","data":{"id":1,"name":"Owner","email":"owner@example.com"}}'
+        content: '{"success":true,"message":"Success","data":{"id":1,"name":"Owner","email":"owner@example.com","roles":[{"name":"owner","label":"مالك"}],"permissions":[{"name":"transaction.viewAny","label":"عرض كل العمليات المالية","group":"transactions","group_label":"العمليات المالية"}]}}'
         headers: []
         description: ''
     responseFields: []

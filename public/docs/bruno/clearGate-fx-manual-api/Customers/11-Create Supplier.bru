@@ -1,7 +1,7 @@
 meta {
-  name: Create Customer
+  name: Create Supplier
   type: http
-  seq: 2
+  seq: 11
 }
 
 post {
@@ -21,13 +21,13 @@ auth:bearer {
 
 body:json {
   {
-    "customer_code": "3302",
-    "name": "Ahmed Khalil",
+    "customer_code": "5001",
+    "name": "شركة أحمد للتحويل",
     "phone": "+970599123456",
-    "type": "customer",
-    "note": "Regular remittance customer",
-    "category": "regular",
+    "type": "supplier",
+    "note": "Money transfer supplier",
+    "category": "company",
     "country": "Palestine",
-    "balance_usd" : "500"
+    "balance_usd" : "0"
   }
 }

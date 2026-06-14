@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('vault_id')->constrained();
+            $table->string('customer_code', 20)->unique();
             $table->string('name', 100);
             $table->string('phone', 30)->nullable();
+            $table->enum('type', ['customer', 'supplier'])->default('customer');
             $table->text('note')->nullable();
             $table->enum('category', ['regular', 'vip', 'agent', 'company'])->default('regular');
             $table->decimal('balance_usd', 18, 4)->default(0);
@@ -27,6 +29,7 @@ return new class extends Migration
 
             $table->index('user_id');
             $table->index('vault_id');
+            $table->index('type');
         });
     }
 

@@ -57,7 +57,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-05-02T21:38:12'
+        example: '2026-06-14T19:59:11'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -65,7 +65,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       rate: 4326.41688
-      date: '2026-05-02T21:38:12'
+      date: '2026-06-14T19:59:11'
     fileParameters: []
     responses:
       -

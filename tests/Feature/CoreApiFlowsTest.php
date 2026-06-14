@@ -143,11 +143,93 @@ test('customer creation requires user vault', function (): void {
     $manager->vault->forceDelete();
 
     $this->postJson('/api/v1/customers', [
+        'customer_code' => '3301',
         'name' => 'No Vault Customer',
+        'type' => 'customer',
     ])
         ->assertStatus(409)
         ->assertJsonPath('success', false)
         ->assertJsonPath('message', 'صندوق المستخدم غير موجود. يرجى التواصل مع المسؤول.');
+});
+
+test('customer can be created with manual code and type', function (): void {
+    actingAsUserWithRole();
+
+    $this->postJson('/api/v1/customers', [
+        'customer_code' => '3301',
+        'name' => 'Ahmed',
+        'phone' => '059xxxxxxx',
+        'type' => 'customer',
+    ])
+        ->assertCreated()
+        ->assertJsonPath('data.customer_code', '3301')
+        ->assertJsonPath('data.name', 'Ahmed')
+        ->assertJsonPath('data.phone', '059xxxxxxx')
+        ->assertJsonPath('data.type', 'customer');
+
+    $this->assertDatabaseHas('customers', [
+        'customer_code' => '3301',
+        'name' => 'Ahmed',
+        'type' => 'customer',
+    ]);
+});
+
+test('supplier can be created and customers can be filtered by type', function (): void {
+    $manager = actingAsUserWithRole();
+
+    createCustomerFor($manager);
+    Customer::factory()->create([
+        'user_id' => $manager->id,
+        'vault_id' => $manager->vault->id,
+        'customer_code' => '5001',
+        'name' => 'شركة أحمد للتحويل',
+        'phone' => '059xxxxxxx',
+        'type' => 'supplier',
+    ]);
+
+    $this->getJson('/api/v1/customers?type=supplier')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.customer_code', '5001')
+        ->assertJsonPath('data.0.name', 'شركة أحمد للتحويل')
+        ->assertJsonPath('data.0.phone', '059xxxxxxx')
+        ->assertJsonPath('data.0.type', 'supplier');
+});
+
+test('customer code and type are validated', function (): void {
+    $manager = actingAsUserWithRole();
+    createCustomerFor($manager, 0)->update(['customer_code' => '3301']);
+
+    $this->postJson('/api/v1/customers', [
+        'name' => 'Invalid Customer',
+        'type' => 'partner',
+    ])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors(['customer_code', 'type']);
+
+    $this->postJson('/api/v1/customers', [
+        'customer_code' => '3301',
+        'name' => 'Duplicate Customer',
+        'type' => 'customer',
+    ])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors(['customer_code']);
+});
+
+test('customer code and type can be updated', function (): void {
+    $manager = actingAsUserWithRole();
+    $customer = createCustomerFor($manager);
+
+    $this->putJson("/api/v1/customers/{$customer->id}", [
+        'customer_code' => '3302',
+        'type' => 'supplier',
+    ])
+        ->assertOk()
+        ->assertJsonPath('data.customer_code', '3302')
+        ->assertJsonPath('data.type', 'supplier');
+
+    expect($customer->refresh()->customer_code)->toBe('3302')
+        ->and($customer->type->value)->toBe('supplier');
 });
 
 test('transaction create calculates financial fields and updates vault and customer balances', function (): void {

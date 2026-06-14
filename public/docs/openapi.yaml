@@ -5,8 +5,11 @@ info:
   version: 1.0.0
 servers:
   -
-    url: 'http://exhange.test'
+    url: 'http://127.0.0.1:8000'
 tags:
+  -
+    name: Archive
+    description: "\nBrowse archived records and restore them through owner-only restore actions."
   -
     name: Auth
     description: "\nEndpoints for API token login, logout, profile lookup, and password changes."
@@ -25,6 +28,18 @@ tags:
   -
     name: Notifications
     description: "\nRead and manage in-app notifications for the authenticated user."
+  -
+    name: Permissions
+    description: "\nOwner-only permission lookup with Arabic display labels."
+  -
+    name: Receipts
+    description: "\nGenerate transaction receipt PDFs."
+  -
+    name: Reports
+    description: "\nGenerate JSON reports and queue report exports."
+  -
+    name: Roles
+    description: "\nOwner-only role and role-permission management."
   -
     name: Settings
     description: "\nRead and manage application settings grouped by feature area."
@@ -47,6 +62,216 @@ security:
   -
     default: []
 paths:
+  /api/v1/archive:
+    get:
+      summary: 'List archive entries'
+      operationId: listArchiveEntries
+      description: 'Owners can see all archive entries. Managers are scoped to entries they archived.'
+      parameters:
+        -
+          in: query
+          name: type
+          description: 'Filter by archived type.'
+          example: transaction
+          required: false
+          schema:
+            type: string
+            description: 'Filter by archived type.'
+            example: transaction
+        -
+          in: query
+          name: date_from
+          description: 'date Filter from archive date.'
+          example: '2026-05-01'
+          required: false
+          schema:
+            type: string
+            description: 'date Filter from archive date.'
+            example: '2026-05-01'
+        -
+          in: query
+          name: date_to
+          description: 'date Filter to archive date.'
+          example: '2026-05-31'
+          required: false
+          schema:
+            type: string
+            description: 'date Filter to archive date.'
+            example: '2026-05-31'
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      id: 1
+                      archivable_type: transaction
+                      archivable_id: 10
+                      reason: transaction.deleted
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        archivable_type: transaction
+                        archivable_id: 10
+                        reason: transaction.deleted
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        archivable_type:
+                          type: string
+                          example: transaction
+                        archivable_id:
+                          type: integer
+                          example: 10
+                        reason:
+                          type: string
+                          example: transaction.deleted
+      tags:
+        - Archive
+  '/api/v1/archive/{id}':
+    get:
+      summary: 'Show archive entry'
+      operationId: showArchiveEntry
+      description: 'Return one archive entry if the current user is allowed to view it.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    id: 1
+                    archivable_type: transaction
+                    archivable_id: 10
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      archivable_type:
+                        type: string
+                        example: transaction
+                      archivable_id:
+                        type: integer
+                        example: 10
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Archive
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the archive.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v1/archive/{archive_id}/restore':
+    post:
+      summary: 'Restore archive entry'
+      operationId: restoreArchiveEntry
+      description: 'Owner-only endpoint that restores the archived model.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تمت الاستعادة من الأرشيف'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تمت الاستعادة من الأرشيف'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Archive
+    parameters:
+      -
+        in: path
+        name: archive_id
+        description: 'The ID of the archive.'
+        example: 16
+        required: true
+        schema:
+          type: integer
   /api/v1/auth/login:
     post:
       summary: Login
@@ -68,6 +293,16 @@ paths:
                       id: 1
                       name: Owner
                       email: owner@example.com
+                      roles:
+                        -
+                          name: owner
+                          label: مالك
+                      permissions:
+                        -
+                          name: transaction.viewAny
+                          label: 'عرض كل العمليات المالية'
+                          group: transactions
+                          group_label: 'العمليات المالية'
                     token: 1|example-token
                 properties:
                   success:
@@ -91,6 +326,44 @@ paths:
                           email:
                             type: string
                             example: owner@example.com
+                          roles:
+                            type: array
+                            example:
+                              -
+                                name: owner
+                                label: مالك
+                            items:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  example: owner
+                                label:
+                                  type: string
+                                  example: مالك
+                          permissions:
+                            type: array
+                            example:
+                              -
+                                name: transaction.viewAny
+                                label: 'عرض كل العمليات المالية'
+                                group: transactions
+                                group_label: 'العمليات المالية'
+                            items:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  example: transaction.viewAny
+                                label:
+                                  type: string
+                                  example: 'عرض كل العمليات المالية'
+                                group:
+                                  type: string
+                                  example: transactions
+                                group_label:
+                                  type: string
+                                  example: 'العمليات المالية'
                       token:
                         type: string
                         example: 1|example-token
@@ -192,6 +465,16 @@ paths:
                     id: 1
                     name: Owner
                     email: owner@example.com
+                    roles:
+                      -
+                        name: owner
+                        label: مالك
+                    permissions:
+                      -
+                        name: transaction.viewAny
+                        label: 'عرض كل العمليات المالية'
+                        group: transactions
+                        group_label: 'العمليات المالية'
                 properties:
                   success:
                     type: boolean
@@ -211,6 +494,44 @@ paths:
                       email:
                         type: string
                         example: owner@example.com
+                      roles:
+                        type: array
+                        example:
+                          -
+                            name: owner
+                            label: مالك
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: owner
+                            label:
+                              type: string
+                              example: مالك
+                      permissions:
+                        type: array
+                        example:
+                          -
+                            name: transaction.viewAny
+                            label: 'عرض كل العمليات المالية'
+                            group: transactions
+                            group_label: 'العمليات المالية'
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: transaction.viewAny
+                            label:
+                              type: string
+                              example: 'عرض كل العمليات المالية'
+                            group:
+                              type: string
+                              example: transactions
+                            group_label:
+                              type: string
+                              example: 'العمليات المالية'
       tags:
         - Auth
   /api/v1/auth/change-password:
@@ -727,14 +1048,14 @@ paths:
         required: true
         schema:
           type: integer
-  '/api/v1/customers/{customer_id}/balance':
-    get:
-      summary: 'Customer balance'
-      operationId: customerBalance
-      description: 'Return the customer balance in USD.'
+  /api/v1/customers:
+    post:
+      summary: 'Create customer'
+      operationId: createCustomer
+      description: "Create a customer and attach it to the selected user's vault."
       parameters: []
       responses:
-        200:
+        201:
           description: ''
           content:
             application/json:
@@ -742,34 +1063,109 @@ paths:
                 type: object
                 example:
                   success: true
-                  message: Success
+                  message: 'تم إنشاء العميل'
                   data:
-                    balance_usd: 250.5
+                    id: 1
+                    customer_code: '3301'
+                    name: Ahmed
+                    phone: 059xxxxxxx
+                    type: customer
                 properties:
                   success:
                     type: boolean
                     example: true
                   message:
                     type: string
-                    example: Success
+                    example: 'تم إنشاء العميل'
                   data:
                     type: object
                     properties:
-                      balance_usd:
-                        type: number
-                        example: 250.5
+                      id:
+                        type: integer
+                        example: 1
+                      customer_code:
+                        type: string
+                        example: '3301'
+                      name:
+                        type: string
+                        example: Ahmed
+                      phone:
+                        type: string
+                        example: 059xxxxxxx
+                      type:
+                        type: string
+                        example: customer
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Validation Error'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Validation Error'
       tags:
         - Customers
-    parameters:
-      -
-        in: path
-        name: customer_id
-        description: 'The ID of the customer.'
-        example: 16
+      requestBody:
         required: true
-        schema:
-          type: integer
-  /api/v1/customers:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customer_code:
+                  type: string
+                  description: 'Manual unique customer code.'
+                  example: '3301'
+                name:
+                  type: string
+                  description: 'Customer or supplier name.'
+                  example: Ahmed
+                phone:
+                  type: string
+                  description: 'Customer phone number.'
+                  example: 059xxxxxxx
+                  nullable: true
+                type:
+                  type: string
+                  description: 'Customer type. Must be customer or supplier.'
+                  example: customer
+                note:
+                  type: string
+                  description: 'Optional note.'
+                  example: 'Regular remittance customer'
+                  nullable: true
+                category:
+                  type: string
+                  description: 'Optional legacy category. Must be regular, vip, agent, or company.'
+                  example: regular
+                  nullable: true
+                country:
+                  type: string
+                  description: 'Optional country.'
+                  example: Palestine
+                  nullable: true
+                user_id:
+                  type: integer
+                  description: 'Owner-only user assignment.'
+                  example: 3
+                  nullable: true
+                balance_usd:
+                  type: number
+                  description: 'Optional opening balance.'
+                  example: 500.0
+                  nullable: true
+              required:
+                - customer_code
+                - name
+                - type
     get:
       summary: 'List customers'
       operationId: listCustomers
@@ -778,13 +1174,23 @@ paths:
         -
           in: query
           name: search
-          description: 'Search by customer name.'
+          description: 'Search by customer name or customer code.'
           example: Ahmed
           required: false
           schema:
             type: string
-            description: 'Search by customer name.'
+            description: 'Search by customer name or customer code.'
             example: Ahmed
+        -
+          in: query
+          name: type
+          description: 'Filter by customer type.'
+          example: customer
+          required: false
+          schema:
+            type: string
+            description: 'Filter by customer type.'
+            example: customer
         -
           in: query
           name: category
@@ -848,10 +1254,10 @@ paths:
                   data:
                     -
                       id: 1
+                      customer_code: '3301'
                       name: Ahmed
-                      category: regular
-                      balance_usd: '250.0000'
-                      is_active: true
+                      phone: 059xxxxxxx
+                      type: customer
                 properties:
                   success:
                     type: boolean
@@ -864,37 +1270,38 @@ paths:
                     example:
                       -
                         id: 1
+                        customer_code: '3301'
                         name: Ahmed
-                        category: regular
-                        balance_usd: '250.0000'
-                        is_active: true
+                        phone: 059xxxxxxx
+                        type: customer
                     items:
                       type: object
                       properties:
                         id:
                           type: integer
                           example: 1
+                        customer_code:
+                          type: string
+                          example: '3301'
                         name:
                           type: string
                           example: Ahmed
-                        category:
+                        phone:
                           type: string
-                          example: regular
-                        balance_usd:
+                          example: 059xxxxxxx
+                        type:
                           type: string
-                          example: '250.0000'
-                        is_active:
-                          type: boolean
-                          example: true
+                          example: customer
       tags:
         - Customers
-    post:
-      summary: 'Create customer'
-      operationId: createCustomer
-      description: "Create a customer and attach it to the selected user's vault."
+  '/api/v1/customers/{customer_id}/balance':
+    get:
+      summary: 'Customer balance'
+      operationId: customerBalance
+      description: 'Return the customer balance in USD.'
       parameters: []
       responses:
-        201:
+        200:
           description: ''
           content:
             application/json:
@@ -902,75 +1309,33 @@ paths:
                 type: object
                 example:
                   success: true
-                  message: 'تم إنشاء العميل'
+                  message: Success
+                  data:
+                    balance_usd: 250.5
                 properties:
                   success:
                     type: boolean
                     example: true
                   message:
                     type: string
-                    example: 'تم إنشاء العميل'
-        422:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  success: false
-                  message: 'Validation Error'
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: 'Validation Error'
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      balance_usd:
+                        type: number
+                        example: 250.5
       tags:
         - Customers
-      requestBody:
+    parameters:
+      -
+        in: path
+        name: customer_id
+        description: 'The ID of the customer.'
+        example: 16
         required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: 'Must not be greater than 100 characters.'
-                  example: b
-                phone:
-                  type: string
-                  description: 'Must not be greater than 30 characters.'
-                  example: 'n'
-                  nullable: true
-                note:
-                  type: string
-                  description: ''
-                  example: architecto
-                  nullable: true
-                category:
-                  type: string
-                  description: ''
-                  example: agent
-                  enum:
-                    - regular
-                    - vip
-                    - agent
-                    - company
-                  nullable: true
-                country:
-                  type: string
-                  description: 'Must not be greater than 50 characters.'
-                  example: 'n'
-                  nullable: true
-                user_id:
-                  type: integer
-                  description: 'The <code>id</code> of an existing record in the users table.'
-                  example: 16
-                  nullable: true
-              required:
-                - name
+        schema:
+          type: integer
   '/api/v1/customers/{id}':
     get:
       summary: 'Show customer'
@@ -989,8 +1354,10 @@ paths:
                   message: Success
                   data:
                     id: 1
+                    customer_code: '3301'
                     name: Ahmed
-                    balance_usd: '250.0000'
+                    phone: 059xxxxxxx
+                    type: customer
                     vault:
                       id: 1
                 properties:
@@ -1006,12 +1373,18 @@ paths:
                       id:
                         type: integer
                         example: 1
+                      customer_code:
+                        type: string
+                        example: '3301'
                       name:
                         type: string
                         example: Ahmed
-                      balance_usd:
+                      phone:
                         type: string
-                        example: '250.0000'
+                        example: 059xxxxxxx
+                      type:
+                        type: string
+                        example: customer
                       vault:
                         type: object
                         properties:
@@ -1051,6 +1424,12 @@ paths:
                 example:
                   success: true
                   message: 'تم تحديث العميل'
+                  data:
+                    id: 1
+                    customer_code: '3302'
+                    name: 'Ahmed Updated'
+                    phone: 059xxxxxxx
+                    type: supplier
                 properties:
                   success:
                     type: boolean
@@ -1058,6 +1437,24 @@ paths:
                   message:
                     type: string
                     example: 'تم تحديث العميل'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      customer_code:
+                        type: string
+                        example: '3302'
+                      name:
+                        type: string
+                        example: 'Ahmed Updated'
+                      phone:
+                        type: string
+                        example: 059xxxxxxx
+                      type:
+                        type: string
+                        example: supplier
         403:
           description: ''
           content:
@@ -1099,39 +1496,42 @@ paths:
             schema:
               type: object
               properties:
+                customer_code:
+                  type: string
+                  description: 'Manual unique customer code.'
+                  example: '3302'
                 name:
                   type: string
-                  description: 'Must not be greater than 100 characters.'
-                  example: b
+                  description: 'Customer or supplier name.'
+                  example: 'Ahmed Updated'
                 phone:
                   type: string
-                  description: 'Must not be greater than 30 characters.'
-                  example: 'n'
+                  description: 'Customer phone number.'
+                  example: 059xxxxxxx
                   nullable: true
+                type:
+                  type: string
+                  description: 'Customer type. Must be customer or supplier.'
+                  example: supplier
                 note:
                   type: string
-                  description: ''
-                  example: architecto
+                  description: 'Optional note.'
+                  example: 'Updated note'
                   nullable: true
                 category:
                   type: string
-                  description: ''
-                  example: company
-                  enum:
-                    - regular
-                    - vip
-                    - agent
-                    - company
+                  description: 'Optional legacy category. Must be regular, vip, agent, or company.'
+                  example: vip
                   nullable: true
                 country:
                   type: string
-                  description: 'Must not be greater than 50 characters.'
-                  example: 'n'
+                  description: 'Optional country.'
+                  example: Jordan
                   nullable: true
                 is_active:
                   type: boolean
-                  description: ''
-                  example: false
+                  description: 'Active status.'
+                  example: true
                   nullable: true
     delete:
       summary: 'Delete customer'
@@ -1200,7 +1600,9 @@ paths:
                   message: 'تم استعادة العميل'
                   data:
                     id: 7
+                    customer_code: '3301'
                     name: Ahmed
+                    type: customer
                     deleted_at: null
                 properties:
                   success:
@@ -1215,9 +1617,15 @@ paths:
                       id:
                         type: integer
                         example: 7
+                      customer_code:
+                        type: string
+                        example: '3301'
                       name:
                         type: string
                         example: Ahmed
+                      type:
+                        type: string
+                        example: customer
                       deleted_at:
                         type: string
                         example: null
@@ -1518,7 +1926,7 @@ paths:
                 date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-05-02T21:38:12'
+                  example: '2026-06-14T19:59:11'
                   nullable: true
               required:
                 - rate
@@ -1954,6 +2362,740 @@ paths:
         in: path
         name: id
         description: 'The ID of the notification.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/v1/permissions:
+    get:
+      summary: ''
+      operationId: getApiV1Permissions
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Permissions
+  '/api/v1/receipts/{transaction_id}':
+    get:
+      summary: 'Show transaction receipt'
+      operationId: showTransactionReceipt
+      description: 'Return a PDF receipt for one transaction if the current user is allowed to view it.'
+      parameters: []
+      responses:
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Receipts
+    parameters:
+      -
+        in: path
+        name: transaction_id
+        description: 'Transaction ID.'
+        example: 10
+        required: true
+        schema:
+          type: integer
+  /api/v1/reports/daily:
+    get:
+      summary: 'Daily report'
+      operationId: dailyReport
+      description: 'Return totals, currency totals, and transactions for one day.'
+      parameters:
+        -
+          in: query
+          name: date
+          description: 'date Report date.'
+          example: '2026-05-03'
+          required: false
+          schema:
+            type: string
+            description: 'date Report date.'
+            example: '2026-05-03'
+        -
+          in: query
+          name: user_id
+          description: 'Owner-only user filter.'
+          example: 2
+          required: false
+          schema:
+            type: integer
+            description: 'Owner-only user filter.'
+            example: 2
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    type: daily
+                    title: 'التقرير اليومي'
+                    totals:
+                      receive: 500
+                      send: 200
+                      net: 300
+                      count: 3
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: daily
+                      title:
+                        type: string
+                        example: 'التقرير اليومي'
+                      totals:
+                        type: object
+                        properties:
+                          receive:
+                            type: integer
+                            example: 500
+                          send:
+                            type: integer
+                            example: 200
+                          net:
+                            type: integer
+                            example: 300
+                          count:
+                            type: integer
+                            example: 3
+      tags:
+        - Reports
+  /api/v1/reports/monthly:
+    get:
+      summary: 'Monthly report'
+      operationId: monthlyReport
+      description: 'Return totals, daily totals, currency totals, and transactions for one month.'
+      parameters:
+        -
+          in: query
+          name: year
+          description: 'Report year.'
+          example: 2026
+          required: false
+          schema:
+            type: integer
+            description: 'Report year.'
+            example: 2026
+        -
+          in: query
+          name: month
+          description: 'Report month.'
+          example: 5
+          required: false
+          schema:
+            type: integer
+            description: 'Report month.'
+            example: 5
+        -
+          in: query
+          name: user_id
+          description: 'Owner-only user filter.'
+          example: 2
+          required: false
+          schema:
+            type: integer
+            description: 'Owner-only user filter.'
+            example: 2
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    type: monthly
+                    title: 'التقرير الشهري'
+                    totals:
+                      receive: 500
+                      send: 200
+                      net: 300
+                      count: 3
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: monthly
+                      title:
+                        type: string
+                        example: 'التقرير الشهري'
+                      totals:
+                        type: object
+                        properties:
+                          receive:
+                            type: integer
+                            example: 500
+                          send:
+                            type: integer
+                            example: 200
+                          net:
+                            type: integer
+                            example: 300
+                          count:
+                            type: integer
+                            example: 3
+      tags:
+        - Reports
+  /api/v1/reports/users-comparison:
+    get:
+      summary: 'Users comparison report'
+      operationId: usersComparisonReport
+      description: 'Owner-only comparison of user activity over a date range.'
+      parameters:
+        -
+          in: query
+          name: date_from
+          description: 'date Filter from transaction date.'
+          example: '2026-05-01'
+          required: false
+          schema:
+            type: string
+            description: 'date Filter from transaction date.'
+            example: '2026-05-01'
+        -
+          in: query
+          name: date_to
+          description: 'date Filter to transaction date.'
+          example: '2026-05-31'
+          required: false
+          schema:
+            type: string
+            description: 'date Filter to transaction date.'
+            example: '2026-05-31'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    type: comparison
+                    title: 'مقارنة المستخدمين'
+                    rows: []
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: comparison
+                      title:
+                        type: string
+                        example: 'مقارنة المستخدمين'
+                      rows:
+                        type: array
+                        example: []
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Reports
+  '/api/v1/reports/customer/{id}/statement':
+    get:
+      summary: 'Customer statement'
+      operationId: customerStatement
+      description: 'Return a customer statement over a date range.'
+      parameters:
+        -
+          in: query
+          name: date_from
+          description: 'date Filter from transaction date.'
+          example: '2026-05-01'
+          required: false
+          schema:
+            type: string
+            description: 'date Filter from transaction date.'
+            example: '2026-05-01'
+        -
+          in: query
+          name: date_to
+          description: 'date Filter to transaction date.'
+          example: '2026-05-31'
+          required: false
+          schema:
+            type: string
+            description: 'date Filter to transaction date.'
+            example: '2026-05-31'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    type: statement
+                    title: 'كشف حساب عميل'
+                    transactions: []
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: statement
+                      title:
+                        type: string
+                        example: 'كشف حساب عميل'
+                      transactions:
+                        type: array
+                        example: []
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Reports
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'Customer ID.'
+        example: 5
+        required: true
+        schema:
+          type: integer
+  /api/v1/reports/export:
+    post:
+      summary: 'Queue report export'
+      operationId: queueReportExport
+      description: 'Queue a PDF or Excel export and return a job ID for polling.'
+      parameters: []
+      responses:
+        202:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تمت إضافة التقرير إلى قائمة التصدير'
+                  data:
+                    job_id: uuid
+                    status: queued
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تمت إضافة التقرير إلى قائمة التصدير'
+                  data:
+                    type: object
+                    properties:
+                      job_id:
+                        type: string
+                        example: uuid
+                      status:
+                        type: string
+                        example: queued
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'معرف العميل مطلوب لتصدير كشف الحساب'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'معرف العميل مطلوب لتصدير كشف الحساب'
+      tags:
+        - Reports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: ''
+                  example: daily
+                  enum:
+                    - daily
+                    - monthly
+                    - statement
+                    - comparison
+                format:
+                  type: string
+                  description: ''
+                  example: excel
+                  enum:
+                    - pdf
+                    - excel
+                params:
+                  type: object
+                  description: ''
+                  example: null
+                  properties: {  }
+                  nullable: true
+              required:
+                - type
+                - format
+  '/api/v1/reports/export/{job_id}/status':
+    get:
+      summary: 'Report export status'
+      operationId: reportExportStatus
+      description: 'Return the current status for a queued report export.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    job_id: uuid
+                    status: ready
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      job_id:
+                        type: string
+                        example: uuid
+                      status:
+                        type: string
+                        example: ready
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'مهمة التصدير غير موجودة'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'مهمة التصدير غير موجودة'
+      tags:
+        - Reports
+    parameters:
+      -
+        in: path
+        name: job_id
+        description: 'Export job ID.'
+        example: 01909392-9d6f-7000-9c65-89f0f1234567
+        required: true
+        schema:
+          type: string
+  '/api/v1/reports/export/{job_id}/download':
+    get:
+      summary: 'Download report export'
+      operationId: downloadReportExport
+      description: 'Download a ready report export file.'
+      parameters: []
+      responses:
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'مهمة التصدير غير موجودة'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'مهمة التصدير غير موجودة'
+        409:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'ملف التصدير غير جاهز بعد'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'ملف التصدير غير جاهز بعد'
+      tags:
+        - Reports
+    parameters:
+      -
+        in: path
+        name: job_id
+        description: 'Export job ID.'
+        example: 01909392-9d6f-7000-9c65-89f0f1234567
+        required: true
+        schema:
+          type: string
+  '/api/v1/roles/{role_id}/permissions':
+    put:
+      summary: ''
+      operationId: putApiV1RolesRole_idPermissions
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Roles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                permissions:
+                  type: array
+                  description: 'The <code>name</code> of an existing record in the permissions table.'
+                  example:
+                    - architecto
+                  items:
+                    type: string
+              required:
+                - permissions
+    parameters:
+      -
+        in: path
+        name: role_id
+        description: 'The ID of the role.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/v1/roles:
+    get:
+      summary: ''
+      operationId: getApiV1Roles
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Roles
+    post:
+      summary: ''
+      operationId: postApiV1Roles
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Roles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must match the regex /^[A-Za-z0-9_.-]+$/. Must not be greater than 100 characters.'
+                  example: b
+                permissions:
+                  type: array
+                  description: 'The <code>name</code> of an existing record in the permissions table.'
+                  example:
+                    - architecto
+                  items:
+                    type: string
+              required:
+                - name
+                - permissions
+  '/api/v1/roles/{id}':
+    get:
+      summary: ''
+      operationId: getApiV1RolesId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Roles
+    put:
+      summary: ''
+      operationId: putApiV1RolesId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Roles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must match the regex /^[A-Za-z0-9_.-]+$/. Must not be greater than 100 characters.'
+                  example: b
+              required:
+                - name
+    delete:
+      summary: ''
+      operationId: deleteApiV1RolesId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Roles
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the role.'
         example: 16
         required: true
         schema:
@@ -2489,7 +3631,7 @@ paths:
     post:
       summary: 'Create transaction'
       operationId: createTransaction
-      description: "Create a receive or send transaction using the current user's vault. Commission is calculated in TransactionService."
+      description: "Create a receive, send, or transfer transaction using the current user's vault. Commission is calculated in TransactionService.\nFor transfer type, provide `from_customer_id`, `to_customer_id`, and `exchange_rate`. No vault balance is affected for transfers — only customer balances."
       parameters: []
       responses:
         201:
@@ -2497,17 +3639,49 @@ paths:
           content:
             application/json:
               schema:
+                oneOf:
+                  -
+                    description: ''
+                    type: object
+                    example:
+                      success: true
+                      message: 'تم إنشاء العملية'
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: 'تم إنشاء العملية'
+                  -
+                    description: ''
+                    type: object
+                    example:
+                      success: true
+                      message: 'تم تنفيذ التحويل بنجاح'
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: 'تم تنفيذ التحويل بنجاح'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
                 type: object
                 example:
-                  success: true
-                  message: 'تم إنشاء العملية'
+                  success: false
+                  message: 'غير مصرح بتنفيذ التحويل، العميل المُحوَّل منه غير تابع لحسابك'
                 properties:
                   success:
                     type: boolean
-                    example: true
+                    example: false
                   message:
                     type: string
-                    example: 'تم إنشاء العملية'
+                    example: 'غير مصرح بتنفيذ التحويل، العميل المُحوَّل منه غير تابع لحسابك'
         422:
           description: ''
           content:
@@ -2540,6 +3714,7 @@ paths:
                   enum:
                     - receive
                     - send
+                    - transfer
                 amount:
                   type: number
                   description: ''
@@ -2550,7 +3725,7 @@ paths:
                   example: miyvdl
                 exchange_rate:
                   type: number
-                  description: ''
+                  description: 'This field is required when <code>type</code> is <code>transfer</code>.'
                   example: 4326.41688
                   nullable: true
                 customer_id:
@@ -2558,10 +3733,20 @@ paths:
                   description: 'The <code>id</code> of an existing record in the customers table.'
                   example: 16
                   nullable: true
+                from_customer_id:
+                  type: integer
+                  description: 'This field is required when <code>type</code> is <code>transfer</code>. The <code>id</code> of an existing record in the customers table.'
+                  example: 16
+                  nullable: true
+                to_customer_id:
+                  type: integer
+                  description: 'This field is required when <code>type</code> is <code>transfer</code>. The <code>id</code> of an existing record in the customers table.'
+                  example: 16
+                  nullable: true
                 commission_type:
                   type: string
                   description: ''
-                  example: fixed
+                  example: percentage
                   enum:
                     - percentage
                     - fixed
@@ -2574,7 +3759,7 @@ paths:
                 commission_sign:
                   type: integer
                   description: 'This field is required when <code>commission_type</code> is present.'
-                  example: -1
+                  example: 1
                   enum:
                     - 1
                     - -1
@@ -2597,7 +3782,7 @@ paths:
                 transaction_date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-05-02T21:38:12'
+                  example: '2026-06-14T19:59:11'
               required:
                 - type
                 - amount
@@ -2754,7 +3939,7 @@ paths:
                 transaction_date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-05-02T21:38:12'
+                  example: '2026-06-14T19:59:11'
                   nullable: true
     delete:
       summary: 'Delete transaction'
@@ -2977,6 +4162,96 @@ paths:
         name: id
         description: 'User ID.'
         example: 2
+        required: true
+        schema:
+          type: integer
+  '/api/v1/users/{user_id}/role':
+    put:
+      summary: 'Change user role'
+      operationId: changeUserRole
+      description: "Owner-only endpoint that replaces the user's assigned role."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث دور المستخدم'
+                  data:
+                    id: 2
+                    roles:
+                      -
+                        name: manager
+                        label: مدير
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث دور المستخدم'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 2
+                      roles:
+                        type: array
+                        example:
+                          -
+                            name: manager
+                            label: مدير
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: manager
+                            label:
+                              type: string
+                              example: مدير
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'لا يمكن تغيير دور آخر مستخدم مالك'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'لا يمكن تغيير دور آخر مستخدم مالك'
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  description: 'The <code>name</code> of an existing record in the roles table.'
+                  example: architecto
+              required:
+                - role
+    parameters:
+      -
+        in: path
+        name: user_id
+        description: 'The ID of the user.'
+        example: 16
         required: true
         schema:
           type: integer
@@ -3348,11 +4623,8 @@ paths:
                   nullable: true
                 role:
                   type: string
-                  description: ''
-                  example: manager
-                  enum:
-                    - manager
-                  nullable: true
+                  description: 'The <code>name</code> of an existing record in the roles table.'
+                  example: architecto
                 initial_balance:
                   type: number
                   description: ''
@@ -3367,6 +4639,7 @@ paths:
                 - name
                 - email
                 - password
+                - role
   '/api/v1/users/{id}':
     get:
       summary: 'Show user'

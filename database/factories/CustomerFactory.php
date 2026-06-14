@@ -25,8 +25,10 @@ class CustomerFactory extends Factory
         return [
             'user_id' => $user->id,
             'vault_id' => $vault->id,
+            'customer_code' => fake()->unique()->numerify('####'),
             'name' => fake()->name(),
             'phone' => fake()->phoneNumber(),
+            'type' => 'customer',
             'note' => fake()->sentence(),
             'category' => 'regular',
             'balance_usd' => 0,
