@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\Api\V1\ArchiveController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\BoxController;
 use App\Http\Controllers\Api\V1\CurrencyController;
 use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ExchangeRateController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\OperationController;
 use App\Http\Controllers\Api\V1\PermissionController;
 use App\Http\Controllers\Api\V1\ReceiptController;
 use App\Http\Controllers\Api\V1\ReportController;
@@ -38,6 +40,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             ->middleware('role:owner,sanctum')
             ->name('transactions.force-delete');
 
+        Route::get('operations/{operation}/receipt', [OperationController::class, 'receipt'])->name('operations.receipt');
+        Route::apiResource('operations', OperationController::class);
+
         Route::get('customers/{customer}/transactions', [CustomerController::class, 'transactions'])->name('customers.transactions');
         Route::post('customers', [CustomerController::class, 'store'])->name('customers.store');
         Route::get('customers/{customer}/balance', [CustomerController::class, 'balance'])->name('customers.balance');
@@ -55,6 +60,14 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('vaults/{vault}/transactions', [VaultController::class, 'transactions'])->name('vaults.transactions');
         Route::get('vaults/{vault}/summary', [VaultController::class, 'summary'])->name('vaults.summary');
         Route::apiResource('vaults', VaultController::class)->only(['index', 'show', 'update']);
+
+        Route::patch('boxes/{box}/balance', [BoxController::class, 'balance'])->name('boxes.balance');
+        Route::get('boxes/{box}/logs', [BoxController::class, 'logs'])->name('boxes.logs');
+        Route::get('boxes', [BoxController::class, 'index'])->name('boxes.index');
+        Route::post('boxes', [BoxController::class, 'store'])->name('boxes.store');
+        Route::get('boxes/{box}', [BoxController::class, 'show'])->name('boxes.show');
+        Route::put('boxes/{box}', [BoxController::class, 'update'])->name('boxes.update');
+        Route::delete('boxes/{box}', [BoxController::class, 'destroy'])->name('boxes.destroy');
 
         Route::put('currencies/{code}/rate', [ExchangeRateController::class, 'update'])->name('currencies.rate.update');
         Route::apiResource('currencies', CurrencyController::class);

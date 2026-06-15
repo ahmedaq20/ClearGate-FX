@@ -82,6 +82,22 @@ abstract class ApiFormRequest extends FormRequest
             'settings.*' => 'قيمة الإعداد',
             'permissions' => 'الصلاحيات',
             'permissions.*' => 'الصلاحية',
+            'assigned_user_id' => 'المستخدم المعين',
+            'box_id' => 'الصندوق',
+            'customer_amount' => 'مبلغ العميل',
+            'customer_currency' => 'عملة العميل',
+            'customer_exchange_rate' => 'سعر صرف العميل',
+            'created_by' => 'المستخدم',
+            'current_balance' => 'الرصيد الحالي',
+            'currency' => 'العملة',
+            'funding_source' => 'مصدر التمويل',
+            'notes' => 'الملاحظات',
+            'operation_type' => 'نوع العملية',
+            'status' => 'الحالة',
+            'supplier_amount' => 'مبلغ المورد',
+            'supplier_currency' => 'عملة المورد',
+            'supplier_exchange_rate' => 'سعر صرف المورد',
+            'supplier_id' => 'المورد',
         ];
     }
 }

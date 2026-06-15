@@ -1,0 +1,32 @@
+meta {
+  name: Create USDT Wallet Box
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{baseUrlApi}}/boxes
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "USDT Main Wallet",
+    "type": "usdt_wallet",
+    "current_balance": 5000,
+    "currency": "USDT",
+    "assigned_user_id": 2,
+    "status": "active",
+    "notes": "Primary USDT wallet box"
+  }
+}

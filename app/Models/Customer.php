@@ -54,6 +54,16 @@ class Customer extends Model
         return $this->hasMany(Transaction::class);
     }
 
+    public function operations(): HasMany
+    {
+        return $this->hasMany(Operation::class);
+    }
+
+    public function supplierOperations(): HasMany
+    {
+        return $this->hasMany(Operation::class, 'supplier_id');
+    }
+
     /**
      * Get the attributes that should be cast.
      *

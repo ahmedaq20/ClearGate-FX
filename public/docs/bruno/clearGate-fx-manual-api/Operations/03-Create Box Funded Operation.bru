@@ -1,0 +1,38 @@
+meta {
+  name: Create Box Funded Operation
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrlApi}}/operations
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "transaction_date": "2026-06-15",
+    "supplier_id": null,
+    "box_id": 1,
+    "customer_id": 1,
+    "supplier_currency": "USD",
+    "supplier_amount": 1000,
+    "supplier_exchange_rate": 1,
+    "customer_currency": "USD",
+    "customer_amount": 1000,
+    "customer_exchange_rate": 1,
+    "commission_type": "fixed",
+    "commission_rate": 25,
+    "notes": "Box funded transfer. Customer amount is deducted from selected box."
+  }
+}

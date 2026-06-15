@@ -1,0 +1,38 @@
+meta {
+  name: Update Operation
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrlApi}}/operations/1
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "transaction_date": "2026-06-16",
+    "supplier_id": null,
+    "box_id": 1,
+    "customer_id": 1,
+    "supplier_currency": "USD",
+    "supplier_amount": 1200,
+    "supplier_exchange_rate": 1,
+    "customer_currency": "USD",
+    "customer_amount": 1200,
+    "customer_exchange_rate": 1,
+    "commission_type": "percentage",
+    "commission_rate": 3,
+    "notes": "Updated operation values. Old box movement is reversed and new movement is applied."
+  }
+}

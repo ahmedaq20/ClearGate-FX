@@ -1,11 +1,11 @@
 meta {
-  name: Show Customer
+  name: List USDT Wallet Boxes
   type: http
-  seq: 3
+  seq: 10
 }
 
 get {
-  url: {{baseUrlApi}}/customers/11
+  url: {{baseUrlApi}}/boxes?type=usdt_wallet&per_page=20
   body: none
   auth: bearer
 }

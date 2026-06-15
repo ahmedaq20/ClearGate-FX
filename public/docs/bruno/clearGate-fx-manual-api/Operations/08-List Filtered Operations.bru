@@ -1,0 +1,23 @@
+meta {
+  name: List Filtered Operations
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrlApi}}/operations?customer=1&supplier=2&box=1&date_from=2026-06-01&date_to=2026-06-30&reference_number=TRX-2026-00001&per_page=20
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Filters are optional. Use customer, supplier, box, date_from, date_to, and reference_number as needed.
+}

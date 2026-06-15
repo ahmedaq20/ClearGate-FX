@@ -4,6 +4,7 @@ return [
     'groups' => [
         'transactions' => 'العمليات المالية',
         'customers' => 'العملاء',
+        'boxes' => 'الصناديق الجديدة',
         'vaults' => 'الصناديق',
         'currencies' => 'العملات وأسعار الصرف',
         'reports' => 'التقارير',
@@ -15,12 +16,16 @@ return [
 
     'roles' => [
         'owner' => 'مالك',
+        'admin' => 'مدير عام',
         'manager' => 'مدير',
+        'operations_employee' => 'موظف عمليات',
     ],
 
     'system_roles' => [
         'owner',
+        'admin',
         'manager',
+        'operations_employee',
     ],
 
     'critical_owner_permissions' => [
@@ -41,6 +46,13 @@ return [
         'customer.forceDelete',
         'customer.viewBalance',
         'customer.viewStatement',
+        'box.viewAny',
+        'box.view',
+        'box.create',
+        'box.update',
+        'box.delete',
+        'box.adjustBalance',
+        'box.viewLogs',
         'vault.viewAny',
         'vault.view',
         'vault.update',
@@ -85,6 +97,14 @@ return [
         'customer.forceDelete' => ['label' => 'حذف عميل نهائياً', 'group' => 'customers'],
         'customer.viewBalance' => ['label' => 'عرض رصيد العميل', 'group' => 'customers'],
         'customer.viewStatement' => ['label' => 'عرض كشف حساب العميل', 'group' => 'customers'],
+
+        'box.viewAny' => ['label' => 'عرض كل الصناديق الجديدة', 'group' => 'boxes'],
+        'box.view' => ['label' => 'عرض صندوق جديد', 'group' => 'boxes'],
+        'box.create' => ['label' => 'إنشاء صندوق جديد', 'group' => 'boxes'],
+        'box.update' => ['label' => 'تعديل صندوق جديد', 'group' => 'boxes'],
+        'box.delete' => ['label' => 'حذف صندوق جديد', 'group' => 'boxes'],
+        'box.adjustBalance' => ['label' => 'تعديل رصيد صندوق جديد', 'group' => 'boxes'],
+        'box.viewLogs' => ['label' => 'عرض سجل رصيد صندوق جديد', 'group' => 'boxes'],
 
         'vault.viewAny' => ['label' => 'عرض كل الصناديق', 'group' => 'vaults'],
         'vault.view' => ['label' => 'عرض صندوق', 'group' => 'vaults'],

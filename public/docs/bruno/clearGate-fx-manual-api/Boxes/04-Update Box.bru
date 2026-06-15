@@ -1,0 +1,30 @@
+meta {
+  name: Update Box
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrlApi}}/boxes/1
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Turkish Main Box Updated",
+    "currency": "USD",
+    "assigned_user_id": 2,
+    "status": "active",
+    "notes": "Updated Turkish box notes"
+  }
+}

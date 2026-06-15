@@ -1,0 +1,32 @@
+meta {
+  name: Create Turkish Box
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrlApi}}/boxes
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Turkish Main Box",
+    "type": "turkish",
+    "current_balance": 1000,
+    "currency": "TRY",
+    "assigned_user_id": 2,
+    "status": "active",
+    "notes": "Main Turkish box"
+  }
+}

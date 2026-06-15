@@ -1,0 +1,32 @@
+meta {
+  name: Create Local Banks Wallets Box
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrlApi}}/boxes
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Local Bank Main Box",
+    "type": "local_bank_wallet",
+    "current_balance": 2500,
+    "currency": "ILS",
+    "assigned_user_id": 2,
+    "status": "active",
+    "notes": "Local bank and wallet box"
+  }
+}

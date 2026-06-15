@@ -69,7 +69,7 @@ class CustomerController extends BaseApiController
             $query->where('user_id', $request->integer('user_id'));
         }
 
-        return $this->sendResponse(CustomerResource::collection($query->paginate($request->integer('per_page', 20))));
+        return $this->sendResponse(CustomerResource::collection($query->latest()->paginate($request->integer('per_page', 20))));
     }
 
     /**

@@ -1,0 +1,29 @@
+meta {
+  name: Adjust Box Balance
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrlApi}}/boxes/2/balance
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+  //   "operation_type": "subtract",
+    "operation_type": "add",
+    "amount": 250,
+    "notes": "Manual balance adjustment"
+  }
+}

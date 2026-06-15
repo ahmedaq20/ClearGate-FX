@@ -1,0 +1,23 @@
+meta {
+  name: Delete Operation
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrlApi}}/operations/1
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Deletes an operation. If it was box funded, the box balance movement is reversed and logged.
+}

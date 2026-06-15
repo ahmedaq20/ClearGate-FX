@@ -61,6 +61,7 @@ class PermissionDisplay
         return match (str($permission)->before('.')->toString()) {
             'transaction' => 'transactions',
             'customer' => 'customers',
+            'box' => 'boxes',
             'vault' => 'vaults',
             'currency', 'exchange_rate' => 'currencies',
             'report' => 'reports',

@@ -1,20 +1,17 @@
 meta {
-  name: List Customers
+  name: Box Balance Logs
   type: http
-  seq: 1
+  seq: 7
 }
 
 get {
-  url: {{baseUrlApi}}/customers?type=customer&per_page=20&with_trashed=false
+  url: {{baseUrlApi}}/boxes/2logs?per_page=20
   body: none
   auth: bearer
 }
 
 params:query {
-  type: customer
   per_page: 20
-  with_trashed: false
-  ~search: Ahmed
 }
 
 headers {

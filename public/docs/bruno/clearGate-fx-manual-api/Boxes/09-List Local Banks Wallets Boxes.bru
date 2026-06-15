@@ -1,11 +1,11 @@
 meta {
-  name: Show Customer
+  name: List Local Banks Wallets Boxes
   type: http
-  seq: 3
+  seq: 9
 }
 
 get {
-  url: {{baseUrlApi}}/customers/11
+  url: {{baseUrlApi}}/boxes?type=local_bank_wallet&per_page=20
   body: none
   auth: bearer
 }

@@ -1,11 +1,11 @@
 meta {
-  name: Show Customer
+  name: List Boxes
   type: http
-  seq: 3
+  seq: 1
 }
 
 get {
-  url: {{baseUrlApi}}/customers/11
+  url: {{baseUrlApi}}/boxes?per_page=20
   body: none
   auth: bearer
 }

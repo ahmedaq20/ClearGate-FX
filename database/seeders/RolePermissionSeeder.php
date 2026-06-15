@@ -37,6 +37,13 @@ class RolePermissionSeeder extends Seeder
             'customer.forceDelete',
             'customer.viewBalance',
             'customer.viewStatement',
+            'box.viewAny',
+            'box.view',
+            'box.create',
+            'box.update',
+            'box.delete',
+            'box.adjustBalance',
+            'box.viewLogs',
             'vault.viewAny',
             'vault.view',
             'vault.update',
@@ -75,6 +82,12 @@ class RolePermissionSeeder extends Seeder
         ]);
         $owner->syncPermissions($permissions);
 
+        $admin = Role::query()->firstOrCreate([
+            'name' => 'admin',
+            'guard_name' => 'sanctum',
+        ]);
+        $admin->syncPermissions($permissions);
+
         $manager = Role::query()->firstOrCreate([
             'name' => 'manager',
             'guard_name' => 'sanctum',
@@ -93,6 +106,13 @@ class RolePermissionSeeder extends Seeder
             'customer.delete',
             'customer.viewBalance',
             'customer.viewStatement',
+            'box.viewAny',
+            'box.view',
+            'box.create',
+            'box.update',
+            'box.delete',
+            'box.adjustBalance',
+            'box.viewLogs',
             'vault.viewAny',
             'vault.view',
             'vault.update',
@@ -108,6 +128,12 @@ class RolePermissionSeeder extends Seeder
             'notification.read',
             'notification.delete',
         ]);
+
+        $operationsEmployee = Role::query()->firstOrCreate([
+            'name' => 'operations_employee',
+            'guard_name' => 'sanctum',
+        ]);
+        $operationsEmployee->syncPermissions([]);
 
         $user = User::query()->firstOrCreate(
             ['email' => 'owner@exchange.com'],

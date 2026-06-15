@@ -47,6 +47,11 @@ class User extends Authenticatable
         return $this->hasOne(Vault::class);
     }
 
+    public function assignedBoxes(): HasMany
+    {
+        return $this->hasMany(Box::class, 'assigned_user_id');
+    }
+
     public function customers(): HasMany
     {
         return $this->hasMany(Customer::class);
@@ -55,6 +60,11 @@ class User extends Authenticatable
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function operations(): HasMany
+    {
+        return $this->hasMany(Operation::class, 'created_by');
     }
 
     public function isOwner(): bool

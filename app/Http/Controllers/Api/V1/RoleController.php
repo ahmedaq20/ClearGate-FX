@@ -79,6 +79,10 @@ class RoleController extends BaseApiController
             return $this->sendError('لا يمكن حذف دور المدير الافتراضي', [], 422);
         }
 
+        if ($this->isSystemRole($role)) {
+            return $this->sendError('لا يمكن حذف دور نظامي', [], 422);
+        }
+
         $role->delete();
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
