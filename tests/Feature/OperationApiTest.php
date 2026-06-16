@@ -32,6 +32,7 @@ function operationPayload(array $overrides = []): array
         'transaction_date' => '2026-06-15',
         'supplier_id' => $supplier->id,
         'box_id' => null,
+        'status' => 'pending',
         'customer_id' => $customer->id,
         'supplier_currency' => 'USD',
         'supplier_amount' => 1000,
@@ -54,10 +55,38 @@ test('supplier funded operation stores commission and does not affect boxes', fu
         ->assertJsonPath('data.reference_number', 'TRX-2026-00001')
         ->assertJsonPath('data.commission_amount', '20.0000')
         ->assertJsonPath('data.customer_net_amount', '980.0000')
+        ->assertJsonPath('data.status', 'pending')
+        ->assertJsonPath('data.completed_at', null)
         ->assertJsonPath('data.created_by', $owner->id);
 
     expect(BoxBalanceLog::query()->count())->toBe(0)
         ->and(AuditLog::query()->where('action', 'operation.created')->count())->toBe(1);
+});
+
+test('supplier funded operation can be created completed when supplier already settled', function (): void {
+    actingAsOperationUser();
+
+    $this->postJson('/api/v1/operations', operationPayload([
+        'status' => 'completed',
+    ]))
+        ->assertCreated()
+        ->assertJsonPath('data.status', 'completed')
+        ->assertJsonPath('data.cancelled_at', null);
+
+    $operation = Operation::query()->firstOrFail();
+
+    expect($operation->completed_at)->not->toBeNull()
+        ->and(BoxBalanceLog::query()->count())->toBe(0);
+});
+
+test('supplier funded operation requires explicit pending or completed status', function (): void {
+    actingAsOperationUser();
+
+    $this->postJson('/api/v1/operations', operationPayload([
+        'status' => null,
+    ]))
+        ->assertUnprocessable()
+        ->assertJsonPath('errors.status.0', 'حقل الحالة مطلوب.');
 });
 
 test('operation requires exactly one funding source', function (): void {
@@ -85,13 +114,16 @@ test('box funded operation deducts from box and writes balance log', function ()
     $this->postJson('/api/v1/operations', operationPayload([
         'supplier_id' => null,
         'box_id' => $box->id,
+        'status' => null,
         'commission_type' => 'fixed',
         'commission_rate' => 25,
     ]))
         ->assertCreated()
         ->assertJsonPath('data.reference_number', 'TRX-2026-00001')
         ->assertJsonPath('data.commission_amount', '25.0000')
-        ->assertJsonPath('data.customer_net_amount', '975.0000');
+        ->assertJsonPath('data.customer_net_amount', '975.0000')
+        ->assertJsonPath('data.status', 'completed')
+        ->assertJsonPath('data.cancelled_at', null);
 
     $log = BoxBalanceLog::query()->where('box_id', $box->id)->firstOrFail();
 
@@ -104,6 +136,23 @@ test('box funded operation deducts from box and writes balance log', function ()
         ->and($log->operation_id)->toBe(Operation::query()->firstOrFail()->id);
 });
 
+test('box funded operation cannot be created as pending', function (): void {
+    actingAsOperationUser();
+    $box = Box::factory()->create(['current_balance' => 1500]);
+
+    $this->postJson('/api/v1/operations', operationPayload([
+        'supplier_id' => null,
+        'box_id' => $box->id,
+        'status' => 'pending',
+    ]))
+        ->assertUnprocessable()
+        ->assertJsonPath('errors.status.0', 'لا يمكن إنشاء عملية معلقة عند استخدام صندوق كمصدر للأموال');
+
+    expect(Operation::query()->count())->toBe(0)
+        ->and(BoxBalanceLog::query()->count())->toBe(0)
+        ->and((float) $box->refresh()->current_balance)->toBe(1500.0);
+});
+
 test('box funded operation cannot overdraw selected box', function (): void {
     actingAsOperationUser();
     $box = Box::factory()->create(['current_balance' => 50]);
@@ -111,6 +160,7 @@ test('box funded operation cannot overdraw selected box', function (): void {
     $this->postJson('/api/v1/operations', operationPayload([
         'supplier_id' => null,
         'box_id' => $box->id,
+        'status' => null,
     ]))
         ->assertUnprocessable()
         ->assertJsonPath('errors.box_id.0', 'رصيد الصندوق غير كافٍ.');
@@ -181,11 +231,17 @@ test('operations can be filtered and receipt can be returned', function (): void
         'transaction_date' => '2026-06-10',
         'customer_id' => $customer->id,
         'supplier_id' => $supplier->id,
+        'status' => 'pending',
         'created_by' => $owner->id,
     ]);
-    Operation::factory()->create(['transaction_date' => '2026-05-10']);
+    Operation::factory()->completed()->create([
+        'transaction_date' => '2026-06-10',
+        'customer_id' => $customer->id,
+        'supplier_id' => $supplier->id,
+        'created_by' => $owner->id,
+    ]);
 
-    $this->getJson("/api/v1/operations?customer={$customer->id}&supplier={$supplier->id}&date_from=2026-06-01&date_to=2026-06-30&reference_number=TRX-2026-00009")
+    $this->getJson("/api/v1/operations?customer={$customer->id}&supplier={$supplier->id}&status=pending&date_from=2026-06-01&date_to=2026-06-30&reference_number=TRX-2026-00009")
         ->assertOk()
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.id', $matching->id);
@@ -194,4 +250,106 @@ test('operations can be filtered and receipt can be returned', function (): void
         ->assertOk()
         ->assertJsonPath('data.operation.id', $matching->id)
         ->assertJsonPath('data.operation.reference_number', 'TRX-2026-00009');
+});
+
+test('pending supplier operation can be completed and records audit', function (): void {
+    $owner = actingAsOperationUser();
+    $operation = Operation::factory()->create([
+        'status' => 'pending',
+        'completed_at' => null,
+        'created_by' => $owner->id,
+    ]);
+
+    $this->postJson("/api/v1/operations/{$operation->id}/complete")
+        ->assertOk()
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('message', 'تم استكمال العملية بنجاح');
+
+    expect($operation->refresh()->status->value)->toBe('completed')
+        ->and($operation->completed_at)->not->toBeNull()
+        ->and(AuditLog::query()->where('action', 'operation.completed')->count())->toBe(1);
+});
+
+test('operation can be cancelled with reason unless already completed', function (): void {
+    $owner = actingAsOperationUser();
+    $pending = Operation::factory()->create([
+        'status' => 'pending',
+        'created_by' => $owner->id,
+    ]);
+    $completed = Operation::factory()->completed()->create([
+        'created_by' => $owner->id,
+    ]);
+
+    $this->postJson("/api/v1/operations/{$pending->id}/cancel", [
+        'cancellation_reason' => 'Supplier did not settle externally',
+    ])
+        ->assertOk()
+        ->assertJsonPath('message', 'تم إلغاء العملية بنجاح');
+
+    $this->postJson("/api/v1/operations/{$completed->id}/cancel", [
+        'cancellation_reason' => 'Too late',
+    ])
+        ->assertUnprocessable()
+        ->assertJsonPath('message', 'العملية مكتملة مسبقاً');
+
+    expect($pending->refresh()->status->value)->toBe('cancelled')
+        ->and($pending->cancelled_at)->not->toBeNull()
+        ->and($pending->cancellation_reason)->toBe('Supplier did not settle externally')
+        ->and(AuditLog::query()->where('action', 'operation.cancelled')->count())->toBe(1);
+});
+
+test('operation status endpoints and validation messages work', function (): void {
+    $owner = actingAsOperationUser();
+    $pending = Operation::factory()->create(['created_by' => $owner->id]);
+    $completed = Operation::factory()->completed()->create(['created_by' => $owner->id]);
+    $cancelled = Operation::factory()->cancelled()->create(['created_by' => $owner->id]);
+
+    $this->getJson('/api/v1/operations/pending')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $pending->id);
+
+    $this->getJson('/api/v1/operations/completed')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $completed->id);
+
+    $this->getJson('/api/v1/operations/cancelled')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $cancelled->id);
+
+    $this->postJson("/api/v1/operations/{$completed->id}/complete")
+        ->assertUnprocessable()
+        ->assertJsonPath('message', 'العملية مكتملة مسبقاً');
+
+    $this->postJson("/api/v1/operations/{$cancelled->id}/complete")
+        ->assertUnprocessable()
+        ->assertJsonPath('message', 'العملية ملغاة');
+
+    $this->postJson('/api/v1/operations/999999/complete')
+        ->assertNotFound()
+        ->assertJsonPath('message', 'العملية غير موجودة');
+});
+
+test('dashboard includes operation status counters and pending amount', function (): void {
+    $owner = actingAsOperationUser();
+
+    Operation::factory()->create([
+        'customer_amount' => 1000,
+        'created_by' => $owner->id,
+    ]);
+    Operation::factory()->create([
+        'customer_amount' => 250,
+        'created_by' => $owner->id,
+    ]);
+    Operation::factory()->completed()->create(['created_by' => $owner->id]);
+    Operation::factory()->cancelled()->create(['created_by' => $owner->id]);
+
+    $this->getJson('/api/v1/dashboard/summary')
+        ->assertOk()
+        ->assertJsonPath('data.pending_operations_count', 2)
+        ->assertJsonPath('data.completed_operations_count', 1)
+        ->assertJsonPath('data.cancelled_operations_count', 1)
+        ->assertJsonPath('data.pending_amount_total', 1250);
 });

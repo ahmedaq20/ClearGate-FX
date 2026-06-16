@@ -1,242 +1,23 @@
-name: Reports
+name: 'Exchange Rates'
 description: |-
 
-  Generate JSON reports and queue report exports.
+  View exchange-rate history and update current currency rates.
 endpoints:
   -
     custom: []
     httpMethods:
-      - GET
-    uri: api/v1/reports/daily
+      - PUT
+    uri: 'api/v1/currencies/{code}/rate'
     metadata:
       custom: []
-      groupName: Reports
+      groupName: 'Exchange Rates'
       groupDescription: |-
 
-        Generate JSON reports and queue report exports.
+        View exchange-rate history and update current currency rates.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Daily report'
-      description: 'Return totals, currency totals, and transactions for one day.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      date:
-        custom: []
-        name: date
-        description: 'date Report date.'
-        required: false
-        example: '2026-05-03'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      user_id:
-        custom: []
-        name: user_id
-        description: 'Owner-only user filter.'
-        required: false
-        example: 2
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      date: '2026-05-03'
-      user_id: 2
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":{"type":"daily","title":"التقرير اليومي","totals":{"receive":500,"send":200,"net":300,"count":3}}}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/v1/reports/monthly
-    metadata:
-      custom: []
-      groupName: Reports
-      groupDescription: |-
-
-        Generate JSON reports and queue report exports.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Monthly report'
-      description: 'Return totals, daily totals, currency totals, and transactions for one month.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      year:
-        custom: []
-        name: year
-        description: 'Report year.'
-        required: false
-        example: 2026
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      month:
-        custom: []
-        name: month
-        description: 'Report month.'
-        required: false
-        example: 5
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      user_id:
-        custom: []
-        name: user_id
-        description: 'Owner-only user filter.'
-        required: false
-        example: 2
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      year: 2026
-      month: 5
-      user_id: 2
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":{"type":"monthly","title":"التقرير الشهري","totals":{"receive":500,"send":200,"net":300,"count":3}}}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/v1/reports/users-comparison
-    metadata:
-      custom: []
-      groupName: Reports
-      groupDescription: |-
-
-        Generate JSON reports and queue report exports.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Users comparison report'
-      description: 'Owner-only comparison of user activity over a date range.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      date_from:
-        custom: []
-        name: date_from
-        description: 'date Filter from transaction date.'
-        required: false
-        example: '2026-05-01'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      date_to:
-        custom: []
-        name: date_to
-        description: 'date Filter to transaction date.'
-        required: false
-        example: '2026-05-31'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      date_from: '2026-05-01'
-      date_to: '2026-05-31'
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":{"type":"comparison","title":"مقارنة المستخدمين","rows":[]}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'api/v1/reports/customer/{id}/statement'
-    metadata:
-      custom: []
-      groupName: Reports
-      groupDescription: |-
-
-        Generate JSON reports and queue report exports.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Customer statement'
-      description: 'Return a customer statement over a date range.'
+      title: 'Update currency rate'
+      description: 'Update the current exchange rate for a currency and append a historical exchange-rate row.'
       authenticated: true
       deprecated: false
     headers:
@@ -244,59 +25,59 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      id:
+      code:
         custom: []
-        name: id
-        description: 'Customer ID.'
+        name: code
+        description: 'Currency code.'
         required: true
-        example: 5
-        type: integer
+        example: USD
+        type: string
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 5
-    queryParameters:
-      date_from:
+      code: USD
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      rate:
         custom: []
-        name: date_from
-        description: 'date Filter from transaction date.'
-        required: false
-        example: '2026-05-01'
-        type: string
+        name: rate
+        description: ''
+        required: true
+        example: 4326.41688
+        type: number
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         deprecated: false
-      date_to:
+      date:
         custom: []
-        name: date_to
-        description: 'date Filter to transaction date.'
+        name: date
+        description: 'Must be a valid date.'
         required: false
-        example: '2026-05-31'
+        example: '2026-06-16T21:08:42'
         type: string
         enumValues: []
-        exampleWasSpecified: true
-        nullable: false
+        exampleWasSpecified: false
+        nullable: true
         deprecated: false
-    cleanQueryParameters:
-      date_from: '2026-05-01'
-      date_to: '2026-05-31'
-    bodyParameters: []
-    cleanBodyParameters: []
+    cleanBodyParameters:
+      rate: 4326.41688
+      date: '2026-06-16T21:08:42'
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Success","data":{"type":"statement","title":"كشف حساب عميل","transactions":[]}}'
+        content: '{"success":true,"message":"تم تحديث سعر الصرف","data":{"code":"USD","rate_to_usd":"1.000000"}}'
         headers: []
         description: ''
       -
         custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
+        status: 422
+        content: '{"success":false,"message":"Validation Error"}'
         headers: []
         description: ''
     responseFields: []
@@ -311,17 +92,17 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v1/reports/export
+    uri: api/v1/exchange-rates/bulk-update
     metadata:
       custom: []
-      groupName: Reports
+      groupName: 'Exchange Rates'
       groupDescription: |-
 
-        Generate JSON reports and queue report exports.
+        View exchange-rate history and update current currency rates.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Queue report export'
-      description: 'Queue a PDF or Excel export and return a job ID for polling.'
+      title: 'Bulk update exchange rates'
+      description: 'Update multiple currency rates in one request. Each item creates a historical exchange-rate row.'
       authenticated: true
       deprecated: false
     headers:
@@ -333,66 +114,57 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      type:
+      rates:
         custom: []
-        name: type
-        description: ''
+        name: rates
+        description: 'Must have at least 1 items.'
         required: true
-        example: daily
-        type: string
-        enumValues:
-          - daily
-          - monthly
-          - statement
-          - comparison
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      format:
-        custom: []
-        name: format
-        description: ''
-        required: true
-        example: excel
-        type: string
-        enumValues:
-          - pdf
-          - excel
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      params:
-        custom: []
-        name: params
-        description: ''
-        required: false
-        example: null
-        type: object
+        example:
+          - []
+        type: 'object[]'
         enumValues: []
         exampleWasSpecified: false
-        nullable: true
+        nullable: false
+        deprecated: false
+      'rates[].code':
+        custom: []
+        name: 'rates[].code'
+        description: 'The <code>code</code> of an existing record in the currencies table. Must not be greater than 10 characters.'
+        required: true
+        example: bngzmi
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'rates[].rate':
+        custom: []
+        name: 'rates[].rate'
+        description: ''
+        required: true
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
         deprecated: false
     cleanBodyParameters:
-      type: daily
-      format: excel
+      rates:
+        -
+          code: bngzmi
+          rate: 4326.41688
     fileParameters: []
     responses:
       -
         custom: []
-        status: 202
-        content: '{"success":true,"message":"تمت إضافة التقرير إلى قائمة التصدير","data":{"job_id":"uuid","status":"queued"}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
+        status: 200
+        content: '{"success":true,"message":"تم تحديث أسعار الصرف"}'
         headers: []
         description: ''
       -
         custom: []
         status: 422
-        content: '{"success":false,"message":"معرف العميل مطلوب لتصدير كشف الحساب"}'
+        content: '{"success":false,"message":"Validation Error"}'
         headers: []
         description: ''
     responseFields: []
@@ -407,39 +179,75 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/reports/export/{job_id}/status'
+    uri: api/v1/exchange-rates
     metadata:
       custom: []
-      groupName: Reports
+      groupName: 'Exchange Rates'
       groupDescription: |-
 
-        Generate JSON reports and queue report exports.
+        View exchange-rate history and update current currency rates.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Report export status'
-      description: 'Return the current status for a queued report export.'
+      title: 'List exchange rates'
+      description: 'Return paginated exchange-rate history with optional currency and date filters.'
       authenticated: true
       deprecated: false
     headers:
       Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
       Content-Type: application/json
       Accept: application/json
-    urlParameters:
-      job_id:
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      currency:
         custom: []
-        name: job_id
-        description: 'Export job ID.'
-        required: true
-        example: 01909392-9d6f-7000-9c65-89f0f1234567
+        name: currency
+        description: 'Filter by currency code.'
+        required: false
+        example: USD
         type: string
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
-    cleanUrlParameters:
-      job_id: 01909392-9d6f-7000-9c65-89f0f1234567
-    queryParameters: []
-    cleanQueryParameters: []
+      date_from:
+        custom: []
+        name: date_from
+        description: 'date Filter from rate date.'
+        required: false
+        example: '2026-05-01'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      date_to:
+        custom: []
+        name: date_to
+        description: 'date Filter to rate date.'
+        required: false
+        example: '2026-05-31'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Results per page.'
+        required: false
+        example: 20
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      currency: USD
+      date_from: '2026-05-01'
+      date_to: '2026-05-31'
+      per_page: 20
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
@@ -447,86 +255,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Success","data":{"job_id":"uuid","status":"ready"}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 404
-        content: '{"success":false,"message":"مهمة التصدير غير موجودة"}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'api/v1/reports/export/{job_id}/download'
-    metadata:
-      custom: []
-      groupName: Reports
-      groupDescription: |-
-
-        Generate JSON reports and queue report exports.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Download report export'
-      description: 'Download a ready report export file.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      job_id:
-        custom: []
-        name: job_id
-        description: 'Export job ID.'
-        required: true
-        example: 01909392-9d6f-7000-9c65-89f0f1234567
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      job_id: 01909392-9d6f-7000-9c65-89f0f1234567
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 404
-        content: '{"success":false,"message":"مهمة التصدير غير موجودة"}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 409
-        content: '{"success":false,"message":"ملف التصدير غير جاهز بعد"}'
+        content: '{"success":true,"message":"Success","data":[{"id":1,"currency_code":"USD","rate":"1.000000","source":"manual","date":"2026-05-03"}]}'
         headers: []
         description: ''
     responseFields: []

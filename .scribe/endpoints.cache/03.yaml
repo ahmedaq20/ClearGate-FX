@@ -280,7 +280,7 @@ endpoints:
         name: type
         description: ''
         required: true
-        example: send
+        example: receive
         type: string
         enumValues:
           - receive
@@ -360,7 +360,7 @@ endpoints:
         name: commission_type
         description: ''
         required: false
-        example: percentage
+        example: fixed
         type: string
         enumValues:
           - percentage
@@ -384,7 +384,7 @@ endpoints:
         name: commission_sign
         description: 'This field is required when <code>commission_type</code> is present.'
         required: false
-        example: 1
+        example: -1
         type: integer
         enumValues:
           - 1
@@ -430,27 +430,27 @@ endpoints:
         name: transaction_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-06-14T19:59:11'
+        example: '2026-06-16T21:08:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      type: send
+      type: receive
       amount: 4326.41688
       currency_code: miyvdl
       exchange_rate: 4326.41688
       customer_id: 16
       from_customer_id: 16
       to_customer_id: 16
-      commission_type: percentage
+      commission_type: fixed
       commission_rate: 4326.41688
-      commission_sign: 1
+      commission_sign: -1
       note: architecto
       reference_number: 'n'
       country: g
-      transaction_date: '2026-06-14T19:59:11'
+      transaction_date: '2026-06-16T21:08:42'
     fileParameters: []
     responses:
       -
@@ -623,7 +623,7 @@ endpoints:
         name: transaction_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-06-14T19:59:11'
+        example: '2026-06-16T21:08:42'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -633,7 +633,7 @@ endpoints:
       note: architecto
       reference_number: 'n'
       country: g
-      transaction_date: '2026-06-14T19:59:11'
+      transaction_date: '2026-06-16T21:08:42'
     fileParameters: []
     responses:
       -

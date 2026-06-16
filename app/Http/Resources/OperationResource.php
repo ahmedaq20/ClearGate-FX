@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\OperationStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,6 +32,10 @@ class OperationResource extends JsonResource
             'commission_rate' => $this->commission_rate,
             'commission_amount' => $this->commission_amount,
             'customer_net_amount' => $this->customer_net_amount,
+            'status' => $this->status instanceof OperationStatus ? $this->status->value : $this->status,
+            'completed_at' => $this->completed_at,
+            'cancelled_at' => $this->cancelled_at,
+            'cancellation_reason' => $this->cancellation_reason,
             'notes' => $this->notes,
             'created_by' => $this->created_by,
             'customer' => $this->whenLoaded('customer'),

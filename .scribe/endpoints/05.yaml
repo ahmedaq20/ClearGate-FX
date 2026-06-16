@@ -1,96 +1,23 @@
-name: Vaults
+name: Customers
 description: |-
 
-  View and manage user vault information. Balance changes remain service-driven.
+  Manage customers owned by users and linked to their vaults.
 endpoints:
   -
     custom: []
     httpMethods:
-      - PATCH
-    uri: 'api/v1/vaults/{vault_id}/set-balance'
-    metadata:
-      custom: []
-      groupName: Vaults
-      groupDescription: |-
-
-        View and manage user vault information. Balance changes remain service-driven.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Set vault initial balance'
-      description: 'Owner-only endpoint that updates the vault initial balance and recalculates current balance.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      vault_id:
-        custom: []
-        name: vault_id
-        description: 'The ID of the vault.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      vault_id: 16
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      initial_balance:
-        custom: []
-        name: initial_balance
-        description: ''
-        required: true
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanBodyParameters:
-      initial_balance: 4326.41688
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم تحديث رصيد الصندوق"}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 422
-        content: '{"success":false,"message":"Validation Error"}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
       - GET
-    uri: 'api/v1/vaults/{vault_id}/transactions'
+    uri: 'api/v1/customers/{customer_id}/transactions'
     metadata:
       custom: []
-      groupName: Vaults
+      groupName: Customers
       groupDescription: |-
 
-        View and manage user vault information. Balance changes remain service-driven.
+        Manage customers owned by users and linked to their vaults.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Vault transactions'
-      description: 'List transactions linked to a vault.'
+      title: 'Customer transactions'
+      description: 'List transactions linked to a customer.'
       authenticated: true
       deprecated: false
     headers:
@@ -98,10 +25,10 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      vault_id:
+      customer_id:
         custom: []
-        name: vault_id
-        description: 'The ID of the vault.'
+        name: customer_id
+        description: 'The ID of the customer.'
         required: true
         example: 16
         type: integer
@@ -110,7 +37,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      vault_id: 16
+      customer_id: 16
     queryParameters:
       per_page:
         custom: []
@@ -152,48 +79,150 @@ endpoints:
   -
     custom: []
     httpMethods:
-      - GET
-    uri: 'api/v1/vaults/{vault_id}/summary'
+      - POST
+    uri: api/v1/customers
     metadata:
       custom: []
-      groupName: Vaults
+      groupName: Customers
       groupDescription: |-
 
-        View and manage user vault information. Balance changes remain service-driven.
+        Manage customers owned by users and linked to their vaults.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Vault summary'
-      description: 'Return initial balance, receive totals, send totals, and current USD balance.'
+      title: 'Create customer'
+      description: "Create a customer and attach it to the selected user's vault."
       authenticated: true
       deprecated: false
     headers:
       Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
       Content-Type: application/json
       Accept: application/json
-    urlParameters:
-      vault_id:
-        custom: []
-        name: vault_id
-        description: 'The ID of the vault.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      vault_id: 16
+    urlParameters: []
+    cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
+    bodyParameters:
+      customer_code:
+        custom: []
+        name: customer_code
+        description: 'Manual unique customer code.'
+        required: true
+        example: '3301'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'Customer or supplier name.'
+        required: true
+        example: Ahmed
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'Customer phone number.'
+        required: false
+        example: 059xxxxxxx
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      type:
+        custom: []
+        name: type
+        description: 'Customer type. Must be customer or supplier.'
+        required: true
+        example: customer
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      note:
+        custom: []
+        name: note
+        description: 'Optional note.'
+        required: false
+        example: 'Regular remittance customer'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      category:
+        custom: []
+        name: category
+        description: 'Optional legacy category. Must be regular, vip, agent, or company.'
+        required: false
+        example: regular
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      country:
+        custom: []
+        name: country
+        description: 'Optional country.'
+        required: false
+        example: Palestine
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      user_id:
+        custom: []
+        name: user_id
+        description: 'Owner-only user assignment.'
+        required: false
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      balance_usd:
+        custom: []
+        name: balance_usd
+        description: 'Optional opening balance.'
+        required: false
+        example: 500.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      customer_code: '3301'
+      name: Ahmed
+      phone: 059xxxxxxx
+      type: customer
+      note: 'Regular remittance customer'
+      category: regular
+      country: Palestine
+      user_id: 3
+      balance_usd: 500.0
     fileParameters: []
     responses:
       -
         custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":{"initial_balance":1000,"total_receive":500,"total_send":100,"balance_usd":1400}}'
+        status: 201
+        content: '{"success":true,"message":"تم إنشاء العميل","data":{"id":1,"customer_code":"3301","name":"Ahmed","phone":"059xxxxxxx","type":"customer"}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: '{"success":false,"message":"Validation Error"}'
         headers: []
         description: ''
     responseFields: []
@@ -208,17 +237,72 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/vaults
+    uri: 'api/v1/customers/{customer_id}/balance'
     metadata:
       custom: []
-      groupName: Vaults
+      groupName: Customers
       groupDescription: |-
 
-        View and manage user vault information. Balance changes remain service-driven.
+        Manage customers owned by users and linked to their vaults.
       subgroup: ''
       subgroupDescription: ''
-      title: 'List vaults'
-      description: 'Owner users can see all vaults. Managers are scoped to their own vault.'
+      title: 'Customer balance'
+      description: 'Return the customer balance in USD.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      customer_id:
+        custom: []
+        name: customer_id
+        description: 'The ID of the customer.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      customer_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"Success","data":{"balance_usd":250.5}}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/customers
+    metadata:
+      custom: []
+      groupName: Customers
+      groupDescription: |-
+
+        Manage customers owned by users and linked to their vaults.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List customers'
+      description: 'Owner users can see all customers. Managers are scoped to their own customers.'
       authenticated: true
       deprecated: false
     headers:
@@ -228,6 +312,72 @@ endpoints:
     urlParameters: []
     cleanUrlParameters: []
     queryParameters:
+      search:
+        custom: []
+        name: search
+        description: 'Search by customer name or customer code.'
+        required: false
+        example: Ahmed
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      type:
+        custom: []
+        name: type
+        description: 'Filter by customer type.'
+        required: false
+        example: customer
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      category:
+        custom: []
+        name: category
+        description: 'Filter by category.'
+        required: false
+        example: regular
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      user_id:
+        custom: []
+        name: user_id
+        description: 'Owner-only user filter.'
+        required: false
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      is_active:
+        custom: []
+        name: is_active
+        description: 'Filter active status.'
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      with_trashed:
+        custom: []
+        name: with_trashed
+        description: 'Include soft-deleted rows.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
       per_page:
         custom: []
         name: per_page
@@ -240,6 +390,12 @@ endpoints:
         nullable: false
         deprecated: false
     cleanQueryParameters:
+      search: Ahmed
+      type: customer
+      category: regular
+      user_id: 3
+      is_active: true
+      with_trashed: false
       per_page: 20
     bodyParameters: []
     cleanBodyParameters: []
@@ -248,7 +404,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Success","data":[{"id":1,"name":"Vault Manager","initial_balance":"1000.0000","balance_usd":"1250.0000"}]}'
+        content: '{"success":true,"message":"Success","data":[{"id":1,"customer_code":"3301","name":"Ahmed","phone":"059xxxxxxx","type":"customer"}]}'
         headers: []
         description: ''
     responseFields: []
@@ -263,17 +419,17 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/vaults/{id}'
+    uri: 'api/v1/customers/{id}'
     metadata:
       custom: []
-      groupName: Vaults
+      groupName: Customers
       groupDescription: |-
 
-        View and manage user vault information. Balance changes remain service-driven.
+        Manage customers owned by users and linked to their vaults.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Show vault'
-      description: 'Return one vault if the current user is allowed to view it.'
+      title: 'Show customer'
+      description: 'Return one customer if the current user is allowed to view it.'
       authenticated: true
       deprecated: false
     headers:
@@ -284,7 +440,7 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the vault.'
+        description: 'The ID of the customer.'
         required: true
         example: 16
         type: integer
@@ -303,7 +459,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Success","data":{"id":1,"name":"Vault Manager","balance_usd":"1250.0000","user":{"id":2,"name":"Manager"}}}'
+        content: '{"success":true,"message":"Success","data":{"id":1,"customer_code":"3301","name":"Ahmed","phone":"059xxxxxxx","type":"customer","vault":{"id":1}}}'
         headers: []
         description: ''
       -
@@ -325,17 +481,17 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'api/v1/vaults/{id}'
+    uri: 'api/v1/customers/{id}'
     metadata:
       custom: []
-      groupName: Vaults
+      groupName: Customers
       groupDescription: |-
 
-        View and manage user vault information. Balance changes remain service-driven.
+        Manage customers owned by users and linked to their vaults.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Update vault'
-      description: 'Update editable vault metadata. Managers cannot update initial balance here.'
+      title: 'Update customer'
+      description: 'Update customer profile fields.'
       authenticated: true
       deprecated: false
     headers:
@@ -346,7 +502,7 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the vault.'
+        description: 'The ID of the customer.'
         required: true
         example: 16
         type: integer
@@ -359,49 +515,109 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
+      customer_code:
+        custom: []
+        name: customer_code
+        description: 'Manual unique customer code.'
+        required: false
+        example: '3302'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
       name:
         custom: []
         name: name
-        description: 'Must not be greater than 100 characters.'
+        description: 'Customer or supplier name.'
         required: false
-        example: b
+        example: 'Ahmed Updated'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'Customer phone number.'
+        required: false
+        example: 059xxxxxxx
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
         nullable: true
+        deprecated: false
+      type:
+        custom: []
+        name: type
+        description: 'Customer type. Must be customer or supplier.'
+        required: false
+        example: supplier
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
         deprecated: false
       note:
         custom: []
         name: note
-        description: ''
+        description: 'Optional note.'
         required: false
-        example: architecto
+        example: 'Updated note'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      category:
+        custom: []
+        name: category
+        description: 'Optional legacy category. Must be regular, vip, agent, or company.'
+        required: false
+        example: vip
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      country:
+        custom: []
+        name: country
+        description: 'Optional country.'
+        required: false
+        example: Jordan
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
         nullable: true
         deprecated: false
       is_active:
         custom: []
         name: is_active
-        description: ''
+        description: 'Active status.'
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      name: b
-      note: architecto
-      is_active: false
+      customer_code: '3302'
+      name: 'Ahmed Updated'
+      phone: 059xxxxxxx
+      type: supplier
+      note: 'Updated note'
+      category: vip
+      country: Jordan
+      is_active: true
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"تم تحديث الصندوق"}'
+        content: '{"success":true,"message":"تم تحديث العميل","data":{"id":1,"customer_code":"3302","name":"Ahmed Updated","phone":"059xxxxxxx","type":"supplier"}}'
         headers: []
         description: ''
       -
@@ -414,6 +630,189 @@ endpoints:
         custom: []
         status: 422
         content: '{"success":false,"message":"Validation Error"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/v1/customers/{id}'
+    metadata:
+      custom: []
+      groupName: Customers
+      groupDescription: |-
+
+        Manage customers owned by users and linked to their vaults.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Delete customer'
+      description: 'Soft-delete a customer.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the customer.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"تم حذف العميل"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: '{"success":false,"message":"غير مصرح"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/v1/customers/{id}/restore'
+    metadata:
+      custom: []
+      groupName: Customers
+      groupDescription: |-
+
+        Manage customers owned by users and linked to their vaults.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Restore customer'
+      description: 'Owner-only endpoint that restores a soft-deleted customer.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'Customer ID.'
+        required: true
+        example: 7
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 7
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"تم استعادة العميل","data":{"id":7,"customer_code":"3301","name":"Ahmed","type":"customer","deleted_at":null}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: '{"success":false,"message":"غير مصرح"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/v1/customers/{id}/force'
+    metadata:
+      custom: []
+      groupName: Customers
+      groupDescription: |-
+
+        Manage customers owned by users and linked to their vaults.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Force delete customer'
+      description: 'Owner-only endpoint that permanently deletes a customer.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'Customer ID.'
+        required: true
+        example: 7
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 7
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"تم حذف العميل نهائياً"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: '{"success":false,"message":"غير مصرح"}'
         headers: []
         description: ''
     responseFields: []

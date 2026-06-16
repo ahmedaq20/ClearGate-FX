@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OperationStatus;
 use Database\Factories\OperationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,6 +26,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'commission_rate',
     'commission_amount',
     'customer_net_amount',
+    'status',
+    'completed_at',
+    'cancelled_at',
+    'cancellation_reason',
     'notes',
     'created_by',
 ])]
@@ -32,6 +37,10 @@ class Operation extends Model
 {
     /** @use HasFactory<OperationFactory> */
     use HasFactory;
+
+    protected $attributes = [
+        'status' => 'pending',
+    ];
 
     public function customer(): BelongsTo
     {
@@ -67,6 +76,7 @@ class Operation extends Model
     {
         return [
             'transaction_date' => 'date',
+            'status' => OperationStatus::class,
             'supplier_amount' => 'decimal:4',
             'supplier_exchange_rate' => 'decimal:8',
             'customer_amount' => 'decimal:4',
@@ -74,6 +84,8 @@ class Operation extends Model
             'commission_rate' => 'decimal:4',
             'commission_amount' => 'decimal:4',
             'customer_net_amount' => 'decimal:4',
+            'completed_at' => 'datetime',
+            'cancelled_at' => 'datetime',
         ];
     }
 }

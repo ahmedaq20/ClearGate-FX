@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\OperationStatus;
 use App\Http\Controllers\Api\BaseApiController;
+use App\Http\Requests\Operation\CancelOperationRequest;
 use App\Http\Requests\Operation\StoreOperationRequest;
 use App\Http\Requests\Operation\UpdateOperationRequest;
 use App\Http\Resources\OperationResource;
@@ -11,6 +13,7 @@ use App\Services\OperationService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 /**
  * @group Operations
@@ -31,6 +34,7 @@ class OperationController extends BaseApiController
      * @queryParam customer integer Filter by customer ID. Example: 12
      * @queryParam supplier integer Filter by supplier ID. Example: 7
      * @queryParam box integer Filter by box ID. Example: 3
+     * @queryParam status string Filter by operation status: pending, completed, or cancelled. Example: pending
      * @queryParam date_from date Filter from transaction date. Example: 2026-06-01
      * @queryParam date_to date Filter to transaction date. Example: 2026-06-30
      * @queryParam reference_number string Filter by reference number. Example: TRX-2026-00001
@@ -48,6 +52,7 @@ class OperationController extends BaseApiController
             ->when($request->filled('customer'), fn (Builder $query) => $query->where('customer_id', $request->integer('customer')))
             ->when($request->filled('supplier'), fn (Builder $query) => $query->where('supplier_id', $request->integer('supplier')))
             ->when($request->filled('box'), fn (Builder $query) => $query->where('box_id', $request->integer('box')))
+            ->when($this->validStatus($request), fn (Builder $query, string $status) => $query->where('status', $status))
             ->when($request->filled('date_from'), fn (Builder $query) => $query->whereDate('transaction_date', '>=', $request->date('date_from')))
             ->when($request->filled('date_to'), fn (Builder $query) => $query->whereDate('transaction_date', '<=', $request->date('date_to')))
             ->when($request->filled('reference_number'), fn (Builder $query) => $query->where('reference_number', $request->string('reference_number')));
@@ -58,7 +63,18 @@ class OperationController extends BaseApiController
     /**
      * Create operation
      *
+     * Supplier-funded operations must include status as pending or completed. Box-funded operations omit status and are stored as completed automatically.
+     *
      * @authenticated
+     *
+     * @bodyParam status string required Required for supplier-funded operations. Allowed values: pending, completed. Box-funded operations are always stored as completed even when omitted. Example: pending
+     * @bodyParam supplier_id integer Supplier ID for supplier-funded operations. Example: 5
+     * @bodyParam box_id integer Box ID for box-funded operations. Example: 3
+     * @bodyParam customer_id integer required Receiving customer ID. Example: 10
+     *
+     * @response 201 {"success":true,"message":"تم إنشاء العملية","data":{"supplier_id":5,"box_id":null,"customer_id":10,"status":"pending"}}
+     * @response 201 {"success":true,"message":"تم إنشاء العملية","data":{"supplier_id":5,"box_id":null,"customer_id":10,"status":"completed"}}
+     * @response 201 {"success":true,"message":"تم إنشاء العملية","data":{"supplier_id":null,"box_id":3,"customer_id":10,"status":"completed"}}
      */
     public function store(StoreOperationRequest $request): JsonResponse
     {
@@ -120,6 +136,75 @@ class OperationController extends BaseApiController
         return $this->sendResponse(null, 'تم حذف العملية');
     }
 
+    public function pending(Request $request): JsonResponse
+    {
+        return $this->listByStatus($request, OperationStatus::Pending);
+    }
+
+    public function completed(Request $request): JsonResponse
+    {
+        return $this->listByStatus($request, OperationStatus::Completed);
+    }
+
+    public function cancelled(Request $request): JsonResponse
+    {
+        return $this->listByStatus($request, OperationStatus::Cancelled);
+    }
+
+    public function complete(Request $request, int $operation): JsonResponse
+    {
+        $operationModel = Operation::query()->find($operation);
+
+        if ($operationModel === null) {
+            return $this->sendError('العملية غير موجودة', [], 404);
+        }
+
+        if (! $this->canAccessOperation($request, $operationModel)) {
+            return $this->sendError('غير مصرح', [], 403);
+        }
+
+        if ($error = $this->statusError($operationModel)) {
+            return $error;
+        }
+
+        try {
+            $this->operationService->complete($operationModel, $this->currentUser($request));
+        } catch (ValidationException $exception) {
+            return $this->sendError($this->firstValidationMessage($exception), $exception->errors(), 422);
+        }
+
+        return $this->sendResponse(null, 'تم استكمال العملية بنجاح');
+    }
+
+    public function cancel(CancelOperationRequest $request, int $operation): JsonResponse
+    {
+        $operationModel = Operation::query()->find($operation);
+
+        if ($operationModel === null) {
+            return $this->sendError('العملية غير موجودة', [], 404);
+        }
+
+        if (! $this->canAccessOperation($request, $operationModel)) {
+            return $this->sendError('غير مصرح', [], 403);
+        }
+
+        if ($error = $this->statusError($operationModel, allowPending: true)) {
+            return $error;
+        }
+
+        try {
+            $this->operationService->cancel(
+                $operationModel,
+                $this->currentUser($request),
+                (string) $request->validated('cancellation_reason')
+            );
+        } catch (ValidationException $exception) {
+            return $this->sendError($this->firstValidationMessage($exception), $exception->errors(), 422);
+        }
+
+        return $this->sendResponse(null, 'تم إلغاء العملية بنجاح');
+    }
+
     /**
      * Operation receipt
      *
@@ -140,5 +225,49 @@ class OperationController extends BaseApiController
     private function canAccessOperation(Request $request, Operation $operation): bool
     {
         return $this->isOwner($request->user()) || $operation->created_by === $request->user()?->id;
+    }
+
+    private function listByStatus(Request $request, OperationStatus $status): JsonResponse
+    {
+        $query = Operation::query()
+            ->with(['customer', 'supplier', 'box', 'creator'])
+            ->where('status', $status->value)
+            ->latest('transaction_date')
+            ->latest('id');
+        $query = $this->scopeToCurrentUser($query, $request, 'created_by');
+
+        return $this->sendResponse(OperationResource::collection($query->paginate($request->integer('per_page', 20))));
+    }
+
+    private function validStatus(Request $request): ?string
+    {
+        $status = $request->string('status')->toString();
+        $allowedStatuses = array_column(OperationStatus::cases(), 'value');
+
+        return in_array($status, $allowedStatuses, true) ? $status : null;
+    }
+
+    private function statusError(Operation $operation, bool $allowPending = false): ?JsonResponse
+    {
+        if ($operation->status === OperationStatus::Completed) {
+            return $this->sendError('العملية مكتملة مسبقاً', [], 422);
+        }
+
+        if ($operation->status === OperationStatus::Cancelled) {
+            return $this->sendError('العملية ملغاة', [], 422);
+        }
+
+        if (! $allowPending && $operation->status !== OperationStatus::Pending) {
+            return $this->sendError('العملية مكتملة مسبقاً', [], 422);
+        }
+
+        return null;
+    }
+
+    private function firstValidationMessage(ValidationException $exception): string
+    {
+        $messages = collect($exception->errors())->flatten();
+
+        return (string) ($messages->first() ?? 'Validation Error');
     }
 }

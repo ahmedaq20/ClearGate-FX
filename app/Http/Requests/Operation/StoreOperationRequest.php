@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Operation;
 
 use App\Enums\CustomerType;
+use App\Enums\OperationStatus;
 use App\Http\Requests\ApiFormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -27,6 +28,7 @@ class StoreOperationRequest extends ApiFormRequest
                 Rule::exists('customers', 'id')->where('type', CustomerType::Supplier->value),
             ],
             'box_id' => ['nullable', 'integer', 'exists:boxes,id'],
+            'status' => ['nullable', Rule::in([OperationStatus::Pending->value, OperationStatus::Completed->value])],
             'customer_id' => [
                 'required',
                 'integer',
@@ -45,6 +47,71 @@ class StoreOperationRequest extends ApiFormRequest
     }
 
     /**
+     * @return array<string, array<string, mixed>>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'transaction_date' => [
+                'description' => 'Operation transaction date.',
+                'example' => '2026-06-15',
+            ],
+            'supplier_id' => [
+                'description' => 'Supplier ID for supplier-funded operations. Leave null when using a box.',
+                'example' => 5,
+            ],
+            'box_id' => [
+                'description' => 'Box ID for box-funded operations. Leave null when using a supplier.',
+                'example' => null,
+            ],
+            'status' => [
+                'description' => 'Required for supplier-funded operations. Allowed values: pending, completed. Box-funded operations are stored as completed automatically.',
+                'example' => OperationStatus::Pending->value,
+            ],
+            'customer_id' => [
+                'description' => 'Receiving customer ID.',
+                'example' => 10,
+            ],
+            'supplier_currency' => [
+                'description' => 'Supplier-side currency code.',
+                'example' => 'USD',
+            ],
+            'supplier_amount' => [
+                'description' => 'Supplier-side amount.',
+                'example' => 1000,
+            ],
+            'supplier_exchange_rate' => [
+                'description' => 'Supplier-side exchange rate.',
+                'example' => 1,
+            ],
+            'customer_currency' => [
+                'description' => 'Customer-side currency code.',
+                'example' => 'USD',
+            ],
+            'customer_amount' => [
+                'description' => 'Amount paid to the customer.',
+                'example' => 1000,
+            ],
+            'customer_exchange_rate' => [
+                'description' => 'Customer-side exchange rate.',
+                'example' => 1,
+            ],
+            'commission_type' => [
+                'description' => 'Commission type.',
+                'example' => 'percentage',
+            ],
+            'commission_rate' => [
+                'description' => 'Commission rate or fixed value.',
+                'example' => 2,
+            ],
+            'notes' => [
+                'description' => 'Optional operation notes.',
+                'example' => 'Supplier funded transfer.',
+            ],
+        ];
+    }
+
+    /**
      * @return array<int, callable>
      */
     public function after(): array
@@ -56,6 +123,14 @@ class StoreOperationRequest extends ApiFormRequest
 
                 if ($hasSupplier === $hasBox) {
                     $validator->errors()->add('funding_source', 'يجب اختيار مصدر تمويل واحد فقط: مورد أو صندوق.');
+                }
+
+                if ($hasSupplier && ! $this->filled('status')) {
+                    $validator->errors()->add('status', 'حقل الحالة مطلوب.');
+                }
+
+                if ($hasBox && $this->input('status') === OperationStatus::Pending->value) {
+                    $validator->errors()->add('status', 'لا يمكن إنشاء عملية معلقة عند استخدام صندوق كمصدر للأموال');
                 }
             },
         ];

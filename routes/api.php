@@ -40,6 +40,11 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             ->middleware('role:owner,sanctum')
             ->name('transactions.force-delete');
 
+        Route::get('operations/pending', [OperationController::class, 'pending'])->name('operations.pending');
+        Route::get('operations/completed', [OperationController::class, 'completed'])->name('operations.completed');
+        Route::get('operations/cancelled', [OperationController::class, 'cancelled'])->name('operations.cancelled');
+        Route::post('operations/{operation}/complete', [OperationController::class, 'complete'])->name('operations.complete');
+        Route::post('operations/{operation}/cancel', [OperationController::class, 'cancel'])->name('operations.cancel');
         Route::get('operations/{operation}/receipt', [OperationController::class, 'receipt'])->name('operations.receipt');
         Route::apiResource('operations', OperationController::class);
 

@@ -1,23 +1,183 @@
-name: Currencies
+name: Boxes
 description: |-
 
-  Manage supported currencies and their current USD exchange rates.
+  Manage operational boxes and their balance adjustment audit logs.
 endpoints:
   -
     custom: []
     httpMethods:
-      - GET
-    uri: api/v1/currencies
+      - PATCH
+    uri: 'api/v1/boxes/{box_id}/balance'
     metadata:
       custom: []
-      groupName: Currencies
+      groupName: Boxes
       groupDescription: |-
 
-        Manage supported currencies and their current USD exchange rates.
+        Manage operational boxes and their balance adjustment audit logs.
       subgroup: ''
       subgroupDescription: ''
-      title: 'List currencies'
-      description: 'Return paginated currencies with optional search and active status filters.'
+      title: 'Adjust box balance'
+      description: 'Adjust the current balance and save a full audit log entry.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      box_id:
+        custom: []
+        name: box_id
+        description: 'The ID of the box.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      box_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      operation_type:
+        custom: []
+        name: operation_type
+        description: ''
+        required: true
+        example: subtract
+        type: string
+        enumValues:
+          - add
+          - subtract
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      amount:
+        custom: []
+        name: amount
+        description: ''
+        required: true
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      notes:
+        custom: []
+        name: notes
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      operation_type: subtract
+      amount: 4326.41688
+      notes: architecto
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"تم تحديث رصيد الصندوق","data":{"id":1,"current_balance":"1250.0000"}}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/boxes/{box_id}/logs'
+    metadata:
+      custom: []
+      groupName: Boxes
+      groupDescription: |-
+
+        Manage operational boxes and their balance adjustment audit logs.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Box balance logs'
+      description: 'Return the balance adjustment audit trail for one box.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      box_id:
+        custom: []
+        name: box_id
+        description: 'The ID of the box.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      box_id: 16
+    queryParameters:
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Results per page.'
+        required: false
+        example: 20
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      per_page: 20
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"Success","data":[{"operation_type":"add","amount":"250.0000"}]}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/boxes
+    metadata:
+      custom: []
+      groupName: Boxes
+      groupDescription: |-
+
+        Manage operational boxes and their balance adjustment audit logs.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List boxes'
+      description: 'Owners can see all boxes. Managers need box.viewAny. Operations employees only see assigned boxes.'
       authenticated: true
       deprecated: false
     headers:
@@ -27,24 +187,13 @@ endpoints:
     urlParameters: []
     cleanUrlParameters: []
     queryParameters:
-      search:
+      type:
         custom: []
-        name: search
-        description: 'Search by code, English name, or Arabic name.'
+        name: type
+        description: 'Filter by box type.'
         required: false
-        example: USD
+        example: turkish
         type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      is_active:
-        custom: []
-        name: is_active
-        description: 'Filter by active status.'
-        required: false
-        example: true
-        type: boolean
         enumValues: []
         exampleWasSpecified: true
         nullable: false
@@ -61,8 +210,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      search: USD
-      is_active: true
+      type: turkish
       per_page: 20
     bodyParameters: []
     cleanBodyParameters: []
@@ -71,7 +219,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Success","data":[{"id":1,"code":"USD","name":"US Dollar","name_ar":"دولار أمريكي","symbol":"$","rate_to_usd":"1.000000","is_active":true}]}'
+        content: '{"success":true,"message":"Success","data":[{"id":1,"name":"Turkish Main","type":"turkish","current_balance":"1000.0000"}]}'
         headers: []
         description: ''
     responseFields: []
@@ -86,17 +234,17 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v1/currencies
+    uri: api/v1/boxes
     metadata:
       custom: []
-      groupName: Currencies
+      groupName: Boxes
       groupDescription: |-
 
-        Manage supported currencies and their current USD exchange rates.
+        Manage operational boxes and their balance adjustment audit logs.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Create currency'
-      description: 'Create a new currency with its initial exchange rate to USD.'
+      title: 'Create box'
+      description: 'Owner users and managers with box.create can create boxes.'
       authenticated: true
       deprecated: false
     headers:
@@ -108,91 +256,102 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      code:
-        custom: []
-        name: code
-        description: 'Must not be greater than 10 characters.'
-        required: true
-        example: bngzmi
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
       name:
         custom: []
         name: name
         description: 'Must not be greater than 100 characters.'
         required: true
-        example: 'y'
+        example: b
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      name_ar:
+      type:
         custom: []
-        name: name_ar
-        description: 'Must not be greater than 100 characters.'
-        required: true
-        example: v
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      symbol:
-        custom: []
-        name: symbol
-        description: 'Must not be greater than 10 characters.'
-        required: true
-        example: dljnik
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      rate_to_usd:
-        custom: []
-        name: rate_to_usd
+        name: type
         description: ''
         required: true
-        example: 4326.41688
+        example: usdt_wallet
+        type: string
+        enumValues:
+          - turkish
+          - local_bank_wallet
+          - usdt_wallet
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      current_balance:
+        custom: []
+        name: current_balance
+        description: 'Must be at least 0.'
+        required: false
+        example: 39
         type: number
         enumValues: []
         exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      currency:
+        custom: []
+        name: currency
+        description: 'Must not be greater than 10 characters.'
+        required: true
+        example: gzmiyv
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
         nullable: false
         deprecated: false
-      is_active:
+      assigned_user_id:
         custom: []
-        name: is_active
+        name: assigned_user_id
+        description: 'The <code>id</code> of an existing record in the users table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      status:
+        custom: []
+        name: status
+        description: 'Must not be greater than 30 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues:
+          - active
+          - inactive
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      notes:
+        custom: []
+        name: notes
         description: ''
         required: false
-        example: true
-        type: boolean
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      code: bngzmi
-      name: 'y'
-      name_ar: v
-      symbol: dljnik
-      rate_to_usd: 4326.41688
-      is_active: true
+      name: b
+      type: usdt_wallet
+      current_balance: 39
+      currency: gzmiyv
+      assigned_user_id: 16
+      status: 'n'
+      notes: architecto
     fileParameters: []
     responses:
       -
         custom: []
         status: 201
-        content: '{"success":true,"message":"تم إنشاء العملة","data":{"id":1,"code":"USD","name":"US Dollar","rate_to_usd":"1.000000","is_active":true}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 422
-        content: '{"success":false,"message":"Validation Error"}'
+        content: '{"success":true,"message":"تم إنشاء الصندوق","data":{"id":1,"name":"Turkish Main","type":"turkish"}}'
         headers: []
         description: ''
     responseFields: []
@@ -207,17 +366,17 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/currencies/{id}'
+    uri: 'api/v1/boxes/{id}'
     metadata:
       custom: []
-      groupName: Currencies
+      groupName: Boxes
       groupDescription: |-
 
-        Manage supported currencies and their current USD exchange rates.
+        Manage operational boxes and their balance adjustment audit logs.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Show currency'
-      description: 'Return one currency and its exchange rate history.'
+      title: 'Show box'
+      description: 'Return one box if the current user can access it.'
       authenticated: true
       deprecated: false
     headers:
@@ -228,7 +387,7 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the currency.'
+        description: 'The ID of the box.'
         required: true
         example: 16
         type: integer
@@ -247,7 +406,13 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Success","data":{"id":1,"code":"USD","name":"US Dollar","exchange_rates":[]}}'
+        content: '{"success":true,"message":"Success","data":{"id":1,"name":"Turkish Main","type":"turkish"}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: '{"success":false,"message":"غير مصرح"}'
         headers: []
         description: ''
     responseFields: []
@@ -262,18 +427,17 @@ endpoints:
     custom: []
     httpMethods:
       - PUT
-      - PATCH
-    uri: 'api/v1/currencies/{id}'
+    uri: 'api/v1/boxes/{id}'
     metadata:
       custom: []
-      groupName: Currencies
+      groupName: Boxes
       groupDescription: |-
 
-        Manage supported currencies and their current USD exchange rates.
+        Manage operational boxes and their balance adjustment audit logs.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Update currency'
-      description: 'Update currency metadata or its active status.'
+      title: 'Update box'
+      description: 'Update editable box metadata. Balance changes must use the balance endpoint.'
       authenticated: true
       deprecated: false
     headers:
@@ -284,7 +448,7 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the currency.'
+        description: 'The ID of the box.'
         required: true
         example: 16
         type: integer
@@ -297,91 +461,90 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      code:
-        custom: []
-        name: code
-        description: 'Must not be greater than 10 characters.'
-        required: false
-        example: bngzmi
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
       name:
         custom: []
         name: name
         description: 'Must not be greater than 100 characters.'
         required: false
-        example: 'y'
+        example: b
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
-      name_ar:
+      type:
         custom: []
-        name: name_ar
-        description: 'Must not be greater than 100 characters.'
+        name: type
+        description: ''
         required: false
-        example: v
+        example: local_bank_wallet
         type: string
-        enumValues: []
+        enumValues:
+          - turkish
+          - local_bank_wallet
+          - usdt_wallet
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
-      symbol:
+      currency:
         custom: []
-        name: symbol
+        name: currency
         description: 'Must not be greater than 10 characters.'
         required: false
-        example: dljnik
+        example: ngzmiy
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
-      rate_to_usd:
+      assigned_user_id:
         custom: []
-        name: rate_to_usd
-        description: ''
+        name: assigned_user_id
+        description: 'The <code>id</code> of an existing record in the users table.'
         required: false
-        example: 4326.41688
-        type: number
+        example: 16
+        type: integer
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
-      is_active:
+      status:
         custom: []
-        name: is_active
+        name: status
+        description: 'Must not be greater than 30 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues:
+          - active
+          - inactive
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      notes:
+        custom: []
+        name: notes
         description: ''
         required: false
-        example: false
-        type: boolean
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      code: bngzmi
-      name: 'y'
-      name_ar: v
-      symbol: dljnik
-      rate_to_usd: 4326.41688
-      is_active: false
+      name: b
+      type: local_bank_wallet
+      currency: ngzmiy
+      assigned_user_id: 16
+      status: 'n'
+      notes: architecto
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"تم تحديث العملة","data":{"id":1,"code":"USD","name":"US Dollar","is_active":true}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 422
-        content: '{"success":false,"message":"Validation Error"}'
+        content: '{"success":true,"message":"تم تحديث الصندوق"}'
         headers: []
         description: ''
     responseFields: []
@@ -396,17 +559,17 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/currencies/{id}'
+    uri: 'api/v1/boxes/{id}'
     metadata:
       custom: []
-      groupName: Currencies
+      groupName: Boxes
       groupDescription: |-
 
-        Manage supported currencies and their current USD exchange rates.
+        Manage operational boxes and their balance adjustment audit logs.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Disable currency'
-      description: 'Disable a currency by setting it inactive instead of deleting it.'
+      title: 'Delete box'
+      description: 'Delete a box and its balance logs.'
       authenticated: true
       deprecated: false
     headers:
@@ -417,7 +580,7 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the currency.'
+        description: 'The ID of the box.'
         required: true
         example: 16
         type: integer
@@ -436,7 +599,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"تم تعطيل العملة"}'
+        content: '{"success":true,"message":"تم حذف الصندوق"}'
         headers: []
         description: ''
     responseFields: []

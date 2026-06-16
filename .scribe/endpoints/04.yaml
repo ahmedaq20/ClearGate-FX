@@ -1,73 +1,111 @@
-name: Customers
+name: Operations
 description: |-
 
-  Manage customers owned by users and linked to their vaults.
+  Manage complete money transfer operations beside the legacy transaction system.
 endpoints:
   -
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/customers/{customer_id}/transactions'
+    uri: api/v1/operations/pending
     metadata:
       custom: []
-      groupName: Customers
+      groupName: Operations
       groupDescription: |-
 
-        Manage customers owned by users and linked to their vaults.
+        Manage complete money transfer operations beside the legacy transaction system.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Customer transactions'
-      description: 'List transactions linked to a customer.'
+      title: ''
+      description: ''
       authenticated: true
       deprecated: false
     headers:
       Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
       Content-Type: application/json
       Accept: application/json
-    urlParameters:
-      customer_id:
-        custom: []
-        name: customer_id
-        description: 'The ID of the customer.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      customer_id: 16
-    queryParameters:
-      per_page:
-        custom: []
-        name: per_page
-        description: 'Results per page.'
-        required: false
-        example: 20
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      per_page: 20
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":[{"id":1,"type":"receive","net_usd_value":"100.0000"}]}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
-        headers: []
-        description: ''
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/operations/completed
+    metadata:
+      custom: []
+      groupName: Operations
+      groupDescription: |-
+
+        Manage complete money transfer operations beside the legacy transaction system.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/operations/cancelled
+    metadata:
+      custom: []
+      groupName: Operations
+      groupDescription: |-
+
+        Manage complete money transfer operations beside the legacy transaction system.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
     responseFields: []
     auth:
       - headers
@@ -80,151 +118,104 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v1/customers
+    uri: 'api/v1/operations/{operation}/complete'
     metadata:
       custom: []
-      groupName: Customers
+      groupName: Operations
       groupDescription: |-
 
-        Manage customers owned by users and linked to their vaults.
+        Manage complete money transfer operations beside the legacy transaction system.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Create customer'
-      description: "Create a customer and attach it to the selected user's vault."
+      title: ''
+      description: ''
       authenticated: true
       deprecated: false
     headers:
       Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
       Content-Type: application/json
       Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
+    urlParameters:
+      operation:
+        custom: []
+        name: operation
+        description: 'The operation.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      operation: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/operations/{operation}/cancel'
+    metadata:
+      custom: []
+      groupName: Operations
+      groupDescription: |-
+
+        Manage complete money transfer operations beside the legacy transaction system.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      operation:
+        custom: []
+        name: operation
+        description: 'The operation.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      operation: architecto
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      customer_code:
+      cancellation_reason:
         custom: []
-        name: customer_code
-        description: 'Manual unique customer code.'
+        name: cancellation_reason
+        description: 'Reason for cancelling the operation. Must not be greater than 1000 characters.'
         required: true
-        example: '3301'
+        example: 'Supplier did not settle externally.'
         type: string
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
-        deprecated: false
-      name:
-        custom: []
-        name: name
-        description: 'Customer or supplier name.'
-        required: true
-        example: Ahmed
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      phone:
-        custom: []
-        name: phone
-        description: 'Customer phone number.'
-        required: false
-        example: 059xxxxxxx
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        deprecated: false
-      type:
-        custom: []
-        name: type
-        description: 'Customer type. Must be customer or supplier.'
-        required: true
-        example: customer
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      note:
-        custom: []
-        name: note
-        description: 'Optional note.'
-        required: false
-        example: 'Regular remittance customer'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        deprecated: false
-      category:
-        custom: []
-        name: category
-        description: 'Optional legacy category. Must be regular, vip, agent, or company.'
-        required: false
-        example: regular
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        deprecated: false
-      country:
-        custom: []
-        name: country
-        description: 'Optional country.'
-        required: false
-        example: Palestine
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        deprecated: false
-      user_id:
-        custom: []
-        name: user_id
-        description: 'Owner-only user assignment.'
-        required: false
-        example: 3
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        deprecated: false
-      balance_usd:
-        custom: []
-        name: balance_usd
-        description: 'Optional opening balance.'
-        required: false
-        example: 500.0
-        type: number
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
         deprecated: false
     cleanBodyParameters:
-      customer_code: '3301'
-      name: Ahmed
-      phone: 059xxxxxxx
-      type: customer
-      note: 'Regular remittance customer'
-      category: regular
-      country: Palestine
-      user_id: 3
-      balance_usd: 500.0
+      cancellation_reason: 'Supplier did not settle externally.'
     fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 201
-        content: '{"success":true,"message":"تم إنشاء العميل","data":{"id":1,"customer_code":"3301","name":"Ahmed","phone":"059xxxxxxx","type":"customer"}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 422
-        content: '{"success":false,"message":"Validation Error"}'
-        headers: []
-        description: ''
+    responses: []
     responseFields: []
     auth:
       - headers
@@ -237,17 +228,17 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/customers/{customer_id}/balance'
+    uri: 'api/v1/operations/{operation_id}/receipt'
     metadata:
       custom: []
-      groupName: Customers
+      groupName: Operations
       groupDescription: |-
 
-        Manage customers owned by users and linked to their vaults.
+        Manage complete money transfer operations beside the legacy transaction system.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Customer balance'
-      description: 'Return the customer balance in USD.'
+      title: 'Operation receipt'
+      description: ''
       authenticated: true
       deprecated: false
     headers:
@@ -255,10 +246,10 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      customer_id:
+      operation_id:
         custom: []
-        name: customer_id
-        description: 'The ID of the customer.'
+        name: operation_id
+        description: 'The ID of the operation.'
         required: true
         example: 16
         type: integer
@@ -267,19 +258,13 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      customer_id: 16
+      operation_id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":{"balance_usd":250.5}}'
-        headers: []
-        description: ''
+    responses: []
     responseFields: []
     auth:
       - headers
@@ -292,17 +277,17 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/customers
+    uri: api/v1/operations
     metadata:
       custom: []
-      groupName: Customers
+      groupName: Operations
       groupDescription: |-
 
-        Manage customers owned by users and linked to their vaults.
+        Manage complete money transfer operations beside the legacy transaction system.
       subgroup: ''
       subgroupDescription: ''
-      title: 'List customers'
-      description: 'Owner users can see all customers. Managers are scoped to their own customers.'
+      title: 'List operations'
+      description: ''
       authenticated: true
       deprecated: false
     headers:
@@ -312,43 +297,32 @@ endpoints:
     urlParameters: []
     cleanUrlParameters: []
     queryParameters:
-      search:
+      customer:
         custom: []
-        name: search
-        description: 'Search by customer name or customer code.'
+        name: customer
+        description: 'Filter by customer ID.'
         required: false
-        example: Ahmed
-        type: string
+        example: 12
+        type: integer
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
-      type:
+      supplier:
         custom: []
-        name: type
-        description: 'Filter by customer type.'
+        name: supplier
+        description: 'Filter by supplier ID.'
         required: false
-        example: customer
-        type: string
+        example: 7
+        type: integer
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
-      category:
+      box:
         custom: []
-        name: category
-        description: 'Filter by category.'
-        required: false
-        example: regular
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      user_id:
-        custom: []
-        name: user_id
-        description: 'Owner-only user filter.'
+        name: box
+        description: 'Filter by box ID.'
         required: false
         example: 3
         type: integer
@@ -356,24 +330,46 @@ endpoints:
         exampleWasSpecified: true
         nullable: false
         deprecated: false
-      is_active:
+      status:
         custom: []
-        name: is_active
-        description: 'Filter active status.'
+        name: status
+        description: 'Filter by operation status: pending, completed, or cancelled.'
         required: false
-        example: true
-        type: boolean
+        example: pending
+        type: string
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
-      with_trashed:
+      date_from:
         custom: []
-        name: with_trashed
-        description: 'Include soft-deleted rows.'
+        name: date_from
+        description: 'date Filter from transaction date.'
         required: false
-        example: false
-        type: boolean
+        example: '2026-06-01'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      date_to:
+        custom: []
+        name: date_to
+        description: 'date Filter to transaction date.'
+        required: false
+        example: '2026-06-30'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      reference_number:
+        custom: []
+        name: reference_number
+        description: 'Filter by reference number.'
+        required: false
+        example: TRX-2026-00001
+        type: string
         enumValues: []
         exampleWasSpecified: true
         nullable: false
@@ -390,21 +386,241 @@ endpoints:
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      search: Ahmed
-      type: customer
-      category: regular
-      user_id: 3
-      is_active: true
-      with_trashed: false
+      customer: 12
+      supplier: 7
+      box: 3
+      status: pending
+      date_from: '2026-06-01'
+      date_to: '2026-06-30'
+      reference_number: TRX-2026-00001
       per_page: 20
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/operations
+    metadata:
+      custom: []
+      groupName: Operations
+      groupDescription: |-
+
+        Manage complete money transfer operations beside the legacy transaction system.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Create operation'
+      description: 'Supplier-funded operations must include status as pending or completed. Box-funded operations omit status and are stored as completed automatically.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      transaction_date:
+        custom: []
+        name: transaction_date
+        description: 'Operation transaction date. Must be a valid date.'
+        required: true
+        example: '2026-06-15'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      supplier_id:
+        custom: []
+        name: supplier_id
+        description: 'Supplier ID for supplier-funded operations.'
+        required: false
+        example: 5
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      box_id:
+        custom: []
+        name: box_id
+        description: 'Box ID for box-funded operations.'
+        required: false
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      status:
+        custom: []
+        name: status
+        description: 'Required for supplier-funded operations. Allowed values: pending, completed. Box-funded operations are always stored as completed even when omitted.'
+        required: true
+        example: pending
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      customer_id:
+        custom: []
+        name: customer_id
+        description: 'Receiving customer ID.'
+        required: true
+        example: 10
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      supplier_currency:
+        custom: []
+        name: supplier_currency
+        description: 'Supplier-side currency code. Must not be greater than 10 characters.'
+        required: true
+        example: USD
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      supplier_amount:
+        custom: []
+        name: supplier_amount
+        description: 'Supplier-side amount.'
+        required: true
+        example: 1000.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      supplier_exchange_rate:
+        custom: []
+        name: supplier_exchange_rate
+        description: 'Supplier-side exchange rate.'
+        required: true
+        example: 1.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      customer_currency:
+        custom: []
+        name: customer_currency
+        description: 'Customer-side currency code. Must not be greater than 10 characters.'
+        required: true
+        example: USD
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      customer_amount:
+        custom: []
+        name: customer_amount
+        description: 'Amount paid to the customer.'
+        required: true
+        example: 1000.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      customer_exchange_rate:
+        custom: []
+        name: customer_exchange_rate
+        description: 'Customer-side exchange rate.'
+        required: true
+        example: 1.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      commission_type:
+        custom: []
+        name: commission_type
+        description: 'Commission type.'
+        required: true
+        example: percentage
+        type: string
+        enumValues:
+          - percentage
+          - fixed
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      commission_rate:
+        custom: []
+        name: commission_rate
+        description: 'Commission rate or fixed value.'
+        required: true
+        example: 2.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      notes:
+        custom: []
+        name: notes
+        description: 'Optional operation notes.'
+        required: false
+        example: 'Supplier funded transfer.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      transaction_date: '2026-06-15'
+      supplier_id: 5
+      box_id: 3
+      status: pending
+      customer_id: 10
+      supplier_currency: USD
+      supplier_amount: 1000.0
+      supplier_exchange_rate: 1.0
+      customer_currency: USD
+      customer_amount: 1000.0
+      customer_exchange_rate: 1.0
+      commission_type: percentage
+      commission_rate: 2.0
+      notes: 'Supplier funded transfer.'
+    fileParameters: []
     responses:
       -
         custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":[{"id":1,"customer_code":"3301","name":"Ahmed","phone":"059xxxxxxx","type":"customer"}]}'
+        status: 201
+        content: '{"success":true,"message":"تم إنشاء العملية","data":{"supplier_id":5,"box_id":null,"customer_id":10,"status":"pending"}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 201
+        content: '{"success":true,"message":"تم إنشاء العملية","data":{"supplier_id":5,"box_id":null,"customer_id":10,"status":"completed"}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 201
+        content: '{"success":true,"message":"تم إنشاء العملية","data":{"supplier_id":null,"box_id":3,"customer_id":10,"status":"completed"}}'
         headers: []
         description: ''
     responseFields: []
@@ -419,17 +635,17 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/customers/{id}'
+    uri: 'api/v1/operations/{id}'
     metadata:
       custom: []
-      groupName: Customers
+      groupName: Operations
       groupDescription: |-
 
-        Manage customers owned by users and linked to their vaults.
+        Manage complete money transfer operations beside the legacy transaction system.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Show customer'
-      description: 'Return one customer if the current user is allowed to view it.'
+      title: 'Show operation'
+      description: ''
       authenticated: true
       deprecated: false
     headers:
@@ -440,7 +656,7 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the customer.'
+        description: 'The ID of the operation.'
         required: true
         example: 16
         type: integer
@@ -455,19 +671,7 @@ endpoints:
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":{"id":1,"customer_code":"3301","name":"Ahmed","phone":"059xxxxxxx","type":"customer","vault":{"id":1}}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
-        headers: []
-        description: ''
+    responses: []
     responseFields: []
     auth:
       - headers
@@ -481,17 +685,17 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'api/v1/customers/{id}'
+    uri: 'api/v1/operations/{id}'
     metadata:
       custom: []
-      groupName: Customers
+      groupName: Operations
       groupDescription: |-
 
-        Manage customers owned by users and linked to their vaults.
+        Manage complete money transfer operations beside the legacy transaction system.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Update customer'
-      description: 'Update customer profile fields.'
+      title: 'Update operation'
+      description: ''
       authenticated: true
       deprecated: false
     headers:
@@ -502,7 +706,7 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the customer.'
+        description: 'The ID of the operation.'
         required: true
         example: 16
         type: integer
@@ -515,123 +719,167 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      customer_code:
+      transaction_date:
         custom: []
-        name: customer_code
-        description: 'Manual unique customer code.'
+        name: transaction_date
+        description: 'Must be a valid date.'
         required: false
-        example: '3302'
+        example: '2026-06-16T21:08:42'
         type: string
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         deprecated: false
-      name:
+      supplier_id:
         custom: []
-        name: name
-        description: 'Customer or supplier name.'
+        name: supplier_id
+        description: 'The <code>id</code> of an existing record in the customers table.'
         required: false
-        example: 'Ahmed Updated'
-        type: string
+        example: 16
+        type: integer
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      box_id:
+        custom: []
+        name: box_id
+        description: 'The <code>id</code> of an existing record in the boxes table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      customer_id:
+        custom: []
+        name: customer_id
+        description: 'The <code>id</code> of an existing record in the customers table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
         nullable: false
         deprecated: false
-      phone:
+      supplier_currency:
         custom: []
-        name: phone
-        description: 'Customer phone number.'
+        name: supplier_currency
+        description: 'Must not be greater than 10 characters.'
         required: false
-        example: 059xxxxxxx
+        example: ngzmiy
         type: string
         enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        deprecated: false
-      type:
-        custom: []
-        name: type
-        description: 'Customer type. Must be customer or supplier.'
-        required: false
-        example: supplier
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         deprecated: false
-      note:
+      supplier_amount:
         custom: []
-        name: note
-        description: 'Optional note.'
+        name: supplier_amount
+        description: ''
         required: false
-        example: 'Updated note'
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      supplier_exchange_rate:
+        custom: []
+        name: supplier_exchange_rate
+        description: ''
+        required: false
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      customer_currency:
+        custom: []
+        name: customer_currency
+        description: 'Must not be greater than 10 characters.'
+        required: false
+        example: miyvdl
         type: string
         enumValues: []
-        exampleWasSpecified: true
-        nullable: true
+        exampleWasSpecified: false
+        nullable: false
         deprecated: false
-      category:
+      customer_amount:
         custom: []
-        name: category
-        description: 'Optional legacy category. Must be regular, vip, agent, or company.'
+        name: customer_amount
+        description: ''
         required: false
-        example: vip
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      customer_exchange_rate:
+        custom: []
+        name: customer_exchange_rate
+        description: ''
+        required: false
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      commission_type:
+        custom: []
+        name: commission_type
+        description: ''
+        required: false
+        example: fixed
+        type: string
+        enumValues:
+          - percentage
+          - fixed
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      commission_rate:
+        custom: []
+        name: commission_rate
+        description: ''
+        required: false
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      notes:
+        custom: []
+        name: notes
+        description: ''
+        required: false
+        example: architecto
         type: string
         enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        deprecated: false
-      country:
-        custom: []
-        name: country
-        description: 'Optional country.'
-        required: false
-        example: Jordan
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        deprecated: false
-      is_active:
-        custom: []
-        name: is_active
-        description: 'Active status.'
-        required: false
-        example: true
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      customer_code: '3302'
-      name: 'Ahmed Updated'
-      phone: 059xxxxxxx
-      type: supplier
-      note: 'Updated note'
-      category: vip
-      country: Jordan
-      is_active: true
+      transaction_date: '2026-06-16T21:08:42'
+      supplier_id: 16
+      box_id: 16
+      customer_id: 16
+      supplier_currency: ngzmiy
+      supplier_amount: 4326.41688
+      supplier_exchange_rate: 4326.41688
+      customer_currency: miyvdl
+      customer_amount: 4326.41688
+      customer_exchange_rate: 4326.41688
+      commission_type: fixed
+      commission_rate: 4326.41688
+      notes: architecto
     fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم تحديث العميل","data":{"id":1,"customer_code":"3302","name":"Ahmed Updated","phone":"059xxxxxxx","type":"supplier"}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 422
-        content: '{"success":false,"message":"Validation Error"}'
-        headers: []
-        description: ''
+    responses: []
     responseFields: []
     auth:
       - headers
@@ -644,17 +892,17 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/customers/{id}'
+    uri: 'api/v1/operations/{id}'
     metadata:
       custom: []
-      groupName: Customers
+      groupName: Operations
       groupDescription: |-
 
-        Manage customers owned by users and linked to their vaults.
+        Manage complete money transfer operations beside the legacy transaction system.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Delete customer'
-      description: 'Soft-delete a customer.'
+      title: 'Delete operation'
+      description: ''
       authenticated: true
       deprecated: false
     headers:
@@ -665,7 +913,7 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the customer.'
+        description: 'The ID of the operation.'
         required: true
         example: 16
         type: integer
@@ -680,141 +928,7 @@ endpoints:
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم حذف العميل"}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PATCH
-    uri: 'api/v1/customers/{id}/restore'
-    metadata:
-      custom: []
-      groupName: Customers
-      groupDescription: |-
-
-        Manage customers owned by users and linked to their vaults.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Restore customer'
-      description: 'Owner-only endpoint that restores a soft-deleted customer.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'Customer ID.'
-        required: true
-        example: 7
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 7
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم استعادة العميل","data":{"id":7,"customer_code":"3301","name":"Ahmed","type":"customer","deleted_at":null}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'api/v1/customers/{id}/force'
-    metadata:
-      custom: []
-      groupName: Customers
-      groupDescription: |-
-
-        Manage customers owned by users and linked to their vaults.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Force delete customer'
-      description: 'Owner-only endpoint that permanently deletes a customer.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'Customer ID.'
-        required: true
-        example: 7
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 7
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم حذف العميل نهائياً"}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
-        headers: []
-        description: ''
+    responses: []
     responseFields: []
     auth:
       - headers

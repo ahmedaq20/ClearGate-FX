@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\OperationStatus;
 use App\Models\Box;
 use App\Models\Customer;
 use App\Models\Operation;
@@ -40,6 +41,10 @@ class OperationFactory extends Factory
             'commission_rate' => $commissionRate,
             'commission_amount' => $commissionAmount,
             'customer_net_amount' => round($amount - $commissionAmount, 4),
+            'status' => OperationStatus::Pending->value,
+            'completed_at' => null,
+            'cancelled_at' => null,
+            'cancellation_reason' => null,
             'notes' => fake()->optional()->sentence(),
             'created_by' => User::factory(),
         ];
@@ -50,6 +55,25 @@ class OperationFactory extends Factory
         return $this->state(fn (array $attributes): array => [
             'supplier_id' => null,
             'box_id' => $box?->id ?? Box::factory(),
+            'status' => OperationStatus::Completed->value,
+            'completed_at' => now(),
+        ]);
+    }
+
+    public function completed(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'status' => OperationStatus::Completed->value,
+            'completed_at' => now(),
+        ]);
+    }
+
+    public function cancelled(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'status' => OperationStatus::Cancelled->value,
+            'cancelled_at' => now(),
+            'cancellation_reason' => fake()->sentence(),
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\BoxBalanceOperationType;
+use App\Enums\OperationStatus;
 use App\Models\AuditLog;
 use App\Models\Box;
 use App\Models\Operation;
@@ -88,6 +89,81 @@ class OperationService
         }, attempts: 3);
     }
 
+    public function complete(Operation $operation, User $user): Operation
+    {
+        return DB::transaction(function () use ($operation, $user): Operation {
+            $lockedOperation = Operation::query()
+                ->whereKey($operation->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $oldValues = $lockedOperation->attributesToArray();
+
+            if ($lockedOperation->status !== OperationStatus::Pending) {
+                throw ValidationException::withMessages([
+                    'status' => $lockedOperation->status === OperationStatus::Completed
+                        ? 'العملية مكتملة مسبقاً'
+                        : 'العملية ملغاة',
+                ]);
+            }
+
+            $lockedOperation->update([
+                'status' => OperationStatus::Completed->value,
+                'completed_at' => now(),
+            ]);
+            $lockedOperation->refresh();
+
+            AuditLog::record(
+                action: 'operation.completed',
+                model: $lockedOperation,
+                userId: $user->id,
+                oldValues: $oldValues,
+                newValues: $lockedOperation->attributesToArray()
+            );
+
+            return $lockedOperation;
+        }, attempts: 3);
+    }
+
+    public function cancel(Operation $operation, User $user, string $cancellationReason): Operation
+    {
+        return DB::transaction(function () use ($operation, $user, $cancellationReason): Operation {
+            $lockedOperation = Operation::query()
+                ->whereKey($operation->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $oldValues = $lockedOperation->attributesToArray();
+
+            if ($lockedOperation->status === OperationStatus::Completed) {
+                throw ValidationException::withMessages([
+                    'status' => 'العملية مكتملة مسبقاً',
+                ]);
+            }
+
+            if ($lockedOperation->status === OperationStatus::Cancelled) {
+                throw ValidationException::withMessages([
+                    'status' => 'العملية ملغاة',
+                ]);
+            }
+
+            $lockedOperation->update([
+                'status' => OperationStatus::Cancelled->value,
+                'cancelled_at' => now(),
+                'cancellation_reason' => $cancellationReason,
+            ]);
+            $lockedOperation->refresh();
+
+            AuditLog::record(
+                action: 'operation.cancelled',
+                model: $lockedOperation,
+                userId: $user->id,
+                oldValues: $oldValues,
+                newValues: $lockedOperation->attributesToArray()
+            );
+
+            return $lockedOperation;
+        }, attempts: 3);
+    }
+
     /**
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
@@ -101,7 +177,7 @@ class OperationService
             (float) $data['commission_rate']
         );
 
-        return [
+        $payload = [
             'reference_number' => $operation?->reference_number ?? $this->nextReferenceNumber((string) $data['transaction_date']),
             'transaction_date' => $data['transaction_date'],
             'supplier_id' => $data['supplier_id'] ?? null,
@@ -120,6 +196,17 @@ class OperationService
             'notes' => $data['notes'] ?? null,
             'created_by' => $operation?->created_by ?? $user->id,
         ];
+
+        if ($operation === null) {
+            $status = isset($data['box_id']) && $data['box_id'] !== null
+                ? OperationStatus::Completed
+                : OperationStatus::from((string) $data['status']);
+
+            $payload['status'] = $status->value;
+            $payload['completed_at'] = $status === OperationStatus::Completed ? now() : null;
+        }
+
+        return $payload;
     }
 
     private function calculateCommissionAmount(float $amount, string $commissionType, float $commissionRate): float

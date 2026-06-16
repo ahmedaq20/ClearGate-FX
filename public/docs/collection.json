@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "ClearGate FX API Documentation",
-        "_postman_id": "31e10d6a-74b8-4f47-9736-60af265d104d",
+        "_postman_id": "b910d13b-179d-425f-ab60-68cf4d0d205e",
         "description": "API documentation for the ClearGate FX currency exchange backend.",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -332,6 +332,311 @@
             ]
         },
         {
+            "name": "Boxes",
+            "description": "\nManage operational boxes and their balance adjustment audit logs.",
+            "item": [
+                {
+                    "name": "Adjust box balance",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/boxes\/:box_id\/balance",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/boxes\/:box_id\/balance",
+                            "variable": [
+                                {
+                                    "id": "box_id",
+                                    "key": "box_id",
+                                    "value": "16",
+                                    "description": "The ID of the box."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"operation_type\":\"subtract\",\"amount\":4326.41688,\"notes\":\"architecto\"}"
+                        },
+                        "description": "Adjust the current balance and save a full audit log entry."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0631\u0635\u064a\u062f \u0627\u0644\u0635\u0646\u062f\u0648\u0642\",\"data\":{\"id\":1,\"current_balance\":\"1250.0000\"}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Box balance logs",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/boxes\/:box_id\/logs",
+                            "query": [
+                                {
+                                    "key": "per_page",
+                                    "value": "20",
+                                    "description": "Results per page.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/boxes\/:box_id\/logs?per_page=20",
+                            "variable": [
+                                {
+                                    "id": "box_id",
+                                    "key": "box_id",
+                                    "value": "16",
+                                    "description": "The ID of the box."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Return the balance adjustment audit trail for one box."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":[{\"operation_type\":\"add\",\"amount\":\"250.0000\"}]}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "List boxes",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/boxes",
+                            "query": [
+                                {
+                                    "key": "type",
+                                    "value": "turkish",
+                                    "description": "Filter by box type.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "20",
+                                    "description": "Results per page.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/boxes?type=turkish&per_page=20"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Owners can see all boxes. Managers need box.viewAny. Operations employees only see assigned boxes."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":[{\"id\":1,\"name\":\"Turkish Main\",\"type\":\"turkish\",\"current_balance\":\"1000.0000\"}]}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Create box",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/boxes",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/boxes"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"type\":\"usdt_wallet\",\"current_balance\":39,\"currency\":\"gzmiyv\",\"assigned_user_id\":16,\"status\":\"n\",\"notes\":\"architecto\"}"
+                        },
+                        "description": "Owner users and managers with box.create can create boxes."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0635\u0646\u062f\u0648\u0642\",\"data\":{\"id\":1,\"name\":\"Turkish Main\",\"type\":\"turkish\"}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show box",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/boxes\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/boxes\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the box."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Return one box if the current user can access it."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"Success\",\"data\":{\"id\":1,\"name\":\"Turkish Main\",\"type\":\"turkish\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"success\":false,\"message\":\"\u063a\u064a\u0631 \u0645\u0635\u0631\u062d\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Update box",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/boxes\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/boxes\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the box."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"type\":\"local_bank_wallet\",\"currency\":\"ngzmiy\",\"assigned_user_id\":16,\"status\":\"n\",\"notes\":\"architecto\"}"
+                        },
+                        "description": "Update editable box metadata. Balance changes must use the balance endpoint."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0635\u0646\u062f\u0648\u0642\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete box",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/boxes\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/boxes\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the box."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Delete a box and its balance logs."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u062d\u0630\u0641 \u0627\u0644\u0635\u0646\u062f\u0648\u0642\"}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "name": "Currencies",
             "description": "\nManage supported currencies and their current USD exchange rates.",
             "item": [
@@ -408,7 +713,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"code\":\"bngzmi\",\"name\":\"y\",\"name_ar\":\"v\",\"symbol\":\"dljnik\",\"rate_to_usd\":4326.41688,\"is_active\":true}"
+                            "raw": "{\"code\":\"bngzmi\",\"name\":\"y\",\"name_ar\":\"v\",\"symbol\":\"dljnik\",\"rate_to_usd\":4326.41688,\"is_active\":false}"
                         },
                         "description": "Create a new currency with its initial exchange rate to USD."
                     },
@@ -1123,7 +1428,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"rate\":4326.41688,\"date\":\"2026-06-14T19:59:11\"}"
+                            "raw": "{\"rate\":4326.41688,\"date\":\"2026-06-16T21:08:42\"}"
                         },
                         "description": "Update the current exchange rate for a currency and append a historical exchange-rate row."
                     },
@@ -1456,6 +1761,412 @@
             ]
         },
         {
+            "name": "Operations",
+            "description": "\nManage complete money transfer operations beside the legacy transaction system.",
+            "item": [
+                {
+                    "name": "GET api\/v1\/operations\/pending",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations\/pending",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations\/pending"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/operations\/completed",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations\/completed",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations\/completed"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/operations\/cancelled",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations\/cancelled",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations\/cancelled"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/operations\/{operation}\/complete",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations\/:operation\/complete",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations\/:operation\/complete",
+                            "variable": [
+                                {
+                                    "id": "operation",
+                                    "key": "operation",
+                                    "value": "architecto",
+                                    "description": "The operation."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/operations\/{operation}\/cancel",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations\/:operation\/cancel",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations\/:operation\/cancel",
+                            "variable": [
+                                {
+                                    "id": "operation",
+                                    "key": "operation",
+                                    "value": "architecto",
+                                    "description": "The operation."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"cancellation_reason\":\"Supplier did not settle externally.\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Operation receipt",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations\/:operation_id\/receipt",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations\/:operation_id\/receipt",
+                            "variable": [
+                                {
+                                    "id": "operation_id",
+                                    "key": "operation_id",
+                                    "value": "16",
+                                    "description": "The ID of the operation."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "List operations",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations",
+                            "query": [
+                                {
+                                    "key": "customer",
+                                    "value": "12",
+                                    "description": "Filter by customer ID.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "supplier",
+                                    "value": "7",
+                                    "description": "Filter by supplier ID.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "box",
+                                    "value": "3",
+                                    "description": "Filter by box ID.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "pending",
+                                    "description": "Filter by operation status: pending, completed, or cancelled.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "date_from",
+                                    "value": "2026-06-01",
+                                    "description": "date Filter from transaction date.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "date_to",
+                                    "value": "2026-06-30",
+                                    "description": "date Filter to transaction date.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "reference_number",
+                                    "value": "TRX-2026-00001",
+                                    "description": "Filter by reference number.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "20",
+                                    "description": "Results per page.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations?customer=12&supplier=7&box=3&status=pending&date_from=2026-06-01&date_to=2026-06-30&reference_number=TRX-2026-00001&per_page=20"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create operation",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"transaction_date\":\"2026-06-15\",\"supplier_id\":5,\"box_id\":3,\"status\":\"pending\",\"customer_id\":10,\"supplier_currency\":\"USD\",\"supplier_amount\":1000,\"supplier_exchange_rate\":1,\"customer_currency\":\"USD\",\"customer_amount\":1000,\"customer_exchange_rate\":1,\"commission_type\":\"percentage\",\"commission_rate\":2,\"notes\":\"Supplier funded transfer.\"}"
+                        },
+                        "description": "Supplier-funded operations must include status as pending or completed. Box-funded operations omit status and are stored as completed automatically."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0639\u0645\u0644\u064a\u0629\",\"data\":{\"supplier_id\":5,\"box_id\":null,\"customer_id\":10,\"status\":\"pending\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0639\u0645\u0644\u064a\u0629\",\"data\":{\"supplier_id\":5,\"box_id\":null,\"customer_id\":10,\"status\":\"completed\"}}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\"success\":true,\"message\":\"\u062a\u0645 \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u0639\u0645\u0644\u064a\u0629\",\"data\":{\"supplier_id\":null,\"box_id\":3,\"customer_id\":10,\"status\":\"completed\"}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show operation",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the operation."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update operation",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the operation."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"transaction_date\":\"2026-06-16T21:08:42\",\"supplier_id\":16,\"box_id\":16,\"customer_id\":16,\"supplier_currency\":\"ngzmiy\",\"supplier_amount\":4326.41688,\"supplier_exchange_rate\":4326.41688,\"customer_currency\":\"miyvdl\",\"customer_amount\":4326.41688,\"customer_exchange_rate\":4326.41688,\"commission_type\":\"fixed\",\"commission_rate\":4326.41688,\"notes\":\"architecto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete operation",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "16",
+                                    "description": "The ID of the operation."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
             "name": "Permissions",
             "description": "\nOwner-only permission lookup with Arabic display labels.",
             "item": [
@@ -1764,7 +2475,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"type\":\"daily\",\"format\":\"excel\"}"
+                            "raw": "{\"type\":\"comparison\",\"format\":\"excel\"}"
                         },
                         "description": "Queue a PDF or Excel export and return a job ID for polling."
                     },
@@ -2474,7 +3185,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"type\":\"send\",\"amount\":4326.41688,\"currency_code\":\"miyvdl\",\"exchange_rate\":4326.41688,\"customer_id\":16,\"from_customer_id\":16,\"to_customer_id\":16,\"commission_type\":\"percentage\",\"commission_rate\":4326.41688,\"commission_sign\":1,\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-06-14T19:59:11\"}"
+                            "raw": "{\"type\":\"receive\",\"amount\":4326.41688,\"currency_code\":\"miyvdl\",\"exchange_rate\":4326.41688,\"customer_id\":16,\"from_customer_id\":16,\"to_customer_id\":16,\"commission_type\":\"fixed\",\"commission_rate\":4326.41688,\"commission_sign\":-1,\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-06-16T21:08:42\"}"
                         },
                         "description": "Create a receive, send, or transfer transaction using the current user's vault. Commission is calculated in TransactionService.\nFor transfer type, provide `from_customer_id`, `to_customer_id`, and `exchange_rate`. No vault balance is affected for transfers \u2014 only customer balances."
                     },
@@ -2581,7 +3292,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-06-14T19:59:11\"}"
+                            "raw": "{\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-06-16T21:08:42\"}"
                         },
                         "description": "Update non-financial transaction fields only."
                     },
@@ -3120,7 +3831,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"password\":\"-0pBNvYgxw\",\"phone\":\"a\",\"is_active\":false}"
+                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"password\":\"-0pBNvYgxw\",\"phone\":\"a\",\"is_active\":true}"
                         },
                         "description": "Owner-only endpoint for updating user profile fields and active status."
                     },
@@ -3448,7 +4159,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"note\":\"architecto\",\"is_active\":false}"
+                            "raw": "{\"name\":\"b\",\"note\":\"architecto\",\"is_active\":true}"
                         },
                         "description": "Update editable vault metadata. Managers cannot update initial balance here."
                     },

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\OperationStatus;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Customer;
+use App\Models\Operation;
 use App\Models\Transaction;
 use App\Models\Vault;
 use App\Services\BalanceService;
@@ -40,10 +42,12 @@ class DashboardController extends BaseApiController
 
         $transactions = Transaction::query()->with(['customer', 'currency'])->latest()->limit(10);
         $customers = Customer::query();
+        $operations = Operation::query();
 
         if (! $isOwner) {
             $transactions->where('user_id', $user->id);
             $customers->where('user_id', $user->id);
+            $operations->where('created_by', $user->id);
         }
 
         $totalsQuery = Transaction::query();
@@ -59,6 +63,10 @@ class DashboardController extends BaseApiController
             'today_net_usd' => $this->balanceService->getDailyNet($isOwner ? null : $user->id, $today),
             'customers_count' => (clone $customers)->count(),
             'transactions_today_count' => (clone $transactions)->whereDate('transaction_date', $today)->count(),
+            'pending_operations_count' => (clone $operations)->where('status', OperationStatus::Pending->value)->count(),
+            'completed_operations_count' => (clone $operations)->where('status', OperationStatus::Completed->value)->count(),
+            'cancelled_operations_count' => (clone $operations)->where('status', OperationStatus::Cancelled->value)->count(),
+            'pending_amount_total' => round((float) (clone $operations)->where('status', OperationStatus::Pending->value)->sum('customer_amount'), 4),
             'recent_transactions' => $transactions->get(),
             'top_customers' => $customers->orderByDesc('balance_usd')->limit(5)->get(),
             'total_summary' => [

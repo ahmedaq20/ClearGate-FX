@@ -1,188 +1,23 @@
-name: Notifications
+name: Roles
 description: |-
 
-  Read and manage in-app notifications for the authenticated user.
+  Owner-only role and role-permission management.
 endpoints:
   -
     custom: []
     httpMethods:
-      - GET
-    uri: api/v1/notifications/unread-count
-    metadata:
-      custom: []
-      groupName: Notifications
-      groupDescription: |-
-
-        Read and manage in-app notifications for the authenticated user.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Unread notification count'
-      description: 'Return the number of unread notifications for the authenticated user.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":{"count":3}}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
       - PUT
-    uri: api/v1/notifications/read-all
+    uri: 'api/v1/roles/{role_id}/permissions'
     metadata:
       custom: []
-      groupName: Notifications
+      groupName: Roles
       groupDescription: |-
 
-        Read and manage in-app notifications for the authenticated user.
+        Owner-only role and role-permission management.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Mark all notifications as read'
-      description: 'Mark every unread notification for the authenticated user as read.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم تعليم كل الإشعارات كمقروءة"}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/v1/notifications
-    metadata:
-      custom: []
-      groupName: Notifications
-      groupDescription: |-
-
-        Read and manage in-app notifications for the authenticated user.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'List notifications'
-      description: 'Return paginated notifications for the authenticated user.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      is_read:
-        custom: []
-        name: is_read
-        description: 'Filter by read status.'
-        required: false
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      type:
-        custom: []
-        name: type
-        description: 'Filter by notification type.'
-        required: false
-        example: report_ready
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      per_page:
-        custom: []
-        name: per_page
-        description: 'Results per page.'
-        required: false
-        example: 20
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      is_read: false
-      type: report_ready
-      per_page: 20
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":[{"id":1,"type":"system","title":"Notification title","body":"Notification body","is_read":false}]}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-    uri: 'api/v1/notifications/{notification_id}/read'
-    metadata:
-      custom: []
-      groupName: Notifications
-      groupDescription: |-
-
-        Read and manage in-app notifications for the authenticated user.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Mark notification as read'
-      description: 'Mark one notification as read if it belongs to the authenticated user.'
+      title: ''
+      description: ''
       authenticated: true
       deprecated: false
     headers:
@@ -190,10 +25,10 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      notification_id:
+      role_id:
         custom: []
-        name: notification_id
-        description: 'The ID of the notification.'
+        name: role_id
+        description: 'The ID of the role.'
         required: true
         example: 16
         type: integer
@@ -202,25 +37,27 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      notification_id: 16
+      role_id: 16
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
+    bodyParameters:
+      permissions:
+        custom: []
+        name: permissions
+        description: 'The <code>name</code> of an existing record in the permissions table.'
+        required: true
+        example:
+          - architecto
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      permissions:
+        - architecto
     fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم تعليم الإشعار كمقروء","data":{"id":1,"is_read":true}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
-        headers: []
-        description: ''
+    responses: []
     responseFields: []
     auth:
       - headers
@@ -232,18 +69,118 @@ endpoints:
   -
     custom: []
     httpMethods:
-      - DELETE
-    uri: 'api/v1/notifications/{id}'
+      - GET
+    uri: api/v1/roles
     metadata:
       custom: []
-      groupName: Notifications
+      groupName: Roles
       groupDescription: |-
 
-        Read and manage in-app notifications for the authenticated user.
+        Owner-only role and role-permission management.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Delete notification'
-      description: 'Delete one notification if it belongs to the authenticated user.'
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/roles
+    metadata:
+      custom: []
+      groupName: Roles
+      groupDescription: |-
+
+        Owner-only role and role-permission management.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Must match the regex /^[A-Za-z0-9_.-]+$/. Must not be greater than 100 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      permissions:
+        custom: []
+        name: permissions
+        description: 'The <code>name</code> of an existing record in the permissions table.'
+        required: true
+        example:
+          - architecto
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: b
+      permissions:
+        - architecto
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/roles/{id}'
+    metadata:
+      custom: []
+      groupName: Roles
+      groupDescription: |-
+
+        Owner-only role and role-permission management.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
       authenticated: true
       deprecated: false
     headers:
@@ -254,7 +191,7 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the notification.'
+        description: 'The ID of the role.'
         required: true
         example: 16
         type: integer
@@ -269,19 +206,118 @@ endpoints:
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
-    responses:
-      -
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/v1/roles/{id}'
+    metadata:
+      custom: []
+      groupName: Roles
+      groupDescription: |-
+
+        Owner-only role and role-permission management.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
         custom: []
-        status: 200
-        content: '{"success":true,"message":"تم حذف الإشعار"}'
-        headers: []
-        description: ''
-      -
+        name: id
+        description: 'The ID of the role.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
         custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
-        headers: []
-        description: ''
+        name: name
+        description: 'Must match the regex /^[A-Za-z0-9_.-]+$/. Must not be greater than 100 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: b
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/v1/roles/{id}'
+    metadata:
+      custom: []
+      groupName: Roles
+      groupDescription: |-
+
+        Owner-only role and role-permission management.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the role.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
     responseFields: []
     auth:
       - headers

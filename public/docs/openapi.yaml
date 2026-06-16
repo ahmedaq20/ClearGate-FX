@@ -14,6 +14,9 @@ tags:
     name: Auth
     description: "\nEndpoints for API token login, logout, profile lookup, and password changes."
   -
+    name: Boxes
+    description: "\nManage operational boxes and their balance adjustment audit logs."
+  -
     name: Currencies
     description: "\nManage supported currencies and their current USD exchange rates."
   -
@@ -28,6 +31,9 @@ tags:
   -
     name: Notifications
     description: "\nRead and manage in-app notifications for the authenticated user."
+  -
+    name: Operations
+    description: "\nManage complete money transfer operations beside the legacy transaction system."
   -
     name: Permissions
     description: "\nOwner-only permission lookup with Arabic display labels."
@@ -593,6 +599,463 @@ paths:
               required:
                 - current_password
                 - password
+  '/api/v1/boxes/{box_id}/balance':
+    patch:
+      summary: 'Adjust box balance'
+      operationId: adjustBoxBalance
+      description: 'Adjust the current balance and save a full audit log entry.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث رصيد الصندوق'
+                  data:
+                    id: 1
+                    current_balance: '1250.0000'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث رصيد الصندوق'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      current_balance:
+                        type: string
+                        example: '1250.0000'
+      tags:
+        - Boxes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                operation_type:
+                  type: string
+                  description: ''
+                  example: subtract
+                  enum:
+                    - add
+                    - subtract
+                amount:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                notes:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+              required:
+                - operation_type
+                - amount
+    parameters:
+      -
+        in: path
+        name: box_id
+        description: 'The ID of the box.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v1/boxes/{box_id}/logs':
+    get:
+      summary: 'Box balance logs'
+      operationId: boxBalanceLogs
+      description: 'Return the balance adjustment audit trail for one box.'
+      parameters:
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      operation_type: add
+                      amount: '250.0000'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        operation_type: add
+                        amount: '250.0000'
+                    items:
+                      type: object
+                      properties:
+                        operation_type:
+                          type: string
+                          example: add
+                        amount:
+                          type: string
+                          example: '250.0000'
+      tags:
+        - Boxes
+    parameters:
+      -
+        in: path
+        name: box_id
+        description: 'The ID of the box.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/v1/boxes:
+    get:
+      summary: 'List boxes'
+      operationId: listBoxes
+      description: 'Owners can see all boxes. Managers need box.viewAny. Operations employees only see assigned boxes.'
+      parameters:
+        -
+          in: query
+          name: type
+          description: 'Filter by box type.'
+          example: turkish
+          required: false
+          schema:
+            type: string
+            description: 'Filter by box type.'
+            example: turkish
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    -
+                      id: 1
+                      name: 'Turkish Main'
+                      type: turkish
+                      current_balance: '1000.0000'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        name: 'Turkish Main'
+                        type: turkish
+                        current_balance: '1000.0000'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: 'Turkish Main'
+                        type:
+                          type: string
+                          example: turkish
+                        current_balance:
+                          type: string
+                          example: '1000.0000'
+      tags:
+        - Boxes
+    post:
+      summary: 'Create box'
+      operationId: createBox
+      description: 'Owner users and managers with box.create can create boxes.'
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم إنشاء الصندوق'
+                  data:
+                    id: 1
+                    name: 'Turkish Main'
+                    type: turkish
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم إنشاء الصندوق'
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: 'Turkish Main'
+                      type:
+                        type: string
+                        example: turkish
+      tags:
+        - Boxes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: b
+                type:
+                  type: string
+                  description: ''
+                  example: usdt_wallet
+                  enum:
+                    - turkish
+                    - local_bank_wallet
+                    - usdt_wallet
+                current_balance:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 39
+                  nullable: true
+                currency:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: gzmiyv
+                assigned_user_id:
+                  type: integer
+                  description: 'The <code>id</code> of an existing record in the users table.'
+                  example: 16
+                  nullable: true
+                status:
+                  type: string
+                  description: 'Must not be greater than 30 characters.'
+                  example: 'n'
+                  enum:
+                    - active
+                    - inactive
+                  nullable: true
+                notes:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+              required:
+                - name
+                - type
+                - currency
+  '/api/v1/boxes/{id}':
+    get:
+      summary: 'Show box'
+      operationId: showBox
+      description: 'Return one box if the current user can access it.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: Success
+                  data:
+                    id: 1
+                    name: 'Turkish Main'
+                    type: turkish
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Success
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: 'Turkish Main'
+                      type:
+                        type: string
+                        example: turkish
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'غير مصرح'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'غير مصرح'
+      tags:
+        - Boxes
+    put:
+      summary: 'Update box'
+      operationId: updateBox
+      description: 'Update editable box metadata. Balance changes must use the balance endpoint.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم تحديث الصندوق'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم تحديث الصندوق'
+      tags:
+        - Boxes
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 100 characters.'
+                  example: b
+                  nullable: true
+                type:
+                  type: string
+                  description: ''
+                  example: local_bank_wallet
+                  enum:
+                    - turkish
+                    - local_bank_wallet
+                    - usdt_wallet
+                  nullable: true
+                currency:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: ngzmiy
+                  nullable: true
+                assigned_user_id:
+                  type: integer
+                  description: 'The <code>id</code> of an existing record in the users table.'
+                  example: 16
+                  nullable: true
+                status:
+                  type: string
+                  description: 'Must not be greater than 30 characters.'
+                  example: 'n'
+                  enum:
+                    - active
+                    - inactive
+                  nullable: true
+                notes:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+    delete:
+      summary: 'Delete box'
+      operationId: deleteBox
+      description: 'Delete a box and its balance logs.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: 'تم حذف الصندوق'
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'تم حذف الصندوق'
+      tags:
+        - Boxes
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the box.'
+        example: 16
+        required: true
+        schema:
+          type: integer
   /api/v1/currencies:
     get:
       summary: 'List currencies'
@@ -786,7 +1249,7 @@ paths:
                 is_active:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
               required:
                 - code
@@ -1926,7 +2389,7 @@ paths:
                 date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-06-14T19:59:11'
+                  example: '2026-06-16T21:08:42'
                   nullable: true
               required:
                 - rate
@@ -2362,6 +2825,486 @@ paths:
         in: path
         name: id
         description: 'The ID of the notification.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/v1/operations/pending:
+    get:
+      summary: ''
+      operationId: getApiV1OperationsPending
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Operations
+  /api/v1/operations/completed:
+    get:
+      summary: ''
+      operationId: getApiV1OperationsCompleted
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Operations
+  /api/v1/operations/cancelled:
+    get:
+      summary: ''
+      operationId: getApiV1OperationsCancelled
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Operations
+  '/api/v1/operations/{operation}/complete':
+    post:
+      summary: ''
+      operationId: postApiV1OperationsOperationComplete
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Operations
+    parameters:
+      -
+        in: path
+        name: operation
+        description: 'The operation.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v1/operations/{operation}/cancel':
+    post:
+      summary: ''
+      operationId: postApiV1OperationsOperationCancel
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Operations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cancellation_reason:
+                  type: string
+                  description: 'Reason for cancelling the operation. Must not be greater than 1000 characters.'
+                  example: 'Supplier did not settle externally.'
+              required:
+                - cancellation_reason
+    parameters:
+      -
+        in: path
+        name: operation
+        description: 'The operation.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v1/operations/{operation_id}/receipt':
+    get:
+      summary: 'Operation receipt'
+      operationId: operationReceipt
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Operations
+    parameters:
+      -
+        in: path
+        name: operation_id
+        description: 'The ID of the operation.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  /api/v1/operations:
+    get:
+      summary: 'List operations'
+      operationId: listOperations
+      description: ''
+      parameters:
+        -
+          in: query
+          name: customer
+          description: 'Filter by customer ID.'
+          example: 12
+          required: false
+          schema:
+            type: integer
+            description: 'Filter by customer ID.'
+            example: 12
+        -
+          in: query
+          name: supplier
+          description: 'Filter by supplier ID.'
+          example: 7
+          required: false
+          schema:
+            type: integer
+            description: 'Filter by supplier ID.'
+            example: 7
+        -
+          in: query
+          name: box
+          description: 'Filter by box ID.'
+          example: 3
+          required: false
+          schema:
+            type: integer
+            description: 'Filter by box ID.'
+            example: 3
+        -
+          in: query
+          name: status
+          description: 'Filter by operation status: pending, completed, or cancelled.'
+          example: pending
+          required: false
+          schema:
+            type: string
+            description: 'Filter by operation status: pending, completed, or cancelled.'
+            example: pending
+        -
+          in: query
+          name: date_from
+          description: 'date Filter from transaction date.'
+          example: '2026-06-01'
+          required: false
+          schema:
+            type: string
+            description: 'date Filter from transaction date.'
+            example: '2026-06-01'
+        -
+          in: query
+          name: date_to
+          description: 'date Filter to transaction date.'
+          example: '2026-06-30'
+          required: false
+          schema:
+            type: string
+            description: 'date Filter to transaction date.'
+            example: '2026-06-30'
+        -
+          in: query
+          name: reference_number
+          description: 'Filter by reference number.'
+          example: TRX-2026-00001
+          required: false
+          schema:
+            type: string
+            description: 'Filter by reference number.'
+            example: TRX-2026-00001
+        -
+          in: query
+          name: per_page
+          description: 'Results per page.'
+          example: 20
+          required: false
+          schema:
+            type: integer
+            description: 'Results per page.'
+            example: 20
+      responses: {  }
+      tags:
+        - Operations
+    post:
+      summary: 'Create operation'
+      operationId: createOperation
+      description: 'Supplier-funded operations must include status as pending or completed. Box-funded operations omit status and are stored as completed automatically.'
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  -
+                    description: ''
+                    type: object
+                    example:
+                      success: true
+                      message: 'تم إنشاء العملية'
+                      data:
+                        supplier_id: 5
+                        box_id: null
+                        customer_id: 10
+                        status: pending
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: 'تم إنشاء العملية'
+                      data:
+                        type: object
+                        properties:
+                          supplier_id:
+                            type: integer
+                            example: 5
+                          box_id:
+                            type: string
+                            example: null
+                            nullable: true
+                          customer_id:
+                            type: integer
+                            example: 10
+                          status:
+                            type: string
+                            example: pending
+                  -
+                    description: ''
+                    type: object
+                    example:
+                      success: true
+                      message: 'تم إنشاء العملية'
+                      data:
+                        supplier_id: 5
+                        box_id: null
+                        customer_id: 10
+                        status: completed
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: 'تم إنشاء العملية'
+                      data:
+                        type: object
+                        properties:
+                          supplier_id:
+                            type: integer
+                            example: 5
+                          box_id:
+                            type: string
+                            example: null
+                            nullable: true
+                          customer_id:
+                            type: integer
+                            example: 10
+                          status:
+                            type: string
+                            example: completed
+                  -
+                    description: ''
+                    type: object
+                    example:
+                      success: true
+                      message: 'تم إنشاء العملية'
+                      data:
+                        supplier_id: null
+                        box_id: 3
+                        customer_id: 10
+                        status: completed
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: 'تم إنشاء العملية'
+                      data:
+                        type: object
+                        properties:
+                          supplier_id:
+                            type: string
+                            example: null
+                            nullable: true
+                          box_id:
+                            type: integer
+                            example: 3
+                          customer_id:
+                            type: integer
+                            example: 10
+                          status:
+                            type: string
+                            example: completed
+      tags:
+        - Operations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transaction_date:
+                  type: string
+                  description: 'Operation transaction date. Must be a valid date.'
+                  example: '2026-06-15'
+                supplier_id:
+                  type: integer
+                  description: 'Supplier ID for supplier-funded operations.'
+                  example: 5
+                  nullable: true
+                box_id:
+                  type: integer
+                  description: 'Box ID for box-funded operations.'
+                  example: 3
+                  nullable: true
+                status:
+                  type: string
+                  description: 'Required for supplier-funded operations. Allowed values: pending, completed. Box-funded operations are always stored as completed even when omitted.'
+                  example: pending
+                  nullable: true
+                customer_id:
+                  type: integer
+                  description: 'Receiving customer ID.'
+                  example: 10
+                supplier_currency:
+                  type: string
+                  description: 'Supplier-side currency code. Must not be greater than 10 characters.'
+                  example: USD
+                supplier_amount:
+                  type: number
+                  description: 'Supplier-side amount.'
+                  example: 1000.0
+                supplier_exchange_rate:
+                  type: number
+                  description: 'Supplier-side exchange rate.'
+                  example: 1.0
+                customer_currency:
+                  type: string
+                  description: 'Customer-side currency code. Must not be greater than 10 characters.'
+                  example: USD
+                customer_amount:
+                  type: number
+                  description: 'Amount paid to the customer.'
+                  example: 1000.0
+                customer_exchange_rate:
+                  type: number
+                  description: 'Customer-side exchange rate.'
+                  example: 1.0
+                commission_type:
+                  type: string
+                  description: 'Commission type.'
+                  example: percentage
+                  enum:
+                    - percentage
+                    - fixed
+                commission_rate:
+                  type: number
+                  description: 'Commission rate or fixed value.'
+                  example: 2.0
+                notes:
+                  type: string
+                  description: 'Optional operation notes.'
+                  example: 'Supplier funded transfer.'
+                  nullable: true
+              required:
+                - transaction_date
+                - status
+                - customer_id
+                - supplier_currency
+                - supplier_amount
+                - supplier_exchange_rate
+                - customer_currency
+                - customer_amount
+                - customer_exchange_rate
+                - commission_type
+                - commission_rate
+  '/api/v1/operations/{id}':
+    get:
+      summary: 'Show operation'
+      operationId: showOperation
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Operations
+    put:
+      summary: 'Update operation'
+      operationId: updateOperation
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Operations
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transaction_date:
+                  type: string
+                  description: 'Must be a valid date.'
+                  example: '2026-06-16T21:08:42'
+                supplier_id:
+                  type: integer
+                  description: 'The <code>id</code> of an existing record in the customers table.'
+                  example: 16
+                  nullable: true
+                box_id:
+                  type: integer
+                  description: 'The <code>id</code> of an existing record in the boxes table.'
+                  example: 16
+                  nullable: true
+                customer_id:
+                  type: integer
+                  description: 'The <code>id</code> of an existing record in the customers table.'
+                  example: 16
+                supplier_currency:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: ngzmiy
+                supplier_amount:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                supplier_exchange_rate:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                customer_currency:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: miyvdl
+                customer_amount:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                customer_exchange_rate:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                commission_type:
+                  type: string
+                  description: ''
+                  example: fixed
+                  enum:
+                    - percentage
+                    - fixed
+                commission_rate:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                notes:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+    delete:
+      summary: 'Delete operation'
+      operationId: deleteOperation
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Operations
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the operation.'
         example: 16
         required: true
         schema:
@@ -2815,7 +3758,7 @@ paths:
                 type:
                   type: string
                   description: ''
-                  example: daily
+                  example: comparison
                   enum:
                     - daily
                     - monthly
@@ -3710,7 +4653,7 @@ paths:
                 type:
                   type: string
                   description: ''
-                  example: send
+                  example: receive
                   enum:
                     - receive
                     - send
@@ -3746,7 +4689,7 @@ paths:
                 commission_type:
                   type: string
                   description: ''
-                  example: percentage
+                  example: fixed
                   enum:
                     - percentage
                     - fixed
@@ -3759,7 +4702,7 @@ paths:
                 commission_sign:
                   type: integer
                   description: 'This field is required when <code>commission_type</code> is present.'
-                  example: 1
+                  example: -1
                   enum:
                     - 1
                     - -1
@@ -3782,7 +4725,7 @@ paths:
                 transaction_date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-06-14T19:59:11'
+                  example: '2026-06-16T21:08:42'
               required:
                 - type
                 - amount
@@ -3939,7 +4882,7 @@ paths:
                 transaction_date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-06-14T19:59:11'
+                  example: '2026-06-16T21:08:42'
                   nullable: true
     delete:
       summary: 'Delete transaction'
@@ -4793,7 +5736,7 @@ paths:
                 is_active:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
     delete:
       summary: 'Delete user'
@@ -5254,7 +6197,7 @@ paths:
                 is_active:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
     parameters:
       -
