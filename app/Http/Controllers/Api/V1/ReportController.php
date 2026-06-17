@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Requests\Report\ExportReportRequest;
+use App\Http\Requests\Report\ProfitReportRequest;
 use App\Jobs\GenerateReportJob;
 use App\Services\ReportService;
 use Illuminate\Http\JsonResponse;
@@ -57,6 +58,31 @@ class ReportController extends BaseApiController
     public function monthly(Request $request): JsonResponse
     {
         return $this->sendResponse($this->reportService->monthly($request->query(), $this->currentUser($request)));
+    }
+
+    public function profitSummary(ProfitReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->profitSummary($request->validated(), $this->currentUser($request)));
+    }
+
+    public function dailyProfit(ProfitReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->dailyProfit($request->validated(), $this->currentUser($request)));
+    }
+
+    public function monthlyProfit(ProfitReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->monthlyProfit($request->validated(), $this->currentUser($request)));
+    }
+
+    public function profitBySupplier(ProfitReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->profitBySupplier($request->validated(), $this->currentUser($request)));
+    }
+
+    public function profitByUser(ProfitReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->profitByUser($request->validated(), $this->currentUser($request)));
     }
 
     /**

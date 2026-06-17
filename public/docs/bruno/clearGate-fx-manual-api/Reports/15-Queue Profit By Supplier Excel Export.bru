@@ -1,0 +1,32 @@
+meta {
+  name: Queue Profit By Supplier Excel Export
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{baseUrlApi}}/reports/export
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "type": "profit-by-supplier",
+    "format": "excel",
+    "params": {
+      "date_from": "2026-06-01",
+      "date_to": "2026-06-30",
+      "supplier_id": 1
+    }
+  }
+}

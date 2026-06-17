@@ -3,12 +3,14 @@
 use App\Http\Controllers\Api\V1\ArchiveController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BoxController;
+use App\Http\Controllers\Api\V1\CapitalController;
 use App\Http\Controllers\Api\V1\CurrencyController;
 use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ExchangeRateController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OperationController;
+use App\Http\Controllers\Api\V1\OwnerExpenseController;
 use App\Http\Controllers\Api\V1\PermissionController;
 use App\Http\Controllers\Api\V1\ReceiptController;
 use App\Http\Controllers\Api\V1\ReportController;
@@ -30,6 +32,11 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         Route::get('dashboard/summary', [DashboardController::class, 'summary'])->name('dashboard.summary');
         Route::get('dashboard/chart', [DashboardController::class, 'chart'])->name('dashboard.chart');
+        Route::get('dashboard/financial', [DashboardController::class, 'financial'])->name('dashboard.financial');
+        Route::get('dashboard/suppliers', [DashboardController::class, 'suppliers'])->name('dashboard.suppliers');
+        Route::get('dashboard/boxes', [DashboardController::class, 'boxes'])->name('dashboard.boxes');
+        Route::get('dashboard/commissions', [DashboardController::class, 'commissions'])->name('dashboard.commissions');
+        Route::get('dashboard/charts', [DashboardController::class, 'charts'])->name('dashboard.charts');
 
         Route::get('transactions/daily-summary', [TransactionController::class, 'dailySummary'])->name('transactions.daily-summary');
         Route::apiResource('transactions', TransactionController::class);
@@ -82,6 +89,14 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         Route::get('reports/daily', [ReportController::class, 'daily'])->name('reports.daily');
         Route::get('reports/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
+        Route::get('reports/profit-summary', [ReportController::class, 'profitSummary'])->name('reports.profit-summary');
+        Route::get('reports/daily-profit', [ReportController::class, 'dailyProfit'])->name('reports.daily-profit');
+        Route::get('reports/monthly-profit', [ReportController::class, 'monthlyProfit'])->name('reports.monthly-profit');
+        Route::get('reports/profit-by-supplier', [ReportController::class, 'profitBySupplier'])->name('reports.profit-by-supplier');
+        Route::get('reports/profit-by-user', [ReportController::class, 'profitByUser'])->name('reports.profit-by-user');
+        Route::get('reports/expense-report', [CapitalController::class, 'expenseReport'])->name('reports.expense-report');
+        Route::get('reports/capital-report', [CapitalController::class, 'capitalReport'])->name('reports.capital-report');
+        Route::get('reports/net-worth-report', [CapitalController::class, 'netWorthReport'])->name('reports.net-worth-report');
         Route::get('reports/users-comparison', [ReportController::class, 'usersComparison'])
             ->middleware('role:owner,sanctum')
             ->name('reports.users-comparison');
@@ -90,6 +105,17 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('reports/export/{job_id}/status', [ReportController::class, 'status'])->name('reports.export.status');
         Route::get('reports/export/{job_id}/download', [ReportController::class, 'download'])->name('reports.export.download');
         Route::get('receipts/{transaction_id}', [ReceiptController::class, 'show'])->name('receipts.show');
+
+        Route::get('capital', [CapitalController::class, 'show'])->name('capital.show');
+        Route::post('capital/deposit', [CapitalController::class, 'deposit'])->name('capital.deposit');
+        Route::post('capital/withdraw', [CapitalController::class, 'withdraw'])->name('capital.withdraw');
+        Route::post('capital/transfer-to-box', [CapitalController::class, 'transferToBox'])->name('capital.transfer-to-box');
+        Route::get('capital/transactions', [CapitalController::class, 'transactions'])->name('capital.transactions');
+
+        Route::get('expenses', [OwnerExpenseController::class, 'index'])->name('expenses.index');
+        Route::post('expenses', [OwnerExpenseController::class, 'store'])->name('expenses.store');
+        Route::put('expenses/{expense}', [OwnerExpenseController::class, 'update'])->name('expenses.update');
+        Route::delete('expenses/{expense}', [OwnerExpenseController::class, 'destroy'])->name('expenses.destroy');
 
         Route::get('settings', [SettingController::class, 'index'])
             ->middleware('role:owner,sanctum')

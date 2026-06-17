@@ -170,6 +170,7 @@ class OperationService
      */
     private function operationPayload(array $data, User $user, ?Operation $operation = null): array
     {
+        $isSupplierFunded = isset($data['supplier_id']) && $data['supplier_id'] !== null;
         $customerAmount = round((float) $data['customer_amount'], 4);
         $commissionAmount = $this->calculateCommissionAmount(
             $customerAmount,
@@ -183,9 +184,9 @@ class OperationService
             'supplier_id' => $data['supplier_id'] ?? null,
             'box_id' => $data['box_id'] ?? null,
             'customer_id' => $data['customer_id'],
-            'supplier_currency' => $data['supplier_currency'],
-            'supplier_amount' => round((float) $data['supplier_amount'], 4),
-            'supplier_exchange_rate' => round((float) $data['supplier_exchange_rate'], 8),
+            'supplier_currency' => $isSupplierFunded ? $data['supplier_currency'] : null,
+            'supplier_amount' => $isSupplierFunded ? round((float) $data['supplier_amount'], 4) : null,
+            'supplier_exchange_rate' => $isSupplierFunded ? round((float) $data['supplier_exchange_rate'], 8) : null,
             'customer_currency' => $data['customer_currency'],
             'customer_amount' => $customerAmount,
             'customer_exchange_rate' => round((float) $data['customer_exchange_rate'], 8),

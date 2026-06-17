@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\OperationStatus;
 use App\Models\Customer;
+use App\Models\Operation;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -23,6 +25,11 @@ class ReportService
             'monthly' => $this->monthly($params, $user),
             'statement' => $this->statement($params, $user),
             'comparison' => $this->comparison($params, $user),
+            'profit-summary' => $this->profitSummary($params, $user),
+            'daily-profit' => $this->dailyProfit($params, $user),
+            'monthly-profit' => $this->monthlyProfit($params, $user),
+            'profit-by-supplier' => $this->profitBySupplier($params, $user),
+            'profit-by-user' => $this->profitByUser($params, $user),
             default => throw ValidationException::withMessages([
                 'type' => 'نوع التقرير غير مدعوم.',
             ]),
@@ -174,6 +181,164 @@ class ReportService
     }
 
     /**
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     */
+    public function profitSummary(array $params, User $user): array
+    {
+        $query = $this->profitOperationsQuery($params, $user);
+        $completed = (clone $query)->where('status', OperationStatus::Completed->value);
+
+        return [
+            'type' => 'profit-summary',
+            'title' => 'ملخص الأرباح',
+            'date_from' => $params['date_from'] ?? null,
+            'date_to' => $params['date_to'] ?? null,
+            'total_operations' => (clone $query)->count(),
+            'completed_operations' => (clone $query)->where('status', OperationStatus::Completed->value)->count(),
+            'pending_operations' => (clone $query)->where('status', OperationStatus::Pending->value)->count(),
+            'cancelled_operations' => (clone $query)->where('status', OperationStatus::Cancelled->value)->count(),
+            'total_profit_usd' => $this->sumProfitUsd($completed),
+            'generated_at' => now(),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     */
+    public function dailyProfit(array $params, User $user): array
+    {
+        $rows = $this->completedProfitOperations($params, $user)
+            ->get(['transaction_date', 'commission_amount', 'customer_exchange_rate'])
+            ->groupBy(fn (Operation $operation): string => $operation->transaction_date->toDateString())
+            ->map(fn ($operations, string $date): array => [
+                'date' => $date,
+                'operations_count' => $operations->count(),
+                'total_profit_usd' => round((float) $operations->sum(fn (Operation $operation): float => $this->operationProfitUsd($operation)), 4),
+            ])
+            ->sortBy('date')
+            ->values()
+            ->all();
+
+        return [
+            'type' => 'daily-profit',
+            'title' => 'الأرباح اليومية',
+            'date_from' => $params['date_from'] ?? null,
+            'date_to' => $params['date_to'] ?? null,
+            'rows' => $rows,
+            'total_profit_usd' => round((float) collect($rows)->sum('total_profit_usd'), 4),
+            'generated_at' => now(),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     */
+    public function monthlyProfit(array $params, User $user): array
+    {
+        $rows = $this->completedProfitOperations($params, $user)
+            ->get(['transaction_date', 'commission_amount', 'customer_exchange_rate'])
+            ->groupBy(fn (Operation $operation): string => $operation->transaction_date->format('Y-m'))
+            ->map(fn ($operations, string $month): array => [
+                'month' => $month,
+                'operations_count' => $operations->count(),
+                'total_profit_usd' => round((float) $operations->sum(fn (Operation $operation): float => $this->operationProfitUsd($operation)), 4),
+            ])
+            ->sortBy('month')
+            ->values()
+            ->all();
+
+        return [
+            'type' => 'monthly-profit',
+            'title' => 'الأرباح الشهرية',
+            'date_from' => $params['date_from'] ?? null,
+            'date_to' => $params['date_to'] ?? null,
+            'rows' => $rows,
+            'total_profit_usd' => round((float) collect($rows)->sum('total_profit_usd'), 4),
+            'generated_at' => now(),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     */
+    public function profitBySupplier(array $params, User $user): array
+    {
+        $customersTable = (new Customer)->getTable();
+        $operationsTable = (new Operation)->getTable();
+
+        $rows = $this->completedProfitOperations($params, $user)
+            ->join($customersTable, "{$customersTable}.id", '=', "{$operationsTable}.supplier_id")
+            ->whereNotNull("{$operationsTable}.supplier_id")
+            ->selectRaw("{$operationsTable}.supplier_id")
+            ->selectRaw("{$customersTable}.name as supplier")
+            ->selectRaw('COUNT(*) as operations_count')
+            ->selectRaw($this->profitSql().' as total_profit_usd')
+            ->groupBy("{$operationsTable}.supplier_id", "{$customersTable}.name")
+            ->orderByDesc('total_profit_usd')
+            ->get()
+            ->map(fn ($row): array => [
+                'supplier_id' => (int) $row->supplier_id,
+                'supplier' => $row->supplier,
+                'operations_count' => (int) $row->operations_count,
+                'total_profit_usd' => round((float) $row->total_profit_usd, 4),
+            ])
+            ->values()
+            ->all();
+
+        return [
+            'type' => 'profit-by-supplier',
+            'title' => 'الأرباح حسب المورد',
+            'date_from' => $params['date_from'] ?? null,
+            'date_to' => $params['date_to'] ?? null,
+            'rows' => $rows,
+            'total_profit_usd' => round((float) collect($rows)->sum('total_profit_usd'), 4),
+            'generated_at' => now(),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     */
+    public function profitByUser(array $params, User $user): array
+    {
+        $operationsTable = (new Operation)->getTable();
+        $usersTable = (new User)->getTable();
+
+        $rows = $this->completedProfitOperations($params, $user)
+            ->join($usersTable, "{$usersTable}.id", '=', "{$operationsTable}.created_by")
+            ->selectRaw("{$operationsTable}.created_by as user_id")
+            ->selectRaw("{$usersTable}.name as employee")
+            ->selectRaw('COUNT(*) as operations_count')
+            ->selectRaw($this->profitSql().' as total_profit_usd')
+            ->groupBy("{$operationsTable}.created_by", "{$usersTable}.name")
+            ->orderByDesc('total_profit_usd')
+            ->get()
+            ->map(fn ($row): array => [
+                'user_id' => (int) $row->user_id,
+                'employee' => $row->employee,
+                'operations_count' => (int) $row->operations_count,
+                'total_profit_usd' => round((float) $row->total_profit_usd, 4),
+            ])
+            ->values()
+            ->all();
+
+        return [
+            'type' => 'profit-by-user',
+            'title' => 'الأرباح حسب الموظف',
+            'date_from' => $params['date_from'] ?? null,
+            'date_to' => $params['date_to'] ?? null,
+            'rows' => $rows,
+            'total_profit_usd' => round((float) collect($rows)->sum('total_profit_usd'), 4),
+            'generated_at' => now(),
+        ];
+    }
+
+    /**
      * @param  Builder<Transaction>  $query
      * @return array{receive: float, send: float, net: float, count: int}
      */
@@ -281,5 +446,61 @@ class ReportService
             ->sum('net_usd_value');
 
         return round($receive - $send, 4);
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return Builder<Operation>
+     */
+    private function profitOperationsQuery(array $params, User $user): Builder
+    {
+        $query = Operation::query();
+
+        if ($user->isOwner()) {
+            $query->when(isset($params['user_id']), fn (Builder $query): Builder => $query->where('created_by', (int) $params['user_id']));
+        } else {
+            $query->where('created_by', $user->id);
+        }
+
+        return $query
+            ->when(isset($params['date_from']), fn (Builder $query): Builder => $query->whereDate('transaction_date', '>=', (string) $params['date_from']))
+            ->when(isset($params['date_to']), fn (Builder $query): Builder => $query->whereDate('transaction_date', '<=', (string) $params['date_to']))
+            ->when(isset($params['supplier_id']), fn (Builder $query): Builder => $query->where('supplier_id', (int) $params['supplier_id']));
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return Builder<Operation>
+     */
+    private function completedProfitOperations(array $params, User $user): Builder
+    {
+        return $this->profitOperationsQuery($params, $user)
+            ->where('status', OperationStatus::Completed->value);
+    }
+
+    /**
+     * @param  Builder<Operation>  $query
+     */
+    private function sumProfitUsd(Builder $query): float
+    {
+        return round((float) $query->selectRaw($this->profitSql().' as total_profit_usd')->value('total_profit_usd'), 4);
+    }
+
+    private function operationProfitUsd(Operation $operation): float
+    {
+        $exchangeRate = (float) $operation->customer_exchange_rate;
+
+        if ($exchangeRate <= 0) {
+            return 0.0;
+        }
+
+        return round((float) $operation->commission_amount / $exchangeRate, 4);
+    }
+
+    private function profitSql(): string
+    {
+        $operationsTable = (new Operation)->getTable();
+
+        return "SUM(CASE WHEN {$operationsTable}.customer_exchange_rate > 0 THEN {$operationsTable}.commission_amount / {$operationsTable}.customer_exchange_rate ELSE 0 END)";
     }
 }

@@ -55,6 +55,9 @@ class OperationFactory extends Factory
         return $this->state(fn (array $attributes): array => [
             'supplier_id' => null,
             'box_id' => $box?->id ?? Box::factory(),
+            'supplier_currency' => null,
+            'supplier_amount' => null,
+            'supplier_exchange_rate' => null,
             'status' => OperationStatus::Completed->value,
             'completed_at' => now(),
         ]);

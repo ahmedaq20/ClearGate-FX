@@ -103,6 +103,7 @@ class PdfService
         return match ($type) {
             'daily' => 'pdf.daily-report',
             'monthly', 'comparison' => 'pdf.monthly-report',
+            'profit-summary', 'daily-profit', 'monthly-profit', 'profit-by-supplier', 'profit-by-user' => 'pdf.profit-report',
             'statement' => 'pdf.statement',
             'receipt' => 'pdf.receipt',
             default => 'pdf.daily-report',

@@ -29,6 +29,11 @@ class ExcelService
     {
         return match ($type) {
             'comparison' => ['User ID', 'User Name', 'Receive USD', 'Send USD', 'Net USD', 'Count'],
+            'profit-summary' => ['Metric', 'Value'],
+            'daily-profit' => ['Date', 'Operations Count', 'Total Profit USD'],
+            'monthly-profit' => ['Month', 'Operations Count', 'Total Profit USD'],
+            'profit-by-supplier' => ['Supplier ID', 'Supplier', 'Operations Count', 'Total Profit USD'],
+            'profit-by-user' => ['User ID', 'Employee', 'Operations Count', 'Total Profit USD'],
             default => ['ID', 'Date', 'Type', 'Customer', 'User', 'Currency', 'Amount', 'Rate', 'USD Value', 'Commission USD', 'Net USD', 'Reference', 'Deleted At'],
         };
     }
@@ -47,6 +52,50 @@ class ExcelService
                 $row['send'],
                 $row['net'],
                 $row['count'],
+            ])->all();
+        }
+
+        if ($type === 'profit-summary') {
+            return [
+                ['Total Operations', $report['total_operations']],
+                ['Completed Operations', $report['completed_operations']],
+                ['Pending Operations', $report['pending_operations']],
+                ['Cancelled Operations', $report['cancelled_operations']],
+                ['Total Profit USD', $report['total_profit_usd']],
+            ];
+        }
+
+        if ($type === 'daily-profit') {
+            return collect($report['rows'])->map(fn (array $row): array => [
+                $row['date'],
+                $row['operations_count'],
+                $row['total_profit_usd'],
+            ])->all();
+        }
+
+        if ($type === 'monthly-profit') {
+            return collect($report['rows'])->map(fn (array $row): array => [
+                $row['month'],
+                $row['operations_count'],
+                $row['total_profit_usd'],
+            ])->all();
+        }
+
+        if ($type === 'profit-by-supplier') {
+            return collect($report['rows'])->map(fn (array $row): array => [
+                $row['supplier_id'],
+                $row['supplier'],
+                $row['operations_count'],
+                $row['total_profit_usd'],
+            ])->all();
+        }
+
+        if ($type === 'profit-by-user') {
+            return collect($report['rows'])->map(fn (array $row): array => [
+                $row['user_id'],
+                $row['employee'],
+                $row['operations_count'],
+                $row['total_profit_usd'],
             ])->all();
         }
 

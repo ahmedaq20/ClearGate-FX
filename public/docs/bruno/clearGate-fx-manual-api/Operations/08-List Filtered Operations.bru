@@ -5,9 +5,19 @@ meta {
 }
 
 get {
-  url: {{baseUrlApi}}/operations?customer=1&supplier=2&box=1&date_from=2026-06-01&date_to=2026-06-30&reference_number=TRX-2026-00001&per_page=20
+  url: {{baseUrlApi}}/operations?customer=2&supplier=1&date_from=2026-06-01&date_to=2026-06-30&reference_number=TRX-2026-00004&per_page=20
   body: none
   auth: bearer
+}
+
+params:query {
+  customer: 2
+  supplier: 1
+  date_from: 2026-06-01
+  date_to: 2026-06-30
+  reference_number: TRX-2026-00004
+  per_page: 20
+  ~box: 1
 }
 
 headers {

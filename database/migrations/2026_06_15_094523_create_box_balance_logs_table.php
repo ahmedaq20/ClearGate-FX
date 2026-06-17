@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('box_balance_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('box_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('operation_id')->nullable()->constrained('operations')->nullOnDelete();
             $table->enum('operation_type', ['add', 'subtract']);
             $table->decimal('amount', 18, 4);
             $table->decimal('balance_before', 18, 4);
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
 
             $table->index('operation_type');
+            $table->index('operation_id');
             $table->index('created_by');
         });
     }

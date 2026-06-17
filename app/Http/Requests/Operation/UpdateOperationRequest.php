@@ -33,9 +33,9 @@ class UpdateOperationRequest extends ApiFormRequest
                 'integer',
                 Rule::exists('customers', 'id')->where('type', CustomerType::Customer->value),
             ],
-            'supplier_currency' => ['sometimes', 'string', 'max:10'],
-            'supplier_amount' => ['sometimes', 'numeric', 'gt:0'],
-            'supplier_exchange_rate' => ['sometimes', 'numeric', 'gt:0'],
+            'supplier_currency' => ['sometimes', 'nullable', 'string', 'max:10'],
+            'supplier_amount' => ['sometimes', 'nullable', 'numeric', 'gt:0'],
+            'supplier_exchange_rate' => ['sometimes', 'nullable', 'numeric', 'gt:0'],
             'customer_currency' => ['sometimes', 'string', 'max:10'],
             'customer_amount' => ['sometimes', 'numeric', 'gt:0'],
             'customer_exchange_rate' => ['sometimes', 'numeric', 'gt:0'],
@@ -59,8 +59,31 @@ class UpdateOperationRequest extends ApiFormRequest
                 if ($hasSupplier === $hasBox) {
                     $validator->errors()->add('funding_source', 'يجب اختيار مصدر تمويل واحد فقط: مورد أو صندوق.');
                 }
+
+                if ($hasSupplier && ! $this->filledFromRequestOrOperation('supplier_currency')) {
+                    $validator->errors()->add('supplier_currency', 'حقل عملة المورد مطلوب عند استخدام مورد كمصدر للأموال.');
+                }
+
+                if ($hasSupplier && ! $this->filledFromRequestOrOperation('supplier_amount')) {
+                    $validator->errors()->add('supplier_amount', 'حقل مبلغ المورد مطلوب عند استخدام مورد كمصدر للأموال.');
+                }
+
+                if ($hasSupplier && ! $this->filledFromRequestOrOperation('supplier_exchange_rate')) {
+                    $validator->errors()->add('supplier_exchange_rate', 'حقل سعر صرف المورد مطلوب عند استخدام مورد كمصدر للأموال.');
+                }
             },
         ];
+    }
+
+    private function filledFromRequestOrOperation(string $key): bool
+    {
+        if ($this->has($key)) {
+            return $this->filled($key);
+        }
+
+        $operation = $this->route('operation');
+
+        return $operation !== null && filled($operation->{$key});
     }
 
     /**

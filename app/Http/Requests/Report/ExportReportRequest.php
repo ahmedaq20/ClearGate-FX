@@ -18,7 +18,17 @@ class ExportReportRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
-            'type' => ['required', Rule::in(['daily', 'monthly', 'statement', 'comparison'])],
+            'type' => ['required', Rule::in([
+                'daily',
+                'monthly',
+                'statement',
+                'comparison',
+                'profit-summary',
+                'daily-profit',
+                'monthly-profit',
+                'profit-by-supplier',
+                'profit-by-user',
+            ])],
             'format' => ['required', Rule::in(['pdf', 'excel'])],
             'params' => ['nullable', 'array'],
         ];

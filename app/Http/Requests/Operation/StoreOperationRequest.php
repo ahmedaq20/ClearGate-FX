@@ -34,9 +34,9 @@ class StoreOperationRequest extends ApiFormRequest
                 'integer',
                 Rule::exists('customers', 'id')->where('type', CustomerType::Customer->value),
             ],
-            'supplier_currency' => ['required', 'string', 'max:10'],
-            'supplier_amount' => ['required', 'numeric', 'gt:0'],
-            'supplier_exchange_rate' => ['required', 'numeric', 'gt:0'],
+            'supplier_currency' => ['nullable', 'string', 'max:10'],
+            'supplier_amount' => ['nullable', 'numeric', 'gt:0'],
+            'supplier_exchange_rate' => ['nullable', 'numeric', 'gt:0'],
             'customer_currency' => ['required', 'string', 'max:10'],
             'customer_amount' => ['required', 'numeric', 'gt:0'],
             'customer_exchange_rate' => ['required', 'numeric', 'gt:0'],
@@ -127,6 +127,18 @@ class StoreOperationRequest extends ApiFormRequest
 
                 if ($hasSupplier && ! $this->filled('status')) {
                     $validator->errors()->add('status', 'حقل الحالة مطلوب.');
+                }
+
+                if ($hasSupplier && ! $this->filled('supplier_currency')) {
+                    $validator->errors()->add('supplier_currency', 'حقل عملة المورد مطلوب عند استخدام مورد كمصدر للأموال.');
+                }
+
+                if ($hasSupplier && ! $this->filled('supplier_amount')) {
+                    $validator->errors()->add('supplier_amount', 'حقل مبلغ المورد مطلوب عند استخدام مورد كمصدر للأموال.');
+                }
+
+                if ($hasSupplier && ! $this->filled('supplier_exchange_rate')) {
+                    $validator->errors()->add('supplier_exchange_rate', 'حقل سعر صرف المورد مطلوب عند استخدام مورد كمصدر للأموال.');
                 }
 
                 if ($hasBox && $this->input('status') === OperationStatus::Pending->value) {

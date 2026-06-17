@@ -52,6 +52,16 @@ class User extends Authenticatable
         return $this->hasMany(Box::class, 'assigned_user_id');
     }
 
+    public function capitalAccount(): HasOne
+    {
+        return $this->hasOne(CapitalAccount::class);
+    }
+
+    public function ownerExpenses(): HasMany
+    {
+        return $this->hasMany(OwnerExpense::class);
+    }
+
     public function customers(): HasMany
     {
         return $this->hasMany(Customer::class);

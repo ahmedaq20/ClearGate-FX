@@ -120,6 +120,9 @@ test('box funded operation deducts from box and writes balance log', function ()
     ]))
         ->assertCreated()
         ->assertJsonPath('data.reference_number', 'TRX-2026-00001')
+        ->assertJsonPath('data.supplier_currency', null)
+        ->assertJsonPath('data.supplier_amount', null)
+        ->assertJsonPath('data.supplier_exchange_rate', null)
         ->assertJsonPath('data.commission_amount', '25.0000')
         ->assertJsonPath('data.customer_net_amount', '975.0000')
         ->assertJsonPath('data.status', 'completed')
@@ -134,6 +137,30 @@ test('box funded operation deducts from box and writes balance log', function ()
         ->and((float) $log->balance_after)->toBe(500.0)
         ->and($log->created_by)->toBe($owner->id)
         ->and($log->operation_id)->toBe(Operation::query()->firstOrFail()->id);
+});
+
+test('box funded operation stores null supplier values even when supplied', function (): void {
+    actingAsOperationUser();
+    $box = Box::factory()->create(['current_balance' => 1500]);
+
+    $this->postJson('/api/v1/operations', operationPayload([
+        'supplier_id' => null,
+        'box_id' => $box->id,
+        'status' => null,
+        'supplier_currency' => 'USD',
+        'supplier_amount' => 100,
+        'supplier_exchange_rate' => 1,
+    ]))
+        ->assertCreated()
+        ->assertJsonPath('data.supplier_currency', null)
+        ->assertJsonPath('data.supplier_amount', null)
+        ->assertJsonPath('data.supplier_exchange_rate', null);
+
+    $operation = Operation::query()->firstOrFail();
+
+    expect($operation->supplier_currency)->toBeNull()
+        ->and($operation->supplier_amount)->toBeNull()
+        ->and($operation->supplier_exchange_rate)->toBeNull();
 });
 
 test('box funded operation cannot be created as pending', function (): void {

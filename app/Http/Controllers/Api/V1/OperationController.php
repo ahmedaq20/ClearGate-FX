@@ -28,6 +28,186 @@ class OperationController extends BaseApiController
 
     /**
      * List operations
+     *Continue following AGENTS.md and the updated project plan.
+
+Phase 5: Operations Dashboard & Financial Monitoring
+
+Business Goal:
+
+Management needs a real-time dashboard to monitor:
+
+     * liquidity
+     * pending supplier operations
+     * completed operations
+     * commissions
+     * suppliers
+     * boxes
+
+---
+
+## DASHBOARD SUMMARY
+
+Create a financial dashboard endpoint.
+
+GET /api/v1/dashboard/financial
+
+Return:
+
+{
+"total_boxes_balance": 0,
+
+"pending_operations_count": 0,
+"pending_operations_amount": 0,
+
+"completed_operations_count": 0,
+"completed_operations_amount": 0,
+
+"today_operations_count": 0,
+"today_operations_amount": 0,
+
+"today_commissions": 0,
+
+"suppliers_count": 0,
+"customers_count": 0,
+
+"boxes_count": 0
+}
+
+---
+
+## PENDING OPERATIONS WIDGET
+
+Return:
+
+Top pending operations:
+
+     * reference number
+     * supplier
+     * customer
+     * amount
+     * transaction date
+     * pending days
+
+Example:
+
+[
+{
+"reference_number": "TRX-2026-00025",
+"supplier": "محمد",
+"customer": "أحمد",
+"amount": 1000,
+"pending_days": 3
+}
+]
+
+---
+
+## SUPPLIER MONITORING
+
+New endpoint:
+
+GET /api/v1/dashboard/suppliers
+
+Return:
+
+     * total suppliers
+     * suppliers with pending operations
+     * top suppliers by volume
+     * top suppliers by commission
+
+---
+
+## BOX MONITORING
+
+New endpoint:
+
+GET /api/v1/dashboard/boxes
+
+Return:
+
+     * box name
+     * box type
+     * current balance
+     * last activity date
+
+---
+
+## COMMISSION ANALYTICS
+
+New endpoint:
+
+GET /api/v1/dashboard/commissions
+
+Return:
+
+     * today commissions
+     * monthly commissions
+     * yearly commissions
+
+---
+
+## CHART DATA
+
+New endpoint:
+
+GET /api/v1/dashboard/charts
+
+Return:
+
+     * operations by day
+     * commissions by day
+     * pending vs completed
+
+Return chart-ready JSON.
+
+---
+
+## FILTER SUPPORT
+
+Allow filters:
+
+     * date_from
+     * date_to
+     * supplier_id
+     * box_id
+
+---
+
+## PERMISSIONS
+
+Owner:
+
+     * full dashboard access
+
+Manager:
+
+     * according to assigned permissions
+
+---
+
+## IMPORTANT
+
+Do NOT create frontend.
+
+Provide API-only responses.
+
+Do NOT modify operations logic.
+
+Do NOT modify box balances.
+
+Do NOT modify customer logic.
+
+---
+
+## AFTER FINISHING
+
+     * Run vendor/bin/pint --dirty --format agent
+     * Run php artisan test --compact
+     * Run PHP syntax checks
+     * Show changed files
+     * Summarize new dashboard endpoints
+     * Show example responses
+
      *
      * @authenticated
      *

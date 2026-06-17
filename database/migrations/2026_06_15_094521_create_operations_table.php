@@ -18,9 +18,9 @@ return new class extends Migration
             $table->foreignId('supplier_id')->nullable()->constrained('customers')->nullOnDelete();
             $table->foreignId('box_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('customer_id')->constrained('customers');
-            $table->string('supplier_currency', 10);
-            $table->decimal('supplier_amount', 18, 4);
-            $table->decimal('supplier_exchange_rate', 18, 8);
+            $table->string('supplier_currency', 10)->nullable();
+            $table->decimal('supplier_amount', 18, 4)->nullable();
+            $table->decimal('supplier_exchange_rate', 18, 8)->nullable();
             $table->string('customer_currency', 10);
             $table->decimal('customer_amount', 18, 4);
             $table->decimal('customer_exchange_rate', 18, 8);
@@ -28,6 +28,10 @@ return new class extends Migration
             $table->decimal('commission_rate', 18, 4);
             $table->decimal('commission_amount', 18, 4);
             $table->decimal('customer_net_amount', 18, 4);
+            $table->string('status', 30)->default('pending')->index();
+            $table->timestamp('completed_at')->nullable()->index();
+            $table->timestamp('cancelled_at')->nullable()->index();
+            $table->text('cancellation_reason')->nullable();
             $table->text('notes')->nullable();
             $table->foreignId('created_by')->constrained('users');
             $table->timestamps();

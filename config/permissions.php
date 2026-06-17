@@ -7,6 +7,7 @@ return [
         'boxes' => 'الصناديق الجديدة',
         'vaults' => 'الصناديق',
         'currencies' => 'العملات وأسعار الصرف',
+        'dashboard' => 'لوحة التحكم',
         'reports' => 'التقارير',
         'users' => 'المستخدمون',
         'settings' => 'الإعدادات',
@@ -59,6 +60,7 @@ return [
         'currency.viewAny',
         'currency.manage',
         'exchange_rate.update',
+        'dashboard.viewFinancial',
         'report.daily',
         'report.monthly',
         'report.export',
@@ -113,6 +115,8 @@ return [
         'currency.viewAny' => ['label' => 'عرض العملات', 'group' => 'currencies'],
         'currency.manage' => ['label' => 'إدارة العملات', 'group' => 'currencies'],
         'exchange_rate.update' => ['label' => 'تحديث أسعار الصرف', 'group' => 'currencies'],
+
+        'dashboard.viewFinancial' => ['label' => 'عرض لوحة التحكم المالية', 'group' => 'dashboard'],
 
         'report.daily' => ['label' => 'عرض التقرير اليومي', 'group' => 'reports'],
         'report.monthly' => ['label' => 'عرض التقرير الشهري', 'group' => 'reports'],

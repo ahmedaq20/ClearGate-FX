@@ -1,11 +1,11 @@
 meta {
-  name: Show Customer
+  name: Daily Profit
   type: http
-  seq: 3
+  seq: 10
 }
 
 get {
-  url: {{baseUrlApi}}/customers/1
+  url: {{baseUrlApi}}/reports/daily-profit?date_from=2026-06-01&date_to=2026-06-30
   body: none
   auth: bearer
 }

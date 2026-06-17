@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\OperationStatus;
 use App\Http\Controllers\Api\BaseApiController;
+use App\Http\Requests\Dashboard\DashboardFilterRequest;
 use App\Models\Customer;
 use App\Models\Operation;
 use App\Models\Transaction;
+use App\Models\User;
 use App\Models\Vault;
 use App\Services\BalanceService;
+use App\Services\FinancialDashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -22,6 +25,7 @@ class DashboardController extends BaseApiController
 {
     public function __construct(
         private BalanceService $balanceService,
+        private FinancialDashboardService $financialDashboardService,
     ) {}
 
     /**
@@ -129,5 +133,69 @@ class DashboardController extends BaseApiController
         }
 
         return $this->sendResponse(compact('labels', 'receive', 'send', 'net'));
+    }
+
+    public function financial(DashboardFilterRequest $request): JsonResponse
+    {
+        if (! $this->canViewFinancialDashboard($request->user())) {
+            return $this->sendError('غير مصرح', [], 403);
+        }
+
+        return $this->sendResponse(
+            $this->financialDashboardService->financial($request->validated(), $this->currentUser($request))
+        );
+    }
+
+    public function suppliers(DashboardFilterRequest $request): JsonResponse
+    {
+        if (! $this->canViewFinancialDashboard($request->user())) {
+            return $this->sendError('غير مصرح', [], 403);
+        }
+
+        return $this->sendResponse(
+            $this->financialDashboardService->suppliers($request->validated(), $this->currentUser($request))
+        );
+    }
+
+    public function boxes(DashboardFilterRequest $request): JsonResponse
+    {
+        if (! $this->canViewFinancialDashboard($request->user())) {
+            return $this->sendError('غير مصرح', [], 403);
+        }
+
+        return $this->sendResponse(
+            $this->financialDashboardService->boxes($request->validated(), $this->currentUser($request))
+        );
+    }
+
+    public function commissions(DashboardFilterRequest $request): JsonResponse
+    {
+        if (! $this->canViewFinancialDashboard($request->user())) {
+            return $this->sendError('غير مصرح', [], 403);
+        }
+
+        return $this->sendResponse(
+            $this->financialDashboardService->commissions($request->validated(), $this->currentUser($request))
+        );
+    }
+
+    public function charts(DashboardFilterRequest $request): JsonResponse
+    {
+        if (! $this->canViewFinancialDashboard($request->user())) {
+            return $this->sendError('غير مصرح', [], 403);
+        }
+
+        return $this->sendResponse(
+            $this->financialDashboardService->charts($request->validated(), $this->currentUser($request))
+        );
+    }
+
+    private function canViewFinancialDashboard(?User $user): bool
+    {
+        return $user !== null && (
+            $user->isOwner()
+            || $user->hasRole('admin', 'sanctum')
+            || $user->can('dashboard.viewFinancial')
+        );
     }
 }

@@ -1,11 +1,11 @@
 meta {
-  name: Show Customer
+  name: Monthly Profit
   type: http
-  seq: 3
+  seq: 11
 }
 
 get {
-  url: {{baseUrlApi}}/customers/1
+  url: {{baseUrlApi}}/reports/monthly-profit?date_from=2026-01-01&date_to=2026-12-31
   body: none
   auth: bearer
 }
