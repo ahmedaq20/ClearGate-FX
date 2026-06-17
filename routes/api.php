@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\ArchiveController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\BoxAdjustmentController;
 use App\Http\Controllers\Api\V1\BoxController;
 use App\Http\Controllers\Api\V1\CapitalController;
 use App\Http\Controllers\Api\V1\CurrencyController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Api\V1\OperationController;
 use App\Http\Controllers\Api\V1\OwnerExpenseController;
 use App\Http\Controllers\Api\V1\PermissionController;
 use App\Http\Controllers\Api\V1\ReceiptController;
+use App\Http\Controllers\Api\V1\ReconciliationController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\SettingController;
@@ -75,6 +77,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         Route::patch('boxes/{box}/balance', [BoxController::class, 'balance'])->name('boxes.balance');
         Route::get('boxes/{box}/logs', [BoxController::class, 'logs'])->name('boxes.logs');
+        Route::post('boxes/{box}/adjust', [BoxAdjustmentController::class, 'store'])
+            ->missing(fn () => response()->json(['success' => false, 'message' => 'الصندوق غير موجود'], 404))
+            ->name('boxes.adjust');
+        Route::get('boxes/{box}/adjustments', [BoxAdjustmentController::class, 'boxAdjustments'])
+            ->missing(fn () => response()->json(['success' => false, 'message' => 'الصندوق غير موجود'], 404))
+            ->name('boxes.adjustments');
         Route::get('boxes', [BoxController::class, 'index'])->name('boxes.index');
         Route::post('boxes', [BoxController::class, 'store'])->name('boxes.store');
         Route::get('boxes/{box}', [BoxController::class, 'show'])->name('boxes.show');
@@ -111,6 +119,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::post('capital/withdraw', [CapitalController::class, 'withdraw'])->name('capital.withdraw');
         Route::post('capital/transfer-to-box', [CapitalController::class, 'transferToBox'])->name('capital.transfer-to-box');
         Route::get('capital/transactions', [CapitalController::class, 'transactions'])->name('capital.transactions');
+
+        Route::get('reconciliation', [ReconciliationController::class, 'show'])->name('reconciliation.show');
+        Route::post('reconciliation/run', [ReconciliationController::class, 'run'])->name('reconciliation.run');
+        Route::get('reconciliation/history', [ReconciliationController::class, 'history'])->name('reconciliation.history');
+
+        Route::get('adjustments', [BoxAdjustmentController::class, 'index'])->name('adjustments.index');
 
         Route::get('expenses', [OwnerExpenseController::class, 'index'])->name('expenses.index');
         Route::post('expenses', [OwnerExpenseController::class, 'store'])->name('expenses.store');

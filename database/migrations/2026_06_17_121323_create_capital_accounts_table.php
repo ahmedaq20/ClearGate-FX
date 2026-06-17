@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
             $table->decimal('balance_usd', 18, 4)->default(0);
+            $table->decimal('free_balance_usd', 18, 4)->default(0);
             $table->timestamps();
 
             $table->index('balance_usd');
+            $table->index('free_balance_usd');
         });
     }
 

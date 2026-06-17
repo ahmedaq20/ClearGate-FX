@@ -1,0 +1,29 @@
+meta {
+  name: Create Box Adjustment
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{baseUrlApi}}/boxes/1/adjust
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "adjustment_type": "decrease",
+    "amount": 500,
+    "reason": "Cash shortage",
+    "notes": "Physical cash count mismatch"
+  }
+}

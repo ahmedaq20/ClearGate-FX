@@ -1,0 +1,23 @@
+meta {
+  name: Reconciliation History
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrlApi}}/reconciliation/history
+  body: none
+  auth: bearer
+}
+
+params:query {
+  per_page: 15
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

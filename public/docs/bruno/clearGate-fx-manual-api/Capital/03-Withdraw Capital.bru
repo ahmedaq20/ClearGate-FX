@@ -1,0 +1,28 @@
+meta {
+  name: Withdraw Capital
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrlApi}}/capital/withdraw
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "amount": 250,
+    "transaction_date": "2026-06-18",
+    "notes": "Owner capital withdrawal"
+  }
+}

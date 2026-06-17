@@ -1,0 +1,28 @@
+meta {
+  name: Deposit Capital
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrlApi}}/capital/deposit
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "amount": 10000,
+    "transaction_date": "2026-06-18",
+    "notes": "Owner capital deposit"
+  }
+}

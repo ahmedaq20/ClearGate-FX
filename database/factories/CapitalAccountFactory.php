@@ -18,9 +18,12 @@ class CapitalAccountFactory extends Factory
      */
     public function definition(): array
     {
+        $balance = fake()->randomFloat(4, 0, 10000);
+
         return [
             'user_id' => User::factory(),
-            'balance_usd' => fake()->randomFloat(4, 0, 10000),
+            'balance_usd' => $balance,
+            'free_balance_usd' => fake()->randomFloat(4, 0, $balance),
         ];
     }
 }

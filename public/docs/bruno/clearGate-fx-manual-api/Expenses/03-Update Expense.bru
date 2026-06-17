@@ -1,0 +1,30 @@
+meta {
+  name: Update Expense
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrlApi}}/expenses/1
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "title": "Vehicle maintenance updated",
+    "category": "vehicle",
+    "amount": 100,
+    "expense_date": "2026-06-18",
+    "notes": "Updated owner vehicle service"
+  }
+}

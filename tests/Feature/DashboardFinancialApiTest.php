@@ -3,6 +3,7 @@
 use App\Enums\OperationStatus;
 use App\Models\Box;
 use App\Models\BoxBalanceLog;
+use App\Models\CapitalAccount;
 use App\Models\Customer;
 use App\Models\Operation;
 use App\Models\User;
@@ -74,6 +75,11 @@ test('owner can view financial dashboard summary and pending operation widget', 
     $customer = dashboardCustomer($owner, 'customer', 'أحمد');
     $box = Box::factory()->create(['current_balance' => 1500]);
     Box::factory()->create(['current_balance' => 700]);
+    CapitalAccount::factory()->create([
+        'user_id' => $owner->id,
+        'balance_usd' => 3200,
+        'free_balance_usd' => 1000,
+    ]);
 
     dashboardOperation([
         'reference_number' => 'TRX-2026-00025',
@@ -105,7 +111,11 @@ test('owner can view financial dashboard summary and pending operation widget', 
 
     $this->getJson('/api/v1/dashboard/financial')
         ->assertOk()
+        ->assertJsonPath('data.capital_balance', 3200)
+        ->assertJsonPath('data.free_capital', 1000)
         ->assertJsonPath('data.total_boxes_balance', 2200)
+        ->assertJsonPath('data.reconciliation_status', 'balanced')
+        ->assertJsonPath('data.reconciliation_difference', 0)
         ->assertJsonPath('data.pending_operations_count', 1)
         ->assertJsonPath('data.pending_operations_amount', 1000)
         ->assertJsonPath('data.completed_operations_count', 1)

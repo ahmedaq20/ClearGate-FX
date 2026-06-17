@@ -8,6 +8,7 @@ return [
         'vaults' => 'الصناديق',
         'currencies' => 'العملات وأسعار الصرف',
         'dashboard' => 'لوحة التحكم',
+        'reconciliation' => 'المطابقة المالية',
         'reports' => 'التقارير',
         'users' => 'المستخدمون',
         'settings' => 'الإعدادات',
@@ -54,6 +55,8 @@ return [
         'box.delete',
         'box.adjustBalance',
         'box.viewLogs',
+        'box.adjustment.view',
+        'box.adjustment.create',
         'vault.viewAny',
         'vault.view',
         'vault.update',
@@ -61,6 +64,8 @@ return [
         'currency.manage',
         'exchange_rate.update',
         'dashboard.viewFinancial',
+        'reconciliation.view',
+        'reconciliation.run',
         'report.daily',
         'report.monthly',
         'report.export',
@@ -107,6 +112,8 @@ return [
         'box.delete' => ['label' => 'حذف صندوق جديد', 'group' => 'boxes'],
         'box.adjustBalance' => ['label' => 'تعديل رصيد صندوق جديد', 'group' => 'boxes'],
         'box.viewLogs' => ['label' => 'عرض سجل رصيد صندوق جديد', 'group' => 'boxes'],
+        'box.adjustment.view' => ['label' => 'عرض تعديلات رصيد الصندوق', 'group' => 'boxes'],
+        'box.adjustment.create' => ['label' => 'إنشاء تعديل رصيد الصندوق', 'group' => 'boxes'],
 
         'vault.viewAny' => ['label' => 'عرض كل الصناديق', 'group' => 'vaults'],
         'vault.view' => ['label' => 'عرض صندوق', 'group' => 'vaults'],
@@ -117,6 +124,9 @@ return [
         'exchange_rate.update' => ['label' => 'تحديث أسعار الصرف', 'group' => 'currencies'],
 
         'dashboard.viewFinancial' => ['label' => 'عرض لوحة التحكم المالية', 'group' => 'dashboard'],
+
+        'reconciliation.view' => ['label' => 'عرض المطابقة المالية', 'group' => 'reconciliation'],
+        'reconciliation.run' => ['label' => 'تنفيذ المطابقة المالية', 'group' => 'reconciliation'],
 
         'report.daily' => ['label' => 'عرض التقرير اليومي', 'group' => 'reports'],
         'report.monthly' => ['label' => 'عرض التقرير الشهري', 'group' => 'reports'],

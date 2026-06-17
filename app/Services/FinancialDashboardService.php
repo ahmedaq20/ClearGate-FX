@@ -14,6 +14,8 @@ use Illuminate\Support\Collection;
 
 class FinancialDashboardService
 {
+    public function __construct(private readonly ReconciliationService $reconciliationService) {}
+
     /**
      * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
@@ -23,9 +25,14 @@ class FinancialDashboardService
         $operations = $this->filteredOperations($filters, $user);
         $todayOperations = $this->filteredOperations($filters, $user)
             ->whereDate('transaction_date', now()->toDateString());
+        $reconciliation = $this->reconciliationService->calculate($this->ownerForDashboard($user));
 
         return [
+            'capital_balance' => $reconciliation['capital_balance'],
+            'free_capital' => $reconciliation['free_capital'],
             'total_boxes_balance' => $this->totalBoxesBalance($filters, $user),
+            'reconciliation_status' => $reconciliation['status'],
+            'reconciliation_difference' => $reconciliation['difference'],
             'pending_operations_count' => (clone $operations)->where('status', OperationStatus::Pending->value)->count(),
             'pending_operations_amount' => $this->sumOperationAmount((clone $operations)->where('status', OperationStatus::Pending->value)),
             'completed_operations_count' => (clone $operations)->where('status', OperationStatus::Completed->value)->count(),
@@ -321,5 +328,14 @@ class FinancialDashboardService
     private function hasFullDashboardAccess(User $user): bool
     {
         return $user->isOwner() || $user->hasRole('admin', 'sanctum');
+    }
+
+    private function ownerForDashboard(User $user): User
+    {
+        if ($user->isOwner()) {
+            return $user;
+        }
+
+        return User::role('owner', 'sanctum')->oldest('id')->first() ?? $user;
     }
 }

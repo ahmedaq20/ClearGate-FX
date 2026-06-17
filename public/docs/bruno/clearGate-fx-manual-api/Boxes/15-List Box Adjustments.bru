@@ -1,0 +1,23 @@
+meta {
+  name: List Box Adjustments
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{baseUrlApi}}/adjustments
+  body: none
+  auth: bearer
+}
+
+params:query {
+  per_page: 15
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

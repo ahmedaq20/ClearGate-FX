@@ -1,0 +1,19 @@
+meta {
+  name: Capital Report
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{baseUrlApi}}/reports/capital-report?date_from=2026-06-01&date_to=2026-06-30
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

@@ -1,0 +1,19 @@
+meta {
+  name: View Reconciliation
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrlApi}}/reconciliation
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

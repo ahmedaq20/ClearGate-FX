@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable([
     'user_id',
     'balance_usd',
+    'free_balance_usd',
 ])]
 class CapitalAccount extends Model
 {
@@ -20,6 +21,7 @@ class CapitalAccount extends Model
 
     protected $attributes = [
         'balance_usd' => 0,
+        'free_balance_usd' => 0,
     ];
 
     public function user(): BelongsTo
@@ -44,6 +46,7 @@ class CapitalAccount extends Model
     {
         return [
             'balance_usd' => 'decimal:4',
+            'free_balance_usd' => 'decimal:4',
         ];
     }
 }

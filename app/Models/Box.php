@@ -44,6 +44,11 @@ class Box extends Model
         return $this->hasMany(BoxBalanceLog::class);
     }
 
+    public function adjustments(): HasMany
+    {
+        return $this->hasMany(BoxAdjustment::class);
+    }
+
     public function operations(): HasMany
     {
         return $this->hasMany(Operation::class);

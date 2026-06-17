@@ -1,0 +1,19 @@
+meta {
+  name: Capital Transactions
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrlApi}}/capital/transactions?per_page=20
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

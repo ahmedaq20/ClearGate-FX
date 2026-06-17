@@ -18,7 +18,7 @@ class CapitalService
     {
         return CapitalAccount::query()->firstOrCreate(
             ['user_id' => $owner->id],
-            ['balance_usd' => 0]
+            ['balance_usd' => 0, 'free_balance_usd' => 0]
         );
     }
 
@@ -46,7 +46,7 @@ class CapitalService
         return DB::transaction(function () use ($owner, $data): CapitalTransaction {
             $account = $this->lockedAccount($owner);
             $amount = (float) $data['amount'];
-            $this->ensureSufficientCapital($account, $amount);
+            $this->ensureSufficientFreeCapital($account, $amount);
 
             $box = Box::query()->whereKey((int) $data['box_id'])->lockForUpdate()->firstOrFail();
             $boxBalanceBefore = (float) $box->current_balance;
@@ -56,9 +56,10 @@ class CapitalService
             $transaction = $this->recordMovement(
                 account: $account,
                 type: 'box_transfer',
-                amount: -1 * $amount,
+                amount: $amount,
                 balanceBefore: (float) $account->balance_usd,
-                balanceAfter: round((float) $account->balance_usd - $amount, 4),
+                balanceAfter: (float) $account->balance_usd,
+                freeBalanceAfter: round((float) $account->free_balance_usd - $amount, 4),
                 transactionDate: (string) ($data['transaction_date'] ?? now()->toDateString()),
                 notes: $data['notes'] ?? "Capital transfer to {$box->name}",
                 boxId: $box->id
@@ -85,7 +86,7 @@ class CapitalService
         return DB::transaction(function () use ($owner, $data): OwnerExpense {
             $account = $this->lockedAccount($owner);
             $amount = (float) $data['amount'];
-            $this->ensureSufficientCapital($account, $amount);
+            $this->ensureSufficientFreeCapital($account, $amount);
 
             $expense = OwnerExpense::query()->create([
                 'capital_account_id' => $account->id,
@@ -103,6 +104,7 @@ class CapitalService
                 amount: -1 * $amount,
                 balanceBefore: (float) $account->balance_usd,
                 balanceAfter: round((float) $account->balance_usd - $amount, 4),
+                freeBalanceAfter: round((float) $account->free_balance_usd - $amount, 4),
                 transactionDate: (string) $data['expense_date'],
                 notes: "Owner expense: {$expense->title}",
                 ownerExpenseId: $expense->id
@@ -129,7 +131,7 @@ class CapitalService
             $delta = round($newAmount - $oldAmount, 4);
 
             if ($delta > 0) {
-                $this->ensureSufficientCapital($account, $delta);
+                $this->ensureSufficientFreeCapital($account, $delta);
             }
 
             if ($delta !== 0.0) {
@@ -139,6 +141,7 @@ class CapitalService
                     amount: -1 * $delta,
                     balanceBefore: (float) $account->balance_usd,
                     balanceAfter: round((float) $account->balance_usd - $delta, 4),
+                    freeBalanceAfter: round((float) $account->free_balance_usd - $delta, 4),
                     transactionDate: (string) ($data['expense_date'] ?? $lockedExpense->expense_date->toDateString()),
                     notes: "Owner expense adjustment: {$lockedExpense->title}",
                     ownerExpenseId: $lockedExpense->id
@@ -168,6 +171,7 @@ class CapitalService
                 amount: $amount,
                 balanceBefore: (float) $account->balance_usd,
                 balanceAfter: round((float) $account->balance_usd + $amount, 4),
+                freeBalanceAfter: round((float) $account->free_balance_usd + $amount, 4),
                 transactionDate: now()->toDateString(),
                 notes: "Deleted owner expense: {$lockedExpense->title}",
                 ownerExpenseId: $lockedExpense->id
@@ -188,7 +192,7 @@ class CapitalService
         return [
             'capital_balance' => round((float) $account->balance_usd, 4),
             'boxes_total_balance' => $boxesTotalBalance,
-            'free_capital' => round((float) $account->balance_usd, 4),
+            'free_capital' => round((float) $account->free_balance_usd, 4),
             'monthly_expenses' => round((float) $owner->ownerExpenses()
                 ->whereYear('expense_date', now()->year)
                 ->whereMonth('expense_date', now()->month)
@@ -251,6 +255,7 @@ class CapitalService
 
         return [
             'capital_balance' => round((float) $this->account($owner)->balance_usd, 4),
+            'free_capital' => round((float) $this->account($owner)->free_balance_usd, 4),
             'by_type' => $rows,
             'transactions' => (clone $query)->latest('transaction_date')->latest('id')->get(),
         ];
@@ -261,13 +266,15 @@ class CapitalService
      */
     public function netWorthReport(User $owner): array
     {
-        $capitalBalance = round((float) $this->account($owner)->balance_usd, 4);
+        $account = $this->account($owner);
+        $capitalBalance = round((float) $account->balance_usd, 4);
         $boxesTotalBalance = round((float) Box::query()->sum('current_balance'), 4);
 
         return [
             'capital_balance' => $capitalBalance,
+            'free_capital' => round((float) $account->free_balance_usd, 4),
             'boxes_total_balance' => $boxesTotalBalance,
-            'net_worth' => round($capitalBalance + $boxesTotalBalance, 4),
+            'net_worth' => $capitalBalance,
         ];
     }
 
@@ -287,7 +294,7 @@ class CapitalService
             $account = $this->lockedAccount($owner);
 
             if ($signedAmount < 0) {
-                $this->ensureSufficientCapital($account, abs($signedAmount));
+                $this->ensureSufficientFreeCapital($account, abs($signedAmount));
             }
 
             return $this->recordMovement(
@@ -296,6 +303,7 @@ class CapitalService
                 amount: $signedAmount,
                 balanceBefore: (float) $account->balance_usd,
                 balanceAfter: round((float) $account->balance_usd + $signedAmount, 4),
+                freeBalanceAfter: round((float) $account->free_balance_usd + $signedAmount, 4),
                 transactionDate: $transactionDate,
                 notes: $notes
             );
@@ -308,12 +316,16 @@ class CapitalService
         float $amount,
         float $balanceBefore,
         float $balanceAfter,
+        ?float $freeBalanceAfter,
         string $transactionDate,
         ?string $notes = null,
         ?int $boxId = null,
         ?int $ownerExpenseId = null,
     ): CapitalTransaction {
-        $account->update(['balance_usd' => $balanceAfter]);
+        $account->update([
+            'balance_usd' => $balanceAfter,
+            'free_balance_usd' => $freeBalanceAfter ?? $balanceAfter,
+        ]);
 
         return $account->transactions()->create([
             'user_id' => $account->user_id,
@@ -331,6 +343,15 @@ class CapitalService
     private function ensureSufficientCapital(CapitalAccount $account, float $amount): void
     {
         if ((float) $account->balance_usd < $amount) {
+            throw ValidationException::withMessages([
+                'amount' => 'رصيد رأس المال غير كافٍ.',
+            ]);
+        }
+    }
+
+    private function ensureSufficientFreeCapital(CapitalAccount $account, float $amount): void
+    {
+        if ((float) $account->free_balance_usd < $amount) {
             throw ValidationException::withMessages([
                 'amount' => 'رصيد رأس المال غير كافٍ.',
             ]);

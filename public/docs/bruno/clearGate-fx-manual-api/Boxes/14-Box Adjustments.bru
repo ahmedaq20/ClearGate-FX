@@ -1,0 +1,23 @@
+meta {
+  name: Box Adjustments
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{baseUrlApi}}/boxes/1/adjustments
+  body: none
+  auth: bearer
+}
+
+params:query {
+  per_page: 15
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

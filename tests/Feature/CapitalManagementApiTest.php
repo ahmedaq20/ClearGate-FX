@@ -56,16 +56,19 @@ test('owner can deposit withdraw and transfer capital to a box with movement log
         ->assertJsonPath('data.type', 'box_transfer')
         ->assertJsonPath('data.box_id', $box->id)
         ->assertJsonPath('data.balance_before', '800.0000')
-        ->assertJsonPath('data.balance_after', '500.0000');
+        ->assertJsonPath('data.balance_after', '800.0000');
 
-    expect((float) CapitalAccount::query()->where('user_id', $owner->id)->value('balance_usd'))->toBe(500.0)
+    $account = CapitalAccount::query()->where('user_id', $owner->id)->firstOrFail();
+
+    expect((float) $account->balance_usd)->toBe(800.0)
+        ->and((float) $account->free_balance_usd)->toBe(500.0)
         ->and((float) $box->refresh()->current_balance)->toBe(400.0)
         ->and(CapitalTransaction::query()->where('user_id', $owner->id)->count())->toBe(3)
         ->and(BoxBalanceLog::query()->where('box_id', $box->id)->count())->toBe(1);
 
     $this->getJson('/api/v1/capital')
         ->assertOk()
-        ->assertJsonPath('data.capital_balance', 500)
+        ->assertJsonPath('data.capital_balance', 800)
         ->assertJsonPath('data.boxes_total_balance', 400)
         ->assertJsonPath('data.free_capital', 500);
 
@@ -155,14 +158,16 @@ test('capital reports return expenses capital movements and net worth', function
     $this->getJson('/api/v1/reports/capital-report')
         ->assertOk()
         ->assertJsonPath('data.capital_balance', 875)
+        ->assertJsonPath('data.free_capital', 875)
         ->assertJsonPath('data.by_type.0.type', 'deposit')
         ->assertJsonPath('data.by_type.1.type', 'expense');
 
     $this->getJson('/api/v1/reports/net-worth-report')
         ->assertOk()
         ->assertJsonPath('data.capital_balance', 875)
+        ->assertJsonPath('data.free_capital', 875)
         ->assertJsonPath('data.boxes_total_balance', 400)
-        ->assertJsonPath('data.net_worth', 1275);
+        ->assertJsonPath('data.net_worth', 875);
 });
 
 test('capital module is owner only', function (): void {

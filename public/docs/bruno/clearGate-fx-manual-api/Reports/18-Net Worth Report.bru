@@ -1,0 +1,19 @@
+meta {
+  name: Net Worth Report
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{baseUrlApi}}/reports/net-worth-report
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}

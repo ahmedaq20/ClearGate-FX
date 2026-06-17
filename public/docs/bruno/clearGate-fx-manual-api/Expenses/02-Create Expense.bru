@@ -1,0 +1,30 @@
+meta {
+  name: Create Expense
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrlApi}}/expenses
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "title": "Vehicle maintenance",
+    "category": "vehicle",
+    "amount": 150,
+    "expense_date": "2026-06-18",
+    "notes": "Owner vehicle service"
+  }
+}
