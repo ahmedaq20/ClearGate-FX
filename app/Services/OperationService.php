@@ -23,6 +23,7 @@ class OperationService
             $operation = Operation::query()->create($this->operationPayload($data, $user));
 
             $this->applyBoxFunding($operation, $user, BoxBalanceOperationType::Subtract);
+            $this->applySupplierFunding($operation);
 
             AuditLog::record(
                 action: 'operation.created',
@@ -49,11 +50,13 @@ class OperationService
             $payload = $this->operationPayload($this->mergeOperationData($lockedOperation, $data), $user, $lockedOperation);
 
             $this->applyBoxFunding($lockedOperation, $user, BoxBalanceOperationType::Add);
+            $this->reverseSupplierFunding($lockedOperation);
 
             $lockedOperation->update($payload);
             $lockedOperation->refresh();
 
             $this->applyBoxFunding($lockedOperation, $user, BoxBalanceOperationType::Subtract);
+            $this->applySupplierFunding($lockedOperation);
 
             AuditLog::record(
                 action: 'operation.updated',
@@ -77,6 +80,7 @@ class OperationService
             $oldValues = $lockedOperation->attributesToArray();
 
             $this->applyBoxFunding($lockedOperation, $user, BoxBalanceOperationType::Add);
+            $this->reverseSupplierFunding($lockedOperation);
 
             AuditLog::record(
                 action: 'operation.deleted',
@@ -111,6 +115,8 @@ class OperationService
                 'completed_at' => now(),
             ]);
             $lockedOperation->refresh();
+
+            $this->applySupplierFunding($lockedOperation);
 
             AuditLog::record(
                 action: 'operation.completed',
@@ -219,6 +225,47 @@ class OperationService
                 'commission_type' => 'نوع العمولة يجب أن يكون نسبة أو قيمة ثابتة.',
             ]),
         };
+    }
+
+    private function applySupplierFunding(Operation $operation): void
+    {
+        $this->applySupplierBalanceEffect($operation, -1);
+    }
+
+    private function reverseSupplierFunding(Operation $operation): void
+    {
+        $this->applySupplierBalanceEffect($operation, 1);
+    }
+
+    private function applySupplierBalanceEffect(Operation $operation, int $direction): void
+    {
+        if ($operation->supplier_id === null || $operation->status !== OperationStatus::Completed) {
+            return;
+        }
+
+        $supplier = $operation->supplier()->lockForUpdate()->firstOrFail();
+        $customer = $operation->customer()->lockForUpdate()->firstOrFail();
+        $supplierAmountUsd = $this->usdValue((float) $operation->supplier_amount, (float) $operation->supplier_exchange_rate);
+        $customerNetAmountUsd = $this->usdValue((float) $operation->customer_net_amount, (float) $operation->customer_exchange_rate);
+
+        $supplier->update([
+            'balance_usd' => round((float) $supplier->balance_usd + ($supplierAmountUsd * $direction), 4),
+        ]);
+
+        $customer->update([
+            'balance_usd' => round((float) $customer->balance_usd - ($customerNetAmountUsd * $direction), 4),
+        ]);
+    }
+
+    private function usdValue(float $amount, float $exchangeRate): float
+    {
+        if ($exchangeRate <= 0) {
+            throw ValidationException::withMessages([
+                'exchange_rate' => 'سعر الصرف يجب أن يكون أكبر من صفر.',
+            ]);
+        }
+
+        return round($amount / $exchangeRate, 4);
     }
 
     private function applyBoxFunding(Operation $operation, User $user, BoxBalanceOperationType $operationType): void

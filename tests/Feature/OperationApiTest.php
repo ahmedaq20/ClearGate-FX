@@ -65,17 +65,36 @@ test('supplier funded operation stores commission and does not affect boxes', fu
 
 test('supplier funded operation can be created completed when supplier already settled', function (): void {
     actingAsOperationUser();
+    $supplier = Customer::factory()->create([
+        'type' => 'supplier',
+        'balance_usd' => 2000,
+    ]);
+    $customer = Customer::factory()->create([
+        'type' => 'customer',
+        'balance_usd' => 100,
+    ]);
 
     $this->postJson('/api/v1/operations', operationPayload([
+        'supplier_id' => $supplier->id,
+        'customer_id' => $customer->id,
         'status' => 'completed',
+        'supplier_amount' => 2000,
+        'supplier_exchange_rate' => 2,
+        'customer_amount' => 1000,
+        'customer_exchange_rate' => 4,
+        'commission_type' => 'fixed',
+        'commission_rate' => 200,
     ]))
         ->assertCreated()
         ->assertJsonPath('data.status', 'completed')
+        ->assertJsonPath('data.customer_net_amount', '800.0000')
         ->assertJsonPath('data.cancelled_at', null);
 
     $operation = Operation::query()->firstOrFail();
 
     expect($operation->completed_at)->not->toBeNull()
+        ->and((float) $supplier->refresh()->balance_usd)->toBe(1000.0)
+        ->and((float) $customer->refresh()->balance_usd)->toBe(300.0)
         ->and(BoxBalanceLog::query()->count())->toBe(0);
 });
 
@@ -229,6 +248,73 @@ test('updating operation reverses old box funding and applies new funding', func
         ->and(AuditLog::query()->where('action', 'operation.updated')->count())->toBe(1);
 });
 
+test('updating completed supplier operation reverses old supplier funding and applies new balances', function (): void {
+    $owner = actingAsOperationUser();
+    $oldSupplier = Customer::factory()->create(['type' => 'supplier', 'balance_usd' => 500]);
+    $newSupplier = Customer::factory()->create(['type' => 'supplier', 'balance_usd' => 1000]);
+    $oldCustomer = Customer::factory()->create(['type' => 'customer', 'balance_usd' => 300]);
+    $newCustomer = Customer::factory()->create(['type' => 'customer', 'balance_usd' => 200]);
+    $operation = Operation::factory()->completed()->create([
+        'supplier_id' => $oldSupplier->id,
+        'customer_id' => $oldCustomer->id,
+        'supplier_amount' => 1000,
+        'supplier_exchange_rate' => 2,
+        'customer_amount' => 1000,
+        'customer_exchange_rate' => 4,
+        'commission_type' => 'fixed',
+        'commission_rate' => 200,
+        'commission_amount' => 200,
+        'customer_net_amount' => 800,
+        'created_by' => $owner->id,
+    ]);
+
+    $this->putJson("/api/v1/operations/{$operation->id}", [
+        'supplier_id' => $newSupplier->id,
+        'customer_id' => $newCustomer->id,
+        'supplier_amount' => 3000,
+        'supplier_exchange_rate' => 3,
+        'customer_amount' => 1500,
+        'customer_exchange_rate' => 5,
+        'commission_type' => 'fixed',
+        'commission_rate' => 500,
+    ])
+        ->assertOk()
+        ->assertJsonPath('data.supplier_id', $newSupplier->id)
+        ->assertJsonPath('data.customer_id', $newCustomer->id)
+        ->assertJsonPath('data.customer_net_amount', '1000.0000');
+
+    expect((float) $oldSupplier->refresh()->balance_usd)->toBe(1000.0)
+        ->and((float) $oldCustomer->refresh()->balance_usd)->toBe(100.0)
+        ->and((float) $newSupplier->refresh()->balance_usd)->toBe(0.0)
+        ->and((float) $newCustomer->refresh()->balance_usd)->toBe(400.0);
+});
+
+test('deleting completed supplier operation reverses supplier and customer balances', function (): void {
+    $owner = actingAsOperationUser();
+    $supplier = Customer::factory()->create(['type' => 'supplier', 'balance_usd' => 500]);
+    $customer = Customer::factory()->create(['type' => 'customer', 'balance_usd' => 300]);
+    $operation = Operation::factory()->completed()->create([
+        'supplier_id' => $supplier->id,
+        'customer_id' => $customer->id,
+        'supplier_amount' => 1000,
+        'supplier_exchange_rate' => 2,
+        'customer_amount' => 1000,
+        'customer_exchange_rate' => 4,
+        'commission_type' => 'fixed',
+        'commission_rate' => 200,
+        'commission_amount' => 200,
+        'customer_net_amount' => 800,
+        'created_by' => $owner->id,
+    ]);
+
+    $this->deleteJson("/api/v1/operations/{$operation->id}")
+        ->assertOk()
+        ->assertJsonPath('message', 'تم حذف العملية');
+
+    expect((float) $supplier->refresh()->balance_usd)->toBe(1000.0)
+        ->and((float) $customer->refresh()->balance_usd)->toBe(100.0);
+});
+
 test('deleting box funded operation reverses box balance and records audit', function (): void {
     $owner = actingAsOperationUser();
     $box = Box::factory()->create(['current_balance' => 500]);
@@ -281,7 +367,17 @@ test('operations can be filtered and receipt can be returned', function (): void
 
 test('pending supplier operation can be completed and records audit', function (): void {
     $owner = actingAsOperationUser();
+    $supplier = Customer::factory()->create(['type' => 'supplier', 'balance_usd' => 2000]);
+    $customer = Customer::factory()->create(['type' => 'customer', 'balance_usd' => 100]);
     $operation = Operation::factory()->create([
+        'supplier_id' => $supplier->id,
+        'customer_id' => $customer->id,
+        'supplier_amount' => 2000,
+        'supplier_exchange_rate' => 2,
+        'customer_amount' => 1000,
+        'customer_exchange_rate' => 4,
+        'commission_amount' => 200,
+        'customer_net_amount' => 800,
         'status' => 'pending',
         'completed_at' => null,
         'created_by' => $owner->id,
@@ -294,6 +390,8 @@ test('pending supplier operation can be completed and records audit', function (
 
     expect($operation->refresh()->status->value)->toBe('completed')
         ->and($operation->completed_at)->not->toBeNull()
+        ->and((float) $supplier->refresh()->balance_usd)->toBe(1000.0)
+        ->and((float) $customer->refresh()->balance_usd)->toBe(300.0)
         ->and(AuditLog::query()->where('action', 'operation.completed')->count())->toBe(1);
 });
 
