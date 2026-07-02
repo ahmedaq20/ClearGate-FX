@@ -187,12 +187,14 @@ class CapitalService
     public function dashboard(User $owner): array
     {
         $account = $this->account($owner);
+        $freeCapital = round((float) $account->free_balance_usd, 4);
         $boxesTotalBalance = round((float) Box::query()->sum('current_balance'), 4);
+        $capitalBalance = $this->capitalBalance($freeCapital, $boxesTotalBalance);
 
         return [
-            'capital_balance' => round((float) $account->balance_usd, 4),
+            'capital_balance' => $capitalBalance,
             'boxes_total_balance' => $boxesTotalBalance,
-            'free_capital' => round((float) $account->free_balance_usd, 4),
+            'free_capital' => $freeCapital,
             'monthly_expenses' => round((float) $owner->ownerExpenses()
                 ->whereYear('expense_date', now()->year)
                 ->whereMonth('expense_date', now()->month)
@@ -267,15 +269,21 @@ class CapitalService
     public function netWorthReport(User $owner): array
     {
         $account = $this->account($owner);
-        $capitalBalance = round((float) $account->balance_usd, 4);
+        $freeCapital = round((float) $account->free_balance_usd, 4);
         $boxesTotalBalance = round((float) Box::query()->sum('current_balance'), 4);
+        $capitalBalance = $this->capitalBalance($freeCapital, $boxesTotalBalance);
 
         return [
             'capital_balance' => $capitalBalance,
-            'free_capital' => round((float) $account->free_balance_usd, 4),
+            'free_capital' => $freeCapital,
             'boxes_total_balance' => $boxesTotalBalance,
             'net_worth' => $capitalBalance,
         ];
+    }
+
+    private function capitalBalance(float $freeCapital, float $boxesTotalBalance): float
+    {
+        return round($freeCapital + $boxesTotalBalance, 4);
     }
 
     private function lockedAccount(User $owner): CapitalAccount

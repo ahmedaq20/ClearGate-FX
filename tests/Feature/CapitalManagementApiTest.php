@@ -68,7 +68,7 @@ test('owner can deposit withdraw and transfer capital to a box with movement log
 
     $this->getJson('/api/v1/capital')
         ->assertOk()
-        ->assertJsonPath('data.capital_balance', 800)
+        ->assertJsonPath('data.capital_balance', 900)
         ->assertJsonPath('data.boxes_total_balance', 400)
         ->assertJsonPath('data.free_capital', 500);
 
@@ -164,10 +164,10 @@ test('capital reports return expenses capital movements and net worth', function
 
     $this->getJson('/api/v1/reports/net-worth-report')
         ->assertOk()
-        ->assertJsonPath('data.capital_balance', 875)
+        ->assertJsonPath('data.capital_balance', 1275)
         ->assertJsonPath('data.free_capital', 875)
         ->assertJsonPath('data.boxes_total_balance', 400)
-        ->assertJsonPath('data.net_worth', 875);
+        ->assertJsonPath('data.net_worth', 1275);
 });
 
 test('capital module is owner only', function (): void {
