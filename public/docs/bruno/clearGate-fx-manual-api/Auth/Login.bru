@@ -1,0 +1,35 @@
+meta {
+  name: Login
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrlApi}}/auth/login
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "owner@exchange.com",
+    "password": "password"
+  }
+}
+
+script:post-response {
+  const json = res.getBody();
+  
+  if (json.data && json.data.token) {
+    bru.setEnvVar('token', json.data.token);
+  }
+}
+
+docs {
+  Authenticates an active user and saves the returned Sanctum token into the token collection variable.
+}

@@ -1,0 +1,43 @@
+meta {
+  name: Create Customer
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{baseUrlApi}}/customers
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  // {
+  //   "customer_code": "3327",
+  //   "name": "Ahmed Qwaider",
+  //   "phone": "+970599123456",
+  //    "type": "supplier",
+  // //   "type": "customer",
+  //   "note": "Regular remittance customer",
+  //   "category": "regular",
+  //   "country": "Palestine",
+  //   "balance_usd" : "900"
+  // }
+  {
+    "balance_usd" : 10000,
+    "category" : "supplier",
+    "type" : "supplier",
+    "customer_code" : "116",
+    "is_active" : true,
+    "name" : "mo"
+  
+  }
+}

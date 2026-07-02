@@ -27,6 +27,8 @@ class UpdateCustomerRequest extends ApiFormRequest
             'category' => ['nullable', Rule::in(['regular', 'vip', 'agent', 'company'])],
             'country' => ['nullable', 'string', 'max:50'],
             'is_active' => ['nullable', 'boolean'],
+            'balance_usd' => ['nullable', 'numeric', 'min:0'],
+
         ];
     }
 }
