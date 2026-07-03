@@ -1,13 +1,24 @@
 meta {
-  name: Monthly Report
+  name: Commission Report
   type: http
   seq: 2
 }
 
 get {
-  url: {{baseUrlApi}}/reports/monthly?year=2026&month=5
+  url: {{baseUrlApi}}/reports/commissions?period=monthly&date=2026-07-03
   body: none
   auth: bearer
+}
+
+params:query {
+  period: monthly
+  date: 2026-07-03
+  ~date_from: 2026-06-01
+  ~date_to: 2026-06-30
+  ~supplier_id: 1
+  ~customer_id: 1
+  ~box_id: 1
+  ~user_id: 1
 }
 
 headers {

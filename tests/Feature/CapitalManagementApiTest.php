@@ -157,8 +157,10 @@ test('capital reports return expenses capital movements and net worth', function
 
     $this->getJson('/api/v1/reports/capital-report')
         ->assertOk()
-        ->assertJsonPath('data.capital_balance', 875)
+        ->assertJsonPath('data.capital_balance', 1275)
         ->assertJsonPath('data.free_capital', 875)
+        ->assertJsonPath('data.boxes_total_balance', 400)
+        ->assertJsonPath('data.net_worth', 1275)
         ->assertJsonPath('data.by_type.0.type', 'deposit')
         ->assertJsonPath('data.by_type.1.type', 'expense');
 

@@ -1,21 +1,19 @@
 meta {
-  name: Box Report
+  name: Supplier Monitoring
   type: http
-  seq: 6
+  seq: 4
 }
 
 get {
-  url: {{baseUrlApi}}/reports/boxes?date_from=2026-06-01&date_to=2026-07-30
+  url: {{baseUrlApi}}/dashboard/suppliers?date_from=2026-06-01&date_to=2026-06-30
   body: none
   auth: bearer
 }
 
 params:query {
   date_from: 2026-06-01
-  date_to: 2026-07-30
-  ~box_id: 1
-  ~user_id: 1
-  ~status: completed
+  date_to: 2026-06-30
+  ~supplier_id: 1
 }
 
 headers {

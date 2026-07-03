@@ -245,7 +245,7 @@ class FinancialDashboardService
      */
     private function sumCommissions(Builder $query): float
     {
-        return round((float) $query->sum('commission_amount'), 4);
+        return round((float) $query->where('status', OperationStatus::Completed->value)->sum('commission_amount'), 4);
     }
 
     /**
@@ -257,7 +257,13 @@ class FinancialDashboardService
         $customersTable = (new Customer)->getTable();
         $operationsTable = (new Operation)->getTable();
 
-        return $this->filteredOperations($filters, $user)
+        $query = $this->filteredOperations($filters, $user);
+
+        if ($sumColumn === 'commission_amount') {
+            $query->where('status', OperationStatus::Completed->value);
+        }
+
+        return $query
             ->join($customersTable, "{$customersTable}.id", '=', "{$operationsTable}.supplier_id")
             ->whereNotNull("{$operationsTable}.supplier_id")
             ->selectRaw("{$operationsTable}.supplier_id as id")
@@ -301,6 +307,7 @@ class FinancialDashboardService
     {
         return $this->dailySeries(
             $this->filteredOperations($filters, $user)
+                ->where('status', OperationStatus::Completed->value)
                 ->selectRaw('DATE(transaction_date) as date')
                 ->selectRaw('SUM(commission_amount) as amount')
                 ->groupByRaw('DATE(transaction_date)')

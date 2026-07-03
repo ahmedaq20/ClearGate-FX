@@ -241,6 +241,10 @@ class CapitalService
     public function capitalReport(User $owner, array $filters): array
     {
         $query = $this->transactionQuery($owner, $filters);
+        $account = $this->account($owner);
+        $freeCapital = round((float) $account->free_balance_usd, 4);
+        $boxesTotalBalance = round((float) Box::query()->sum('current_balance'), 4);
+        $capitalBalance = $this->capitalBalance($freeCapital, $boxesTotalBalance);
         $rows = (clone $query)
             ->selectRaw('type')
             ->selectRaw('COUNT(*) as transactions_count')
@@ -256,8 +260,10 @@ class CapitalService
             ->all();
 
         return [
-            'capital_balance' => round((float) $this->account($owner)->balance_usd, 4),
-            'free_capital' => round((float) $this->account($owner)->free_balance_usd, 4),
+            'capital_balance' => $capitalBalance,
+            'free_capital' => $freeCapital,
+            'boxes_total_balance' => $boxesTotalBalance,
+            'net_worth' => $capitalBalance,
             'by_type' => $rows,
             'transactions' => (clone $query)->latest('transaction_date')->latest('id')->get(),
         ];

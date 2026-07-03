@@ -1,19 +1,31 @@
 meta {
-  name: Daily Profit
+  name: Queue Supplier Excel Export
   type: http
   seq: 10
 }
 
-get {
-  url: {{baseUrlApi}}/reports/daily-profit?date_from=2026-06-01&date_to=2026-06-30
-  body: none
+post {
+  url: {{baseUrlApi}}/reports/export
+  body: json
   auth: bearer
 }
 
 headers {
   Accept: application/json
+  Content-Type: application/json
 }
 
 auth:bearer {
   token: {{token}}
+}
+
+body:json {
+  {
+    "type": "suppliers",
+    "format": "excel",
+    "params": {
+      "date_from": "2026-06-01",
+      "date_to": "2026-06-30"
+    }
+  }
 }

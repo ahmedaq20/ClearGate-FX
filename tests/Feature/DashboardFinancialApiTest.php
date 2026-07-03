@@ -224,7 +224,7 @@ test('supplier box commission and chart dashboard endpoints return chart ready d
         ->assertJsonPath('data.suppliers_with_pending_operations', 1)
         ->assertJsonPath('data.top_suppliers_by_volume.0.name', 'Top Supplier')
         ->assertJsonPath('data.top_suppliers_by_volume.0.total', 1500)
-        ->assertJsonPath('data.top_suppliers_by_commission.0.total', 70);
+        ->assertJsonPath('data.top_suppliers_by_commission.0.total', 30);
 
     $this->getJson('/api/v1/dashboard/boxes')
         ->assertOk()
@@ -235,15 +235,15 @@ test('supplier box commission and chart dashboard endpoints return chart ready d
 
     $this->getJson('/api/v1/dashboard/commissions')
         ->assertOk()
-        ->assertJsonPath('data.today_commissions', 70)
-        ->assertJsonPath('data.monthly_commissions', 70)
-        ->assertJsonPath('data.yearly_commissions', 70);
+        ->assertJsonPath('data.today_commissions', 30)
+        ->assertJsonPath('data.monthly_commissions', 30)
+        ->assertJsonPath('data.yearly_commissions', 30);
 
     $this->getJson('/api/v1/dashboard/charts')
         ->assertOk()
         ->assertJsonPath('data.operations_by_day.0.count', 2)
         ->assertJsonPath('data.operations_by_day.0.amount', 1500)
-        ->assertJsonPath('data.commissions_by_day.0.amount', 70)
+        ->assertJsonPath('data.commissions_by_day.0.amount', 30)
         ->assertJsonPath('data.pending_vs_completed.pending.count', 1)
         ->assertJsonPath('data.pending_vs_completed.completed.count', 1);
 });

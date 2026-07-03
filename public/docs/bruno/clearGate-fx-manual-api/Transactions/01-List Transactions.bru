@@ -5,9 +5,16 @@ meta {
 }
 
 get {
-  url: {{baseUrlApi}}/transactions?date_from=2026-05-01&date_to=2026-05-31&type=receive&per_page=20
+  url: {{baseUrlApi}}/transactions?date_from=2026-07-01&date_to=2026-07-31&type=receive&per_page=20
   body: none
   auth: bearer
+}
+
+params:query {
+  date_from: 2026-07-01
+  date_to: 2026-07-31
+  type: receive
+  per_page: 20
 }
 
 headers {

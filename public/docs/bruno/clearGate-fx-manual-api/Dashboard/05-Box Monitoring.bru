@@ -1,13 +1,17 @@
 meta {
-  name: Export Download
+  name: Box Monitoring
   type: http
-  seq: 15
+  seq: 5
 }
 
 get {
-  url: {{baseUrlApi}}/reports/export/replace-with-job-id/download
+  url: {{baseUrlApi}}/dashboard/boxes?box_id=1
   body: none
   auth: bearer
+}
+
+params:query {
+  ~box_id: 1
 }
 
 headers {

@@ -28,13 +28,20 @@ class ExcelService
     private function headings(string $type): array
     {
         return match ($type) {
-            'comparison' => ['User ID', 'User Name', 'Receive USD', 'Send USD', 'Net USD', 'Count'],
+            'operations' => ['Metric', 'Value'],
+            'commissions' => ['Metric', 'Value'],
+            'comparison' => ['User ID', 'User Name', 'Transferred Amount USD', 'Total Commission USD', 'Count'],
             'profit-summary' => ['Metric', 'Value'],
             'daily-profit' => ['Date', 'Operations Count', 'Total Profit USD'],
             'monthly-profit' => ['Month', 'Operations Count', 'Total Profit USD'],
             'profit-by-supplier' => ['Supplier ID', 'Supplier', 'Operations Count', 'Total Profit USD'],
             'profit-by-user' => ['User ID', 'Employee', 'Operations Count', 'Total Profit USD'],
-            default => ['ID', 'Date', 'Type', 'Customer', 'User', 'Currency', 'Amount', 'Rate', 'USD Value', 'Commission USD', 'Net USD', 'Reference', 'Deleted At'],
+            'suppliers' => ['Supplier ID', 'Supplier', 'Operations', 'Completed', 'Pending', 'Cancelled', 'Transferred Amount USD', 'Total Commissions USD'],
+            'customers' => ['Customer ID', 'Customer', 'Operations', 'Total Received Amount USD', 'Total Sent Amount USD', 'Last Operation'],
+            'boxes' => ['Box ID', 'Box', 'Current Balance', 'Operations', 'Outgoing Amount', 'Incoming Amount', 'Last Operation'],
+            'pending' => ['Reference', 'Supplier', 'Customer', 'Amount USD', 'Commission USD', 'Created At'],
+            'cancelled' => ['Reference', 'Supplier', 'Customer', 'Amount USD', 'Commission USD', 'Cancellation Reason', 'Cancelled At'],
+            default => ['Reference', 'Supplier', 'Customer', 'Amount USD', 'Commission USD', 'Status', 'Created At'],
         };
     }
 
@@ -44,13 +51,38 @@ class ExcelService
      */
     private function rows(string $type, array $report): array
     {
+        if ($type === 'operations') {
+            $rows = [
+                ['Total Operations', $report['total_operations']],
+                ['Completed', $report['completed']],
+                ['Pending', $report['pending']],
+                ['Cancelled', $report['cancelled']],
+                ['Total Transferred Amount USD', $report['total_transferred_amount']],
+            ];
+
+            foreach ($report['by_status'] ?? [] as $row) {
+                $rows[] = ["Status {$row['status']} Count", $row['operation_count']];
+                $rows[] = ["Status {$row['status']} Amount USD", $row['transferred_amount']];
+            }
+
+            return $rows;
+        }
+
+        if ($type === 'commissions') {
+            return [
+                ['Total Commission USD', $report['total_commission']],
+                ['Average Commission USD', $report['average_commission']],
+                ['Operation Count', $report['operation_count']],
+                ['Period', $report['period']],
+            ];
+        }
+
         if ($type === 'comparison') {
             return $report['rows']->map(fn (array $row): array => [
                 $row['user_id'],
                 $row['user_name'],
-                $row['receive'],
-                $row['send'],
-                $row['net'],
+                $row['transferred_amount'],
+                $row['total_commission'],
                 $row['count'],
             ])->all();
         }
@@ -61,7 +93,7 @@ class ExcelService
                 ['Completed Operations', $report['completed_operations']],
                 ['Pending Operations', $report['pending_operations']],
                 ['Cancelled Operations', $report['cancelled_operations']],
-                ['Total Profit USD', $report['total_profit_usd']],
+                ['Total Profit USD', $report['total_profit_usd'] ?? $report['total_profit']],
             ];
         }
 
@@ -99,22 +131,61 @@ class ExcelService
             ])->all();
         }
 
-        return $report['transactions']
-            ->map(fn ($transaction): array => [
-                $transaction->id,
-                $transaction->transaction_date?->toDateString(),
-                $transaction->type,
-                $transaction->customer?->name,
-                $transaction->user?->name,
-                $transaction->currency_code,
-                (float) $transaction->amount,
-                (float) $transaction->exchange_rate,
-                (float) $transaction->usd_value,
-                (float) $transaction->commission_usd,
-                (float) $transaction->net_usd_value,
-                $transaction->reference_number,
-                $transaction->deleted_at?->toDateTimeString(),
-            ])
-            ->all();
+        if ($type === 'suppliers') {
+            return collect($report['rows'])->map(fn (array $row): array => [
+                $row['supplier_id'],
+                $row['supplier'],
+                $row['operation_count'],
+                $row['completed_count'],
+                $row['pending_count'],
+                $row['cancelled_count'],
+                $row['transferred_amount'],
+                $row['total_commissions'],
+            ])->all();
+        }
+
+        if ($type === 'customers') {
+            return collect($report['rows'])->map(fn (array $row): array => [
+                $row['customer_id'],
+                $row['customer'],
+                $row['operation_count'],
+                $row['total_received_amount'],
+                $row['total_sent_amount'],
+                $row['last_operation'],
+            ])->all();
+        }
+
+        if ($type === 'boxes') {
+            return collect($report['rows'])->map(fn (array $row): array => [
+                $row['box_id'],
+                $row['box'],
+                $row['current_balance'],
+                $row['operations_count'],
+                $row['outgoing_amount'],
+                $row['incoming_amount'],
+                $row['last_operation'],
+            ])->all();
+        }
+
+        if ($type === 'pending') {
+            return collect($report['operations'])->map(fn (array $row): array => [
+                $row['reference_number'],
+                $row['supplier'],
+                $row['customer'],
+                $row['amount'],
+                $row['commission'],
+                $row['created_at'],
+            ])->all();
+        }
+
+        return collect($report['operations'])->map(fn (array $row): array => [
+            $row['reference_number'],
+            $row['supplier'],
+            $row['customer'],
+            $row['amount'],
+            $row['commission'],
+            $row['cancellation_reason'],
+            $row['cancelled_at'],
+        ])->all();
     }
 }

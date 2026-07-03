@@ -1,13 +1,21 @@
 meta {
-  name: Customer Statement
+  name: Supplier Report
   type: http
   seq: 4
 }
 
 get {
-  url: {{baseUrlApi}}/reports/customer/1/statement?date_from=2026-05-01&date_to=2026-05-31
+  url: {{baseUrlApi}}/reports/suppliers?date_from=2026-06-01&date_to=2026-07-30
   body: none
   auth: bearer
+}
+
+params:query {
+  date_from: 2026-06-01
+  date_to: 2026-07-30
+  ~supplier_id: 1
+  ~user_id: 1
+  ~status: completed
 }
 
 headers {

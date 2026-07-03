@@ -1,19 +1,32 @@
 meta {
-  name: Profit Summary
+  name: Queue Operations PDF Export
   type: http
   seq: 9
 }
 
-get {
-  url: {{baseUrlApi}}/reports/profit-summary?date_from=2026-06-01&date_to=2026-06-30
-  body: none
+post {
+  url: {{baseUrlApi}}/reports/export
+  body: json
   auth: bearer
 }
 
 headers {
   Accept: application/json
+  Content-Type: application/json
 }
 
 auth:bearer {
   token: {{token}}
+}
+
+body:json {
+  {
+    "type": "operations",
+    "format": "pdf",
+    "params": {
+      "date_from": "2026-06-01",
+      "date_to": "2026-07-30",
+      "group_by_status": true
+    }
+  }
 }

@@ -1,31 +1,19 @@
 meta {
-  name: Queue Profit Summary PDF Export
+  name: Export Status
   type: http
   seq: 14
 }
 
-post {
-  url: {{baseUrlApi}}/reports/export
-  body: json
+get {
+  url: {{baseUrlApi}}/reports/export/replace-with-job-id/status
+  body: none
   auth: bearer
 }
 
 headers {
   Accept: application/json
-  Content-Type: application/json
 }
 
 auth:bearer {
   token: {{token}}
-}
-
-body:json {
-  {
-    "type": "profit-summary",
-    "format": "pdf",
-    "params": {
-      "date_from": "2026-06-01",
-      "date_to": "2026-06-30"
-    }
-  }
 }

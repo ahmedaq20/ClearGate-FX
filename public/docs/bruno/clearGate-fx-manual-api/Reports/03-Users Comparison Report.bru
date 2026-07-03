@@ -1,13 +1,22 @@
 meta {
-  name: Users Comparison Report
+  name: Profit Summary
   type: http
   seq: 3
 }
 
 get {
-  url: {{baseUrlApi}}/reports/users-comparison?date_from=2026-05-01&date_to=2026-05-31
+  url: {{baseUrlApi}}/reports/profit-summary?date_from=2026-06-01&date_to=2026-07-30
   body: none
   auth: bearer
+}
+
+params:query {
+  date_from: 2026-06-01
+  date_to: 2026-07-30
+  ~supplier_id: 1
+  ~customer_id: 1
+  ~box_id: 1
+  ~user_id: 1
 }
 
 headers {

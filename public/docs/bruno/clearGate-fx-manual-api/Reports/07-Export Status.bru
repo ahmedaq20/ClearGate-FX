@@ -1,13 +1,22 @@
 meta {
-  name: Export Status
+  name: Pending Operations Report
   type: http
   seq: 7
 }
 
 get {
-  url: {{baseUrlApi}}/reports/export/99de014c-f9b5-448d-b674-3d44cf87fdc4/status
+  url: {{baseUrlApi}}/reports/pending?date_from=2026-06-01&date_to=2026-06-30&per_page=20
   body: none
   auth: bearer
+}
+
+params:query {
+  date_from: 2026-06-01
+  date_to: 2026-06-30
+  per_page: 20
+  ~supplier_id: 1
+  ~customer_id: 1
+  ~user_id: 1
 }
 
 headers {
@@ -15,5 +24,5 @@ headers {
 }
 
 auth:bearer {
-  token: 3|bi218NCMyR0eOjBbQyqAflLEuVdPpQy3uHphAb9S3cd4d5e6
+  token: {{token}}
 }

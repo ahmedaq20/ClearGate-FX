@@ -39,7 +39,7 @@
             <td class="num">{{ $report['completed_operations'] }}</td>
             <td class="num">{{ $report['pending_operations'] }}</td>
             <td class="num">{{ $report['cancelled_operations'] }}</td>
-            <td class="num">{{ number_format($report['total_profit_usd'], 4) }}</td>
+            <td class="num">{{ number_format($report['total_profit_usd'] ?? $report['total_profit'], 4) }}</td>
         </tr>
     </table>
 @else
@@ -77,7 +77,7 @@
     <table>
         <tr>
             <th>إجمالي الربح USD</th>
-            <td class="num">{{ number_format($report['total_profit_usd'], 4) }}</td>
+            <td class="num">{{ number_format($report['total_profit_usd'] ?? $report['total_profit'], 4) }}</td>
         </tr>
     </table>
 @endif

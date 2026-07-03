@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\CustomerType;
 use App\Enums\OperationStatus;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Requests\Dashboard\DashboardFilterRequest;
@@ -12,6 +13,7 @@ use App\Models\User;
 use App\Models\Vault;
 use App\Services\BalanceService;
 use App\Services\FinancialDashboardService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -44,41 +46,45 @@ class DashboardController extends BaseApiController
         $isOwner = $this->isOwner($user);
         $today = now()->toDateString();
 
-        $transactions = Transaction::query()->with(['customer', 'currency'])->latest()->limit(10);
         $customers = Customer::query();
         $operations = Operation::query();
+        $recentOperations = Operation::query()->with(['supplier:id,name', 'customer:id,name', 'box:id,name', 'creator:id,name'])
+            ->latest('transaction_date')
+            ->latest('id')
+            ->limit(10);
 
         if (! $isOwner) {
-            $transactions->where('user_id', $user->id);
             $customers->where('user_id', $user->id);
             $operations->where('created_by', $user->id);
+            $recentOperations->where('created_by', $user->id);
         }
 
-        $totalsQuery = Transaction::query();
-        if (! $isOwner) {
-            $totalsQuery->where('user_id', $user->id);
-        }
-        $totalReceive = round((float) (clone $totalsQuery)->where('type', 'receive')->sum('net_usd_value'), 4);
-        $totalSend = round((float) (clone $totalsQuery)->where('type', 'send')->sum('net_usd_value'), 4);
+        $todayOperations = (clone $operations)->whereDate('transaction_date', $today);
+        $completedToday = (clone $todayOperations)->where('status', OperationStatus::Completed->value);
+        $monthCompleted = (clone $operations)
+            ->where('status', OperationStatus::Completed->value)
+            ->whereYear('transaction_date', now()->year)
+            ->whereMonth('transaction_date', now()->month);
 
         return $this->sendResponse([
             'total_balance_usd' => $isOwner ? (float) Vault::query()->sum('balance_usd') : null,
             'my_vault_balance' => (float) $user->vault()->value('balance_usd'),
-            'today_net_usd' => $this->balanceService->getDailyNet($isOwner ? null : $user->id, $today),
             'customers_count' => (clone $customers)->count(),
-            'transactions_today_count' => (clone $transactions)->whereDate('transaction_date', $today)->count(),
+            'today_operations' => (clone $todayOperations)->count(),
+            'today_completed' => (clone $todayOperations)->where('status', OperationStatus::Completed->value)->count(),
+            'today_pending' => (clone $todayOperations)->where('status', OperationStatus::Pending->value)->count(),
+            'today_cancelled' => (clone $todayOperations)->where('status', OperationStatus::Cancelled->value)->count(),
+            'today_commission' => round((float) $completedToday->sum('commission_amount'), 4),
+            'month_commission' => round((float) $monthCompleted->sum('commission_amount'), 4),
+            'active_suppliers' => $this->activeCustomersCount($operations, CustomerType::Supplier->value),
+            'active_customers' => $this->activeCustomersCount($operations, CustomerType::Customer->value),
             'pending_operations_count' => (clone $operations)->where('status', OperationStatus::Pending->value)->count(),
             'completed_operations_count' => (clone $operations)->where('status', OperationStatus::Completed->value)->count(),
             'cancelled_operations_count' => (clone $operations)->where('status', OperationStatus::Cancelled->value)->count(),
             'pending_amount_total' => round((float) (clone $operations)->where('status', OperationStatus::Pending->value)->sum('customer_amount'), 4),
-            'recent_transactions' => $transactions->get(),
+            'recent_operations' => $recentOperations->get(),
             'top_customers' => $customers->orderByDesc('balance_usd')->limit(5)->get(),
-            'total_summary' => [
-                'receive' => $totalReceive,
-                'send' => $totalSend,
-                'net' => round($totalReceive - $totalSend, 4),
-                'count' => (clone $totalsQuery)->count(),
-            ],
+            'total_transferred_amount' => round((float) (clone $operations)->sum('customer_amount'), 4),
         ]);
     }
 
@@ -197,5 +203,18 @@ class DashboardController extends BaseApiController
             || $user->hasRole('admin', 'sanctum')
             || $user->can('dashboard.viewFinancial')
         );
+    }
+
+    private function activeCustomersCount(Builder $operations, string $type): int
+    {
+        $customersTable = (new Customer)->getTable();
+        $operationsTable = (new Operation)->getTable();
+        $customerColumn = $type === CustomerType::Supplier->value ? 'supplier_id' : 'customer_id';
+
+        return (clone $operations)
+            ->join($customersTable, "{$customersTable}.id", '=', "{$operationsTable}.{$customerColumn}")
+            ->where("{$customersTable}.type", $type)
+            ->distinct("{$operationsTable}.{$customerColumn}")
+            ->count("{$operationsTable}.{$customerColumn}");
     }
 }

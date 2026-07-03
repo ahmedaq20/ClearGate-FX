@@ -97,11 +97,18 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         Route::get('reports/daily', [ReportController::class, 'daily'])->name('reports.daily');
         Route::get('reports/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
+        Route::get('reports/operations', [ReportController::class, 'operations'])->name('reports.operations');
+        Route::get('reports/commissions', [ReportController::class, 'commissions'])->name('reports.commissions');
         Route::get('reports/profit-summary', [ReportController::class, 'profitSummary'])->name('reports.profit-summary');
         Route::get('reports/daily-profit', [ReportController::class, 'dailyProfit'])->name('reports.daily-profit');
         Route::get('reports/monthly-profit', [ReportController::class, 'monthlyProfit'])->name('reports.monthly-profit');
         Route::get('reports/profit-by-supplier', [ReportController::class, 'profitBySupplier'])->name('reports.profit-by-supplier');
         Route::get('reports/profit-by-user', [ReportController::class, 'profitByUser'])->name('reports.profit-by-user');
+        Route::get('reports/suppliers', [ReportController::class, 'suppliers'])->name('reports.suppliers');
+        Route::get('reports/customers', [ReportController::class, 'customers'])->name('reports.customers');
+        Route::get('reports/boxes', [ReportController::class, 'boxes'])->name('reports.boxes');
+        Route::get('reports/pending', [ReportController::class, 'pending'])->name('reports.pending');
+        Route::get('reports/cancelled', [ReportController::class, 'cancelled'])->name('reports.cancelled');
         Route::get('reports/expense-report', [CapitalController::class, 'expenseReport'])->name('reports.expense-report');
         Route::get('reports/capital-report', [CapitalController::class, 'capitalReport'])->name('reports.capital-report');
         Route::get('reports/net-worth-report', [CapitalController::class, 'netWorthReport'])->name('reports.net-worth-report');

@@ -5,9 +5,14 @@ meta {
 }
 
 get {
-  url: {{baseUrlApi}}/reports/capital-report?date_from=2026-06-01&date_to=2026-06-30
+  url: {{baseUrlApi}}/reports/capital-report?date_from=2026-07-01&date_to=2026-07-30
   body: none
   auth: bearer
+}
+
+params:query {
+  date_from: 2026-07-01
+  date_to: 2026-07-30
 }
 
 headers {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Requests\Report\ExportReportRequest;
+use App\Http\Requests\Report\OperationReportRequest;
 use App\Http\Requests\Report\ProfitReportRequest;
 use App\Jobs\GenerateReportJob;
 use App\Services\ReportService;
@@ -60,6 +61,16 @@ class ReportController extends BaseApiController
         return $this->sendResponse($this->reportService->monthly($request->query(), $this->currentUser($request)));
     }
 
+    public function operations(OperationReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->operations($request->validated(), $this->currentUser($request)));
+    }
+
+    public function commissions(OperationReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->commissions($request->validated(), $this->currentUser($request)));
+    }
+
     public function profitSummary(ProfitReportRequest $request): JsonResponse
     {
         return $this->sendResponse($this->reportService->profitSummary($request->validated(), $this->currentUser($request)));
@@ -83,6 +94,31 @@ class ReportController extends BaseApiController
     public function profitByUser(ProfitReportRequest $request): JsonResponse
     {
         return $this->sendResponse($this->reportService->profitByUser($request->validated(), $this->currentUser($request)));
+    }
+
+    public function suppliers(OperationReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->suppliers($request->validated(), $this->currentUser($request)));
+    }
+
+    public function customers(OperationReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->customers($request->validated(), $this->currentUser($request)));
+    }
+
+    public function boxes(OperationReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->boxes($request->validated(), $this->currentUser($request)));
+    }
+
+    public function pending(OperationReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->pending($request->validated(), $this->currentUser($request)));
+    }
+
+    public function cancelled(OperationReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->cancelled($request->validated(), $this->currentUser($request)));
     }
 
     /**
@@ -147,12 +183,6 @@ class ReportController extends BaseApiController
 
         if ($data['type'] === 'comparison' && ! $this->isOwner($request->user())) {
             return $this->sendError('غير مصرح', [], 403);
-        }
-
-        if ($data['type'] === 'statement' && ! isset($data['params']['customer_id'])) {
-            return $this->sendError('معرف العميل مطلوب لتصدير كشف الحساب', [
-                'params.customer_id' => ['معرف العميل مطلوب لتصدير كشف الحساب.'],
-            ], 422);
         }
 
         $status = [

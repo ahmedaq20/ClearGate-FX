@@ -101,12 +101,11 @@ class PdfService
     private function view(string $type): string
     {
         return match ($type) {
-            'daily' => 'pdf.daily-report',
-            'monthly', 'comparison' => 'pdf.monthly-report',
+            'daily', 'monthly', 'operations', 'commissions', 'suppliers', 'customers', 'boxes', 'pending', 'cancelled', 'comparison' => 'pdf.operations-report',
             'profit-summary', 'daily-profit', 'monthly-profit', 'profit-by-supplier', 'profit-by-user' => 'pdf.profit-report',
-            'statement' => 'pdf.statement',
+            'statement' => 'pdf.operations-report',
             'receipt' => 'pdf.receipt',
-            default => 'pdf.daily-report',
+            default => 'pdf.operations-report',
         };
     }
 }

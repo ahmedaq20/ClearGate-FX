@@ -114,7 +114,8 @@ test('profit summary includes only completed operation commissions as usd profit
         ->assertJsonPath('data.completed_operations', 2)
         ->assertJsonPath('data.pending_operations', 1)
         ->assertJsonPath('data.cancelled_operations', 1)
-        ->assertJsonPath('data.total_profit_usd', 40);
+        ->assertJsonPath('data.total_profit', 60)
+        ->assertJsonPath('data.total_profit_usd', 60);
 });
 
 test('daily and monthly profit reports return completed commission totals', function (): void {
@@ -148,17 +149,17 @@ test('daily and monthly profit reports return completed commission totals', func
         ->assertJsonPath('data.rows.0.date', '2026-06-10')
         ->assertJsonPath('data.rows.0.total_profit_usd', 10)
         ->assertJsonPath('data.rows.1.date', '2026-06-11')
-        ->assertJsonPath('data.rows.1.total_profit_usd', 10)
-        ->assertJsonPath('data.total_profit_usd', 20);
+        ->assertJsonPath('data.rows.1.total_profit_usd', 30)
+        ->assertJsonPath('data.total_profit_usd', 40);
 
     $this->getJson('/api/v1/reports/monthly-profit')
         ->assertOk()
         ->assertJsonPath('data.rows.0.month', '2026-06')
         ->assertJsonPath('data.rows.0.operations_count', 2)
-        ->assertJsonPath('data.rows.0.total_profit_usd', 20)
+        ->assertJsonPath('data.rows.0.total_profit_usd', 40)
         ->assertJsonPath('data.rows.1.month', '2026-07')
-        ->assertJsonPath('data.rows.1.total_profit_usd', 25)
-        ->assertJsonPath('data.total_profit_usd', 45);
+        ->assertJsonPath('data.rows.1.total_profit_usd', 50)
+        ->assertJsonPath('data.total_profit_usd', 90);
 });
 
 test('profit by supplier and user reports support filters', function (): void {
@@ -199,14 +200,14 @@ test('profit by supplier and user reports support filters', function (): void {
         ->assertJsonCount(1, 'data.rows')
         ->assertJsonPath('data.rows.0.supplier', 'Supplier A')
         ->assertJsonPath('data.rows.0.operations_count', 2)
-        ->assertJsonPath('data.rows.0.total_profit_usd', 30);
+        ->assertJsonPath('data.rows.0.total_profit_usd', 50);
 
     $this->getJson("/api/v1/reports/profit-by-user?user_id={$employee->id}")
         ->assertOk()
         ->assertJsonCount(1, 'data.rows')
         ->assertJsonPath('data.rows.0.employee', 'Employee A')
         ->assertJsonPath('data.rows.0.operations_count', 2)
-        ->assertJsonPath('data.rows.0.total_profit_usd', 30);
+        ->assertJsonPath('data.rows.0.total_profit_usd', 50);
 });
 
 test('manager profit report is scoped to own completed operations and profit export can be queued', function (): void {
@@ -234,7 +235,8 @@ test('manager profit report is scoped to own completed operations and profit exp
         ->assertOk()
         ->assertJsonPath('data.total_operations', 1)
         ->assertJsonPath('data.completed_operations', 1)
-        ->assertJsonPath('data.total_profit_usd', 30);
+        ->assertJsonPath('data.total_profit', 60)
+        ->assertJsonPath('data.total_profit_usd', 60);
 
     $this->postJson('/api/v1/reports/export', [
         'type' => 'profit-summary',
