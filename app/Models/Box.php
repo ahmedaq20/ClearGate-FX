@@ -54,6 +54,11 @@ class Box extends Model
         return $this->hasMany(Operation::class);
     }
 
+    public function operationSettlements(): HasMany
+    {
+        return $this->hasMany(OperationSettlement::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

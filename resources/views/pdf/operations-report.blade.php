@@ -107,7 +107,8 @@
             @forelse($report['rows'] ?? [] as $row)
                 <tr>
                     @foreach($row as $value)
-                        <td class="{{ is_numeric($value) ? 'num' : '' }}">{{ is_numeric($value) ? number_format((float) $value, 4) : ($value ?? '-') }}</td>
+                        @php($displayValue = is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $value)
+                        <td class="{{ is_numeric($displayValue) ? 'num' : '' }}">{{ is_numeric($displayValue) ? number_format((float) $displayValue, 4) : ($displayValue ?? '-') }}</td>
                     @endforeach
                 </tr>
             @empty

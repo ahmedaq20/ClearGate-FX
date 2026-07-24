@@ -54,6 +54,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('operations/cancelled', [OperationController::class, 'cancelled'])->name('operations.cancelled');
         Route::post('operations/{operation}/complete', [OperationController::class, 'complete'])->name('operations.complete');
         Route::post('operations/{operation}/cancel', [OperationController::class, 'cancel'])->name('operations.cancel');
+        Route::post('operations/{operation}/customer-settlement', [OperationController::class, 'settleCustomer'])->name('operations.customer-settlement');
+        Route::post('operations/{operation}/supplier-fulfillment', [OperationController::class, 'fulfillSupplier'])->name('operations.supplier-fulfillment');
+        Route::post('operations/{operation}/supplier-settlement', [OperationController::class, 'settleSupplier'])->name('operations.supplier-settlement');
         Route::get('operations/{operation}/receipt', [OperationController::class, 'receipt'])->name('operations.receipt');
         Route::apiResource('operations', OperationController::class);
 
@@ -109,6 +112,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('reports/boxes', [ReportController::class, 'boxes'])->name('reports.boxes');
         Route::get('reports/pending', [ReportController::class, 'pending'])->name('reports.pending');
         Route::get('reports/cancelled', [ReportController::class, 'cancelled'])->name('reports.cancelled');
+        Route::get('reports/obligations', [ReportController::class, 'obligations'])->name('reports.obligations');
+        Route::get('reports/operations-workflow', [ReportController::class, 'workflow'])->name('reports.operations-workflow');
+        Route::get('reports/reconciliation', [ReportController::class, 'reconciliation'])->name('reports.reconciliation');
         Route::get('reports/expense-report', [CapitalController::class, 'expenseReport'])->name('reports.expense-report');
         Route::get('reports/capital-report', [CapitalController::class, 'capitalReport'])->name('reports.capital-report');
         Route::get('reports/net-worth-report', [CapitalController::class, 'netWorthReport'])->name('reports.net-worth-report');

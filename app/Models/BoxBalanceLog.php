@@ -12,10 +12,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable([
     'box_id',
     'operation_id',
+    'operation_settlement_id',
     'operation_type',
     'amount',
     'balance_before',
     'balance_after',
+    'reason',
     'notes',
     'created_by',
 ])]
@@ -34,6 +36,11 @@ class BoxBalanceLog extends Model
     public function operation(): BelongsTo
     {
         return $this->belongsTo(Operation::class);
+    }
+
+    public function operationSettlement(): BelongsTo
+    {
+        return $this->belongsTo(OperationSettlement::class);
     }
 
     public function creator(): BelongsTo

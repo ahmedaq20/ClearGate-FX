@@ -2,10 +2,18 @@
 
 namespace App\Services;
 
+use App\Enums\BoxBalanceOperationType;
+use App\Enums\OperationCustomerSettlementStatus;
+use App\Enums\OperationObligationStatus;
+use App\Enums\OperationObligationType;
+use App\Enums\OperationSettlementDirection;
 use App\Enums\OperationStatus;
+use App\Enums\OperationSupplierFulfillmentStatus;
 use App\Models\Box;
 use App\Models\Customer;
 use App\Models\Operation;
+use App\Models\OperationObligation;
+use App\Models\OperationSettlement;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,6 +39,9 @@ class ReportService
             'boxes' => $this->boxes($params, $user),
             'pending' => $this->pending($params, $user),
             'cancelled' => $this->cancelled($params, $user),
+            'obligations', 'operation-obligations' => $this->obligations($params, $user),
+            'operations-workflow' => $this->workflow($params, $user),
+            'workflow-reconciliation', 'reconciliation' => $this->workflowReconciliation($params, $user),
             'comparison', 'profit-by-user' => $this->comparison($params, $user),
             default => throw ValidationException::withMessages([
                 'type' => 'نوع التقرير غير مدعوم.',
@@ -407,6 +418,106 @@ class ReportService
      * @param  array<string, mixed>  $params
      * @return array<string, mixed>
      */
+    public function obligations(array $params, User $user): array
+    {
+        $query = $this->obligationsQuery($params, $user);
+        $paginator = (clone $query)
+            ->with(['operation:id,reference_number,transaction_date,status,created_by', 'counterparty:id,name,type'])
+            ->latest('id')
+            ->paginate((int) ($params['per_page'] ?? 20));
+
+        return [
+            'type' => 'operation-obligations',
+            'title' => 'تقرير الذمم المالية',
+            'date_from' => $params['date_from'] ?? null,
+            'date_to' => $params['date_to'] ?? null,
+            'currency_totals' => $this->obligationCurrencyTotals(clone $query),
+            'status_totals' => $this->obligationStatusTotals(clone $query),
+            'rows' => $paginator->getCollection()
+                ->map(fn (OperationObligation $obligation): array => $this->obligationReportRow($obligation))
+                ->values()
+                ->all(),
+            'meta' => [
+                'total' => $paginator->total(),
+                'count' => $paginator->count(),
+                'per_page' => $paginator->perPage(),
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+            ],
+            'generated_at' => now(),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     */
+    public function workflow(array $params, User $user): array
+    {
+        $paginator = $this->operationsQuery($params, $user)
+            ->with(['supplier:id,name,type', 'customer:id,name,type', 'obligations'])
+            ->latest('transaction_date')
+            ->latest('id')
+            ->paginate((int) ($params['per_page'] ?? 20));
+
+        return [
+            'type' => 'operations-workflow',
+            'title' => 'تقرير سير العمليات المالي',
+            'date_from' => $params['date_from'] ?? null,
+            'date_to' => $params['date_to'] ?? null,
+            'rows' => $paginator->getCollection()
+                ->map(fn (Operation $operation): array => $this->workflowOperationRow($operation))
+                ->values()
+                ->all(),
+            'meta' => [
+                'total' => $paginator->total(),
+                'count' => $paginator->count(),
+                'per_page' => $paginator->perPage(),
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+            ],
+            'generated_at' => now(),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     */
+    public function workflowReconciliation(array $params, User $user): array
+    {
+        $operationsQuery = $this->operationsQuery($params, $user);
+        $operationIds = (clone $operationsQuery)->pluck('id');
+        $obligationIssues = $this->obligationReconciliationIssues($operationIds);
+        $settlementSumIssues = $this->obligationSettlementSumIssues($operationIds);
+        $settlementObligationIssues = $this->settlementObligationIssues($operationIds);
+        $settlementIssues = $this->settlementReconciliationIssues($operationIds);
+        $statusIssues = $this->operationWorkflowStatusIssues(clone $operationsQuery);
+        $issues = array_merge($obligationIssues, $settlementSumIssues, $settlementObligationIssues, $settlementIssues, $statusIssues);
+
+        return [
+            'type' => 'workflow-reconciliation',
+            'title' => 'تقرير مطابقة سير العمليات المالي',
+            'date_from' => $params['date_from'] ?? null,
+            'date_to' => $params['date_to'] ?? null,
+            'summary' => [
+                'operations_checked' => $operationIds->count(),
+                'obligation_issues' => count($obligationIssues),
+                'settlement_sum_issues' => count($settlementSumIssues),
+                'settlement_obligation_issues' => count($settlementObligationIssues),
+                'settlement_issues' => count($settlementIssues),
+                'status_issues' => count($statusIssues),
+                'total_issues' => count($issues),
+            ],
+            'issues' => $issues,
+            'generated_at' => now(),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     */
     public function comparison(array $params, User $user): array
     {
         if (! $user->isOwner()) {
@@ -486,6 +597,368 @@ class ReportService
             'total_profit_usd' => round((float) collect($rows)->sum('total_profit_usd'), 4),
             'generated_at' => now(),
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     * @return Builder<OperationObligation>
+     */
+    private function obligationsQuery(array $params, User $user): Builder
+    {
+        return OperationObligation::query()
+            ->whereHas('operation', function (Builder $query) use ($params, $user): void {
+                if ($user->isOwner()) {
+                    $query->when(isset($params['user_id']), fn (Builder $query): Builder => $query->where('created_by', (int) $params['user_id']));
+                } else {
+                    $query->where('created_by', $user->id);
+                }
+
+                $query
+                    ->when(isset($params['date_from']), fn (Builder $query): Builder => $query->whereDate('transaction_date', '>=', (string) $params['date_from']))
+                    ->when(isset($params['date_to']), fn (Builder $query): Builder => $query->whereDate('transaction_date', '<=', (string) $params['date_to']))
+                    ->when(isset($params['supplier_id']), fn (Builder $query): Builder => $query->where('supplier_id', (int) $params['supplier_id']))
+                    ->when(isset($params['customer_id']), fn (Builder $query): Builder => $query->where('customer_id', (int) $params['customer_id']))
+                    ->when(isset($params['status']), fn (Builder $query): Builder => $query->where('status', (string) $params['status']));
+            })
+            ->when(isset($params['obligation_type']), fn (Builder $query): Builder => $query->where('type', (string) $params['obligation_type']))
+            ->when(isset($params['counterparty_role']), fn (Builder $query): Builder => $query->where('counterparty_role', (string) $params['counterparty_role']))
+            ->when(isset($params['obligation_status']), fn (Builder $query): Builder => $query->where('status', (string) $params['obligation_status']))
+            ->when(isset($params['currency']), fn (Builder $query): Builder => $query->where('currency', mb_strtoupper((string) $params['currency'])));
+    }
+
+    /**
+     * @param  Builder<OperationObligation>  $query
+     * @return list<array<string, mixed>>
+     */
+    private function obligationCurrencyTotals(Builder $query): array
+    {
+        return $query
+            ->selectRaw('type, counterparty_role, currency')
+            ->selectRaw('COUNT(*) as obligation_count')
+            ->selectRaw('SUM(amount) as total_amount')
+            ->selectRaw('SUM(settled_amount) as settled_amount')
+            ->selectRaw('SUM(balance_amount) as balance_amount')
+            ->groupBy('type', 'counterparty_role', 'currency')
+            ->orderBy('type')
+            ->orderBy('counterparty_role')
+            ->orderBy('currency')
+            ->get()
+            ->map(fn ($row): array => [
+                'type' => $this->enumValue($row->type),
+                'counterparty_role' => $this->enumValue($row->counterparty_role),
+                'currency' => (string) $row->currency,
+                'obligation_count' => (int) $row->obligation_count,
+                'total_amount' => round((float) $row->total_amount, 4),
+                'settled_amount' => round((float) $row->settled_amount, 4),
+                'balance_amount' => round((float) $row->balance_amount, 4),
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  Builder<OperationObligation>  $query
+     * @return list<array<string, mixed>>
+     */
+    private function obligationStatusTotals(Builder $query): array
+    {
+        return $query
+            ->selectRaw('status, currency')
+            ->selectRaw('COUNT(*) as obligation_count')
+            ->selectRaw('SUM(balance_amount) as balance_amount')
+            ->groupBy('status', 'currency')
+            ->orderBy('status')
+            ->orderBy('currency')
+            ->get()
+            ->map(fn ($row): array => [
+                'status' => $this->enumValue($row->status),
+                'currency' => (string) $row->currency,
+                'obligation_count' => (int) $row->obligation_count,
+                'balance_amount' => round((float) $row->balance_amount, 4),
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function obligationReportRow(OperationObligation $obligation): array
+    {
+        return [
+            'id' => $obligation->id,
+            'operation_id' => $obligation->operation_id,
+            'reference_number' => $obligation->operation?->reference_number,
+            'transaction_date' => $obligation->operation?->transaction_date?->toDateString(),
+            'counterparty_id' => $obligation->counterparty_id,
+            'counterparty' => $obligation->counterparty?->name,
+            'counterparty_role' => $obligation->counterparty_role->value,
+            'type' => $obligation->type->value,
+            'reason' => $obligation->reason->value,
+            'amount' => round((float) $obligation->amount, 4),
+            'currency' => $obligation->currency,
+            'exchange_rate' => $obligation->exchange_rate === null ? null : round((float) $obligation->exchange_rate, 8),
+            'settled_amount' => round((float) $obligation->settled_amount, 4),
+            'balance_amount' => round((float) $obligation->balance_amount, 4),
+            'status' => $obligation->status->value,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function workflowOperationRow(Operation $operation): array
+    {
+        return [
+            'id' => $operation->id,
+            'reference_number' => $operation->reference_number,
+            'transaction_date' => $operation->transaction_date?->toDateString(),
+            'status' => $operation->status->value,
+            'customer_id' => $operation->customer_id,
+            'customer' => $operation->customer?->name,
+            'customer_amount' => round((float) $operation->customer_amount, 4),
+            'customer_currency' => $operation->customer_currency,
+            'supplier_id' => $operation->supplier_id,
+            'supplier' => $operation->supplier?->name,
+            'supplier_amount' => $operation->supplier_amount === null ? null : round((float) $operation->supplier_amount, 4),
+            'supplier_currency' => $operation->supplier_currency,
+            'commission_amount' => round((float) $operation->commission_amount, 4),
+            'commission_currency' => $operation->commission_currency,
+            'customer_settlement_status' => $operation->customer_settlement_status?->value,
+            'supplier_fulfillment_status' => $operation->supplier_fulfillment_status?->value,
+            'supplier_settlement_status' => $operation->supplier_settlement_status?->value,
+            'outstanding' => $this->operationOutstandingByCurrency($operation->obligations),
+        ];
+    }
+
+    /**
+     * @param  Collection<int, OperationObligation>  $obligations
+     * @return list<array<string, mixed>>
+     */
+    private function operationOutstandingByCurrency(Collection $obligations): array
+    {
+        return $obligations
+            ->filter(fn (OperationObligation $obligation): bool => round((float) $obligation->balance_amount, 4) > 0)
+            ->groupBy(fn (OperationObligation $obligation): string => "{$obligation->type->value}|{$obligation->counterparty_role->value}|{$obligation->currency}")
+            ->map(function (Collection $group): array {
+                /** @var OperationObligation $first */
+                $first = $group->first();
+
+                return [
+                    'type' => $first->type->value,
+                    'counterparty_role' => $first->counterparty_role->value,
+                    'currency' => $first->currency,
+                    'balance_amount' => round((float) $group->sum('balance_amount'), 4),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  Collection<int, int>  $operationIds
+     * @return list<array<string, mixed>>
+     */
+    private function settlementObligationIssues(Collection $operationIds): array
+    {
+        return OperationSettlement::query()
+            ->whereIn('operation_id', $operationIds)
+            ->whereNotNull('operation_obligation_id')
+            ->with('obligation')
+            ->get()
+            ->filter(function (OperationSettlement $settlement): bool {
+                $obligation = $settlement->obligation;
+
+                if ($obligation === null) {
+                    return true;
+                }
+
+                return $settlement->currency !== $obligation->currency
+                    || $settlement->direction !== $this->expectedSettlementDirectionForObligation($obligation)
+                    || (int) $settlement->counterparty_id !== (int) $obligation->counterparty_id
+                    || $settlement->counterparty_role !== $obligation->counterparty_role;
+            })
+            ->map(function (OperationSettlement $settlement): array {
+                $obligation = $settlement->obligation;
+
+                return [
+                    'type' => 'settlement_obligation_mismatch',
+                    'operation_id' => $settlement->operation_id,
+                    'operation_settlement_id' => $settlement->id,
+                    'operation_obligation_id' => $settlement->operation_obligation_id,
+                    'settlement_currency' => $settlement->currency,
+                    'obligation_currency' => $obligation?->currency,
+                    'settlement_direction' => $settlement->direction->value,
+                    'expected_direction' => $obligation === null ? null : $this->expectedSettlementDirectionForObligation($obligation)->value,
+                    'settlement_counterparty_id' => $settlement->counterparty_id,
+                    'obligation_counterparty_id' => $obligation?->counterparty_id,
+                    'settlement_counterparty_role' => $settlement->counterparty_role->value,
+                    'obligation_counterparty_role' => $obligation?->counterparty_role?->value,
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  Collection<int, int>  $operationIds
+     * @return list<array<string, mixed>>
+     */
+    private function obligationSettlementSumIssues(Collection $operationIds): array
+    {
+        return OperationObligation::query()
+            ->whereIn('operation_id', $operationIds)
+            ->withSum('settlements as settlements_amount', 'amount')
+            ->get()
+            ->filter(function (OperationObligation $obligation): bool {
+                if ($obligation->status === OperationObligationStatus::Cancelled) {
+                    return false;
+                }
+
+                return round((float) $obligation->settled_amount, 4) !== round((float) ($obligation->settlements_amount ?? 0), 4);
+            })
+            ->map(fn (OperationObligation $obligation): array => [
+                'type' => 'obligation_settlement_sum_mismatch',
+                'operation_id' => $obligation->operation_id,
+                'operation_obligation_id' => $obligation->id,
+                'currency' => $obligation->currency,
+                'settled_amount' => round((float) $obligation->settled_amount, 4),
+                'settlements_amount' => round((float) ($obligation->settlements_amount ?? 0), 4),
+                'status' => $obligation->status->value,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  Collection<int, int>  $operationIds
+     * @return list<array<string, mixed>>
+     */
+    private function obligationReconciliationIssues(Collection $operationIds): array
+    {
+        return OperationObligation::query()
+            ->whereIn('operation_id', $operationIds)
+            ->get()
+            ->filter(function (OperationObligation $obligation): bool {
+                $amount = round((float) $obligation->amount, 4);
+                $settledAmount = round((float) $obligation->settled_amount, 4);
+                $balanceAmount = round((float) $obligation->balance_amount, 4);
+
+                if (round($settledAmount + $balanceAmount, 4) !== $amount) {
+                    return true;
+                }
+
+                return match ($obligation->status) {
+                    OperationObligationStatus::Open => $settledAmount !== 0.0 || $balanceAmount !== $amount,
+                    OperationObligationStatus::PartiallySettled => ! ($settledAmount > 0 && $balanceAmount > 0),
+                    OperationObligationStatus::Settled => $balanceAmount !== 0.0 || $settledAmount !== $amount,
+                    OperationObligationStatus::Cancelled => false,
+                };
+            })
+            ->map(fn (OperationObligation $obligation): array => [
+                'type' => 'obligation_balance_mismatch',
+                'operation_id' => $obligation->operation_id,
+                'operation_obligation_id' => $obligation->id,
+                'currency' => $obligation->currency,
+                'amount' => round((float) $obligation->amount, 4),
+                'settled_amount' => round((float) $obligation->settled_amount, 4),
+                'balance_amount' => round((float) $obligation->balance_amount, 4),
+                'status' => $obligation->status->value,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  Collection<int, int>  $operationIds
+     * @return list<array<string, mixed>>
+     */
+    private function settlementReconciliationIssues(Collection $operationIds): array
+    {
+        return OperationSettlement::query()
+            ->whereIn('operation_id', $operationIds)
+            ->whereNotNull('box_id')
+            ->with('boxBalanceLogs')
+            ->get()
+            ->filter(function (OperationSettlement $settlement): bool {
+                $logs = $settlement->boxBalanceLogs;
+                $log = $logs->first();
+                $expectedOperationType = $this->boxOperationTypeForSettlement($settlement);
+
+                return $logs->count() !== 1
+                    || round((float) $logs->sum('amount'), 4) !== round((float) $settlement->amount, 4)
+                    || ($log !== null && $log->operation_type !== $expectedOperationType)
+                    || ($log !== null && (int) $log->box_id !== (int) $settlement->box_id)
+                    || ($log !== null && (int) $log->operation_id !== (int) $settlement->operation_id);
+            })
+            ->map(fn (OperationSettlement $settlement): array => [
+                'type' => 'settlement_box_log_mismatch',
+                'operation_id' => $settlement->operation_id,
+                'operation_settlement_id' => $settlement->id,
+                'box_id' => $settlement->box_id,
+                'currency' => $settlement->currency,
+                'settlement_amount' => round((float) $settlement->amount, 4),
+                'box_log_count' => $settlement->boxBalanceLogs->count(),
+                'box_log_amount' => round((float) $settlement->boxBalanceLogs->sum('amount'), 4),
+                'direction' => $settlement->direction->value,
+                'expected_box_operation_type' => $this->boxOperationTypeForSettlement($settlement)->value,
+                'box_log_operation_id' => $settlement->boxBalanceLogs->first()?->operation_id,
+                'box_log_box_id' => $settlement->boxBalanceLogs->first()?->box_id,
+                'box_operation_type' => $settlement->boxBalanceLogs->first()?->operation_type?->value,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  Builder<Operation>  $query
+     * @return list<array<string, mixed>>
+     */
+    private function operationWorkflowStatusIssues(Builder $query): array
+    {
+        return $query
+            ->get()
+            ->filter(fn (Operation $operation): bool => $this->expectedOperationStatus($operation) !== $operation->status)
+            ->map(fn (Operation $operation): array => [
+                'type' => 'operation_status_mismatch',
+                'operation_id' => $operation->id,
+                'reference_number' => $operation->reference_number,
+                'actual_status' => $operation->status->value,
+                'expected_status' => $this->expectedOperationStatus($operation)->value,
+                'customer_settlement_status' => $operation->customer_settlement_status?->value,
+                'supplier_fulfillment_status' => $operation->supplier_fulfillment_status?->value,
+            ])
+            ->values()
+            ->all();
+    }
+
+    private function boxOperationTypeForSettlement(OperationSettlement $settlement): BoxBalanceOperationType
+    {
+        return $settlement->direction === OperationSettlementDirection::CashIn
+            ? BoxBalanceOperationType::Add
+            : BoxBalanceOperationType::Subtract;
+    }
+
+    private function expectedSettlementDirectionForObligation(OperationObligation $obligation): OperationSettlementDirection
+    {
+        return $obligation->type === OperationObligationType::Receivable
+            ? OperationSettlementDirection::CashIn
+            : OperationSettlementDirection::CashOut;
+    }
+
+    private function expectedOperationStatus(Operation $operation): OperationStatus
+    {
+        if ($operation->status === OperationStatus::Cancelled) {
+            return OperationStatus::Cancelled;
+        }
+
+        $customerSettled = $operation->customer_settlement_status === OperationCustomerSettlementStatus::Completed;
+        $supplierExecuted = $operation->supplier_id === null
+            || $operation->supplier_fulfillment_status === OperationSupplierFulfillmentStatus::Completed;
+
+        return $customerSettled && $supplierExecuted
+            ? OperationStatus::Completed
+            : OperationStatus::Pending;
     }
 
     /**
@@ -690,5 +1163,10 @@ class ReportService
     private function truthy(mixed $value): bool
     {
         return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    private function enumValue(mixed $value): string
+    {
+        return $value instanceof \BackedEnum ? (string) $value->value : (string) $value;
     }
 }

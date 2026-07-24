@@ -121,6 +121,21 @@ class ReportController extends BaseApiController
         return $this->sendResponse($this->reportService->cancelled($request->validated(), $this->currentUser($request)));
     }
 
+    public function obligations(OperationReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->obligations($request->validated(), $this->currentUser($request)));
+    }
+
+    public function workflow(OperationReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->workflow($request->validated(), $this->currentUser($request)));
+    }
+
+    public function reconciliation(OperationReportRequest $request): JsonResponse
+    {
+        return $this->sendResponse($this->reportService->workflowReconciliation($request->validated(), $this->currentUser($request)));
+    }
+
     /**
      * Users comparison report
      *

@@ -41,6 +41,9 @@ class ExcelService
             'boxes' => ['Box ID', 'Box', 'Current Balance', 'Operations', 'Outgoing Amount', 'Incoming Amount', 'Last Operation'],
             'pending' => ['Reference', 'Supplier', 'Customer', 'Amount USD', 'Commission USD', 'Created At'],
             'cancelled' => ['Reference', 'Supplier', 'Customer', 'Amount USD', 'Commission USD', 'Cancellation Reason', 'Cancelled At'],
+            'obligations', 'operation-obligations' => ['Operation', 'Counterparty', 'Role', 'Type', 'Reason', 'Amount', 'Currency', 'Settled', 'Balance', 'Status'],
+            'operations-workflow' => ['Reference', 'Customer', 'Customer Amount', 'Customer Currency', 'Supplier', 'Supplier Amount', 'Supplier Currency', 'Status', 'Customer Settlement', 'Supplier Fulfillment', 'Supplier Settlement', 'Outstanding'],
+            'workflow-reconciliation', 'reconciliation' => ['Issue Type', 'Operation ID', 'Reference', 'Currency', 'Actual', 'Expected', 'Details'],
             default => ['Reference', 'Supplier', 'Customer', 'Amount USD', 'Commission USD', 'Status', 'Created At'],
         };
     }
@@ -178,6 +181,50 @@ class ExcelService
             ])->all();
         }
 
+        if (in_array($type, ['obligations', 'operation-obligations'], true)) {
+            return collect($report['rows'])->map(fn (array $row): array => [
+                $row['reference_number'],
+                $row['counterparty'],
+                $row['counterparty_role'],
+                $row['type'],
+                $row['reason'],
+                $row['amount'],
+                $row['currency'],
+                $row['settled_amount'],
+                $row['balance_amount'],
+                $row['status'],
+            ])->all();
+        }
+
+        if ($type === 'operations-workflow') {
+            return collect($report['rows'])->map(fn (array $row): array => [
+                $row['reference_number'],
+                $row['customer'],
+                $row['customer_amount'],
+                $row['customer_currency'],
+                $row['supplier'],
+                $row['supplier_amount'],
+                $row['supplier_currency'],
+                $row['status'],
+                $row['customer_settlement_status'],
+                $row['supplier_fulfillment_status'],
+                $row['supplier_settlement_status'],
+                $this->compactJson($row['outstanding']),
+            ])->all();
+        }
+
+        if (in_array($type, ['workflow-reconciliation', 'reconciliation'], true)) {
+            return collect($report['issues'])->map(fn (array $row): array => [
+                $row['type'],
+                $row['operation_id'] ?? null,
+                $row['reference_number'] ?? null,
+                $row['currency'] ?? null,
+                $row['actual_status'] ?? $row['settled_amount'] ?? $row['settlement_amount'] ?? null,
+                $row['expected_status'] ?? $row['settlements_amount'] ?? $row['expected_box_operation_type'] ?? null,
+                $this->compactJson($row),
+            ])->all();
+        }
+
         return collect($report['operations'])->map(fn (array $row): array => [
             $row['reference_number'],
             $row['supplier'],
@@ -187,5 +234,10 @@ class ExcelService
             $row['cancellation_reason'],
             $row['cancelled_at'],
         ])->all();
+    }
+
+    private function compactJson(mixed $value): string
+    {
+        return (string) json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 }

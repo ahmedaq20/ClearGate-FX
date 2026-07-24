@@ -5,11 +5,17 @@ namespace App\Http\Controllers\Api\V1;
 use App\Enums\OperationStatus;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Requests\Operation\CancelOperationRequest;
+use App\Http\Requests\Operation\SetSupplierFulfillmentRequest;
+use App\Http\Requests\Operation\SettleCustomerOperationRequest;
+use App\Http\Requests\Operation\SettleSupplierOperationRequest;
 use App\Http\Requests\Operation\StoreOperationRequest;
 use App\Http\Requests\Operation\UpdateOperationRequest;
 use App\Http\Resources\OperationResource;
 use App\Models\Operation;
+use App\Services\OperationCustomerSettlementService;
 use App\Services\OperationService;
+use App\Services\OperationSupplierFulfillmentService;
+use App\Services\OperationSupplierSettlementService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,6 +30,9 @@ class OperationController extends BaseApiController
 {
     public function __construct(
         private OperationService $operationService,
+        private OperationCustomerSettlementService $customerSettlementService,
+        private OperationSupplierFulfillmentService $supplierFulfillmentService,
+        private OperationSupplierSettlementService $supplierSettlementService,
     ) {}
 
     /**
@@ -205,6 +214,90 @@ class OperationController extends BaseApiController
         }
 
         return $this->sendResponse(null, 'تم إلغاء العملية بنجاح');
+    }
+
+    public function settleCustomer(SettleCustomerOperationRequest $request, int $operation): JsonResponse
+    {
+        $operationModel = Operation::query()->find($operation);
+
+        if ($operationModel === null) {
+            return $this->sendError('العملية غير موجودة', [], 404);
+        }
+
+        if (! $this->canAccessOperation($request, $operationModel)) {
+            return $this->sendError('غير مصرح', [], 403);
+        }
+
+        try {
+            $operationModel = $this->customerSettlementService->settle(
+                $operationModel,
+                $this->currentUser($request),
+                $request->validated()
+            );
+        } catch (ValidationException $exception) {
+            return $this->sendError($this->firstValidationMessage($exception), $exception->errors(), 422);
+        }
+
+        return $this->sendResponse(
+            OperationResource::make($operationModel->load(['customer', 'supplier', 'box', 'creator', 'obligations', 'settlements'])),
+            'تم تحديث تسوية العميل'
+        );
+    }
+
+    public function fulfillSupplier(SetSupplierFulfillmentRequest $request, int $operation): JsonResponse
+    {
+        $operationModel = Operation::query()->find($operation);
+
+        if ($operationModel === null) {
+            return $this->sendError('العملية غير موجودة', [], 404);
+        }
+
+        if (! $this->canAccessOperation($request, $operationModel)) {
+            return $this->sendError('غير مصرح', [], 403);
+        }
+
+        try {
+            $operationModel = $this->supplierFulfillmentService->update(
+                $operationModel,
+                $this->currentUser($request),
+                $request->validated()
+            );
+        } catch (ValidationException $exception) {
+            return $this->sendError($this->firstValidationMessage($exception), $exception->errors(), 422);
+        }
+
+        return $this->sendResponse(
+            OperationResource::make($operationModel->load(['customer', 'supplier', 'box', 'creator', 'obligations', 'settlements'])),
+            'تم تحديث تنفيذ المورد'
+        );
+    }
+
+    public function settleSupplier(SettleSupplierOperationRequest $request, int $operation): JsonResponse
+    {
+        $operationModel = Operation::query()->find($operation);
+
+        if ($operationModel === null) {
+            return $this->sendError('العملية غير موجودة', [], 404);
+        }
+
+        if (! $this->canAccessOperation($request, $operationModel)) {
+            return $this->sendError('غير مصرح', [], 403);
+        }
+
+        try {
+            $operationModel = $this->supplierSettlementService->settle(
+                $operationModel,
+                $this->currentUser($request),
+                $request->validated()
+            );
+        } catch (ValidationException $exception) {
+            return $this->sendError($this->firstValidationMessage($exception), $exception->errors(), 422);
+        }
+
+        return $this->sendResponse(
+            OperationResource::make($operationModel->load(['customer', 'supplier', 'box', 'creator', 'obligations', 'settlements'])),
+            'تم تحديث تسوية المورد'
+        );
     }
 
     /**

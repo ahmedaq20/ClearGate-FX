@@ -49,6 +49,11 @@ class Vault extends Model
         return $this->hasMany(Transaction::class);
     }
 
+    public function operationSettlements(): HasMany
+    {
+        return $this->hasMany(OperationSettlement::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

@@ -77,6 +77,16 @@ class User extends Authenticatable
         return $this->hasMany(Operation::class, 'created_by');
     }
 
+    public function createdOperationObligations(): HasMany
+    {
+        return $this->hasMany(OperationObligation::class, 'created_by');
+    }
+
+    public function createdOperationSettlements(): HasMany
+    {
+        return $this->hasMany(OperationSettlement::class, 'created_by');
+    }
+
     public function isOwner(): bool
     {
         return $this->hasRole('owner', 'sanctum');
