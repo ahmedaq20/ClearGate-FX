@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\CapitalAccountType;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -54,7 +55,12 @@ class User extends Authenticatable
 
     public function capitalAccount(): HasOne
     {
-        return $this->hasOne(CapitalAccount::class);
+        return $this->hasOne(CapitalAccount::class)->where('type', CapitalAccountType::Owner->value);
+    }
+
+    public function capitalAccounts(): HasMany
+    {
+        return $this->hasMany(CapitalAccount::class);
     }
 
     public function ownerExpenses(): HasMany

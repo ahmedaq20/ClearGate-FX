@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\CapitalAccountType;
 use App\Models\AuditLog;
 use App\Models\Box;
 use App\Models\CapitalAccount;
@@ -60,6 +61,10 @@ class ReconciliationService
 
     public function latestOwnerAccount(): ?CapitalAccount
     {
-        return CapitalAccount::query()->oldest('id')->first();
+        return CapitalAccount::query()
+            ->where('type', CapitalAccountType::Owner->value)
+            ->where('currency', 'USD')
+            ->oldest('id')
+            ->first();
     }
 }

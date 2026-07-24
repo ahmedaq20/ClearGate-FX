@@ -132,6 +132,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::post('capital/withdraw', [CapitalController::class, 'withdraw'])->name('capital.withdraw');
         Route::post('capital/transfer-to-box', [CapitalController::class, 'transferToBox'])->name('capital.transfer-to-box');
         Route::get('capital/transactions', [CapitalController::class, 'transactions'])->name('capital.transactions');
+        Route::get('capital/accounts', [CapitalController::class, 'accounts'])->name('capital.accounts.index');
+        Route::post('capital/accounts', [CapitalController::class, 'storeAccount'])->name('capital.accounts.store');
+        Route::get('capital/accounts/{capitalAccount}', [CapitalController::class, 'showAccount'])->name('capital.accounts.show');
+        Route::post('capital/accounts/{capitalAccount}/movements', [CapitalController::class, 'storeAccountMovement'])->name('capital.accounts.movements.store');
+        Route::patch('capital/movements/{capitalTransaction}', [CapitalController::class, 'updateMovement'])->name('capital.movements.update');
+        Route::delete('capital/movements/{capitalTransaction}', [CapitalController::class, 'destroyMovement'])->name('capital.movements.destroy');
 
         Route::get('reconciliation', [ReconciliationController::class, 'show'])->name('reconciliation.show');
         Route::post('reconciliation/run', [ReconciliationController::class, 'run'])->name('reconciliation.run');

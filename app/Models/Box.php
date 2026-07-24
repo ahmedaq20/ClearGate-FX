@@ -59,6 +59,11 @@ class Box extends Model
         return $this->hasMany(OperationSettlement::class);
     }
 
+    public function capitalAllocations(): HasMany
+    {
+        return $this->hasMany(CapitalBoxAllocation::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
