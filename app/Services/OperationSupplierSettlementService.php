@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\BoxBalanceOperationType;
 use App\Enums\OperationCounterpartyRole;
+use App\Enums\OperationObligationReason;
 use App\Enums\OperationObligationStatus;
 use App\Enums\OperationObligationType;
 use App\Enums\OperationSettlementDirection;
@@ -51,7 +52,8 @@ class OperationSupplierSettlementService
             $obligation = $this->supplierObligation(
                 $lockedOperation,
                 $data['operation_obligation_id'] ?? null,
-                $data['idempotency_key'] ?? null
+                $data['idempotency_key'] ?? null,
+                $data['amount']
             );
             $box = Box::query()
                 ->whereKey($data['box_id'])
@@ -85,7 +87,7 @@ class OperationSupplierSettlementService
         }, attempts: 3);
     }
 
-    private function supplierObligation(Operation $operation, mixed $operationObligationId, mixed $idempotencyKey): OperationObligation
+    private function supplierObligation(Operation $operation, mixed $operationObligationId, mixed $idempotencyKey, mixed $amount): OperationObligation
     {
         if (($operationObligationId === null || $operationObligationId === '') && $this->nullableString($idempotencyKey) !== null) {
             $existingSettlement = OperationSettlement::query()
@@ -121,7 +123,25 @@ class OperationSupplierSettlementService
             $query->whereIn('status', [
                 OperationObligationStatus::Open->value,
                 OperationObligationStatus::PartiallySettled->value,
-            ])->orderBy('id');
+            ]);
+
+            $settlementAmount = round((float) $amount, 4);
+
+            if ($settlementAmount > 0) {
+                $query
+                    ->where('balance_amount', '>=', $settlementAmount)
+                    ->orderByRaw('CASE WHEN ROUND(balance_amount, 4) = ? THEN 0 ELSE 1 END', [$settlementAmount])
+                    ->orderByRaw(
+                        'CASE reason WHEN ? THEN 0 WHEN ? THEN 1 WHEN ? THEN 2 ELSE 3 END',
+                        [
+                            OperationObligationReason::SupplierPrincipal->value,
+                            OperationObligationReason::SupplierSettlement->value,
+                            OperationObligationReason::Commission->value,
+                        ]
+                    );
+            }
+
+            $query->orderBy('id');
         }
 
         $obligation = $query->first();

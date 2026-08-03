@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\BoxBalanceOperationType;
+use App\Enums\OperationCommissionPayer;
 use App\Enums\OperationCounterpartyRole;
 use App\Enums\OperationObligationReason;
 use App\Enums\OperationObligationStatus;
@@ -266,6 +267,65 @@ test('supplier pays intermediary workflow opens supplier receivable and settles 
         ->and($settlement->direction)->toBe(OperationSettlementDirection::CashIn)
         ->and($balanceLog->operation_type)->toBe(BoxBalanceOperationType::Add)
         ->and($operation->refresh()->supplier_settlement_status)->toBe(OperationSupplierSettlementStatus::Settled);
+});
+
+test('supplier settlement without obligation id chooses principal before split commission when amount fits', function (): void {
+    $user = actingAsSupplierSettlementUser();
+    $customer = Customer::factory()->create(['type' => 'customer']);
+    $supplier = Customer::factory()->create(['type' => 'supplier']);
+    $box = Box::factory()->create(['currency' => 'USD', 'current_balance' => 100]);
+
+    $this->postJson('/api/v1/operations', [
+        'transaction_date' => '2026-08-04',
+        'supplier_id' => $supplier->id,
+        'box_id' => null,
+        'status' => OperationStatus::Pending->value,
+        'customer_id' => $customer->id,
+        'supplier_currency' => 'USD',
+        'supplier_amount' => 50,
+        'supplier_exchange_rate' => 1,
+        'supplier_direction' => OperationSupplierDirection::SupplierPaysIntermediary->value,
+        'customer_currency' => 'USD',
+        'customer_amount' => 100,
+        'customer_exchange_rate' => 1,
+        'commission_type' => 'fixed',
+        'commission_rate' => 10,
+        'commission_payer' => OperationCommissionPayer::Both->value,
+        'customer_commission_amount' => 5,
+        'supplier_commission_amount' => 5,
+    ])->assertCreated();
+
+    $operation = Operation::query()->firstOrFail();
+
+    $this->postJson("/api/v1/operations/{$operation->id}/supplier-fulfillment", [
+        'supplier_fulfillment_status' => OperationSupplierFulfillmentStatus::Completed->value,
+    ])->assertOk();
+
+    $principalObligation = OperationObligation::query()
+        ->where('operation_id', $operation->id)
+        ->where('reason', OperationObligationReason::SupplierPrincipal->value)
+        ->firstOrFail();
+    $commissionObligation = OperationObligation::query()
+        ->where('operation_id', $operation->id)
+        ->where('reason', OperationObligationReason::Commission->value)
+        ->firstOrFail();
+
+    $this->postJson("/api/v1/operations/{$operation->id}/supplier-settlement", [
+        'amount' => 50,
+        'box_id' => $box->id,
+        'idempotency_key' => 'supplier-principal-with-split-commission',
+    ])
+        ->assertOk()
+        ->assertJsonPath('data.supplier_settlement_status', OperationSupplierSettlementStatus::PartiallySettled->value);
+
+    $settlement = OperationSettlement::query()->firstOrFail();
+
+    expect($settlement->operation_obligation_id)->toBe($principalObligation->id)
+        ->and($principalObligation->refresh()->status)->toBe(OperationObligationStatus::Settled)
+        ->and((float) $principalObligation->balance_amount)->toBe(0.0)
+        ->and($commissionObligation->refresh()->status)->toBe(OperationObligationStatus::Open)
+        ->and((float) $commissionObligation->balance_amount)->toBe(5.0)
+        ->and((float) $box->refresh()->current_balance)->toBe(150.0);
 });
 
 test('supplier settlement rejects missing obligations currency mismatches and overdrafts', function (): void {
