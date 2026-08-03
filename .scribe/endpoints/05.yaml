@@ -603,6 +603,17 @@ endpoints:
         exampleWasSpecified: true
         nullable: true
         deprecated: false
+      balance_usd:
+        custom: []
+        name: balance_usd
+        description: 'Must be at least 0.'
+        required: false
+        example: 84
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
       customer_code: '3302'
       name: 'Ahmed Updated'
@@ -612,6 +623,7 @@ endpoints:
       category: vip
       country: Jordan
       is_active: true
+      balance_usd: 84
     fileParameters: []
     responses:
       -

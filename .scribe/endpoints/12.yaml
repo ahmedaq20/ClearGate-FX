@@ -1,188 +1,23 @@
-name: Notifications
+name: Receipts
 description: |-
 
-  Read and manage in-app notifications for the authenticated user.
+  Generate transaction receipt PDFs.
 endpoints:
   -
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/notifications/unread-count
+    uri: 'api/v1/receipts/{transaction_id}'
     metadata:
       custom: []
-      groupName: Notifications
+      groupName: Receipts
       groupDescription: |-
 
-        Read and manage in-app notifications for the authenticated user.
+        Generate transaction receipt PDFs.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Unread notification count'
-      description: 'Return the number of unread notifications for the authenticated user.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":{"count":3}}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-    uri: api/v1/notifications/read-all
-    metadata:
-      custom: []
-      groupName: Notifications
-      groupDescription: |-
-
-        Read and manage in-app notifications for the authenticated user.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Mark all notifications as read'
-      description: 'Mark every unread notification for the authenticated user as read.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم تعليم كل الإشعارات كمقروءة"}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/v1/notifications
-    metadata:
-      custom: []
-      groupName: Notifications
-      groupDescription: |-
-
-        Read and manage in-app notifications for the authenticated user.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'List notifications'
-      description: 'Return paginated notifications for the authenticated user.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      is_read:
-        custom: []
-        name: is_read
-        description: 'Filter by read status.'
-        required: false
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      type:
-        custom: []
-        name: type
-        description: 'Filter by notification type.'
-        required: false
-        example: report_ready
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      per_page:
-        custom: []
-        name: per_page
-        description: 'Results per page.'
-        required: false
-        example: 20
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      is_read: false
-      type: report_ready
-      per_page: 20
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":[{"id":1,"type":"system","title":"Notification title","body":"Notification body","is_read":false}]}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-    uri: 'api/v1/notifications/{notification_id}/read'
-    metadata:
-      custom: []
-      groupName: Notifications
-      groupDescription: |-
-
-        Read and manage in-app notifications for the authenticated user.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Mark notification as read'
-      description: 'Mark one notification as read if it belongs to the authenticated user.'
+      title: 'Show transaction receipt'
+      description: 'Return a PDF receipt for one transaction if the current user is allowed to view it.'
       authenticated: true
       deprecated: false
     headers:
@@ -190,92 +25,25 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      notification_id:
+      transaction_id:
         custom: []
-        name: notification_id
-        description: 'The ID of the notification.'
+        name: transaction_id
+        description: 'Transaction ID.'
         required: true
-        example: 16
+        example: 10
         type: integer
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      notification_id: 16
+      transaction_id: 10
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
     responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم تعليم الإشعار كمقروء","data":{"id":1,"is_read":true}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 403
-        content: '{"success":false,"message":"غير مصرح"}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'api/v1/notifications/{id}'
-    metadata:
-      custom: []
-      groupName: Notifications
-      groupDescription: |-
-
-        Read and manage in-app notifications for the authenticated user.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Delete notification'
-      description: 'Delete one notification if it belongs to the authenticated user.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The ID of the notification.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 16
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم حذف الإشعار"}'
-        headers: []
-        description: ''
       -
         custom: []
         status: 403

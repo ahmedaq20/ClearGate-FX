@@ -25,6 +25,7 @@ class OperationResource extends JsonResource
             'supplier_currency' => $this->supplier_currency,
             'supplier_amount' => $this->supplier_amount,
             'supplier_exchange_rate' => $this->supplier_exchange_rate,
+            'supplier_direction' => $this->supplier_direction?->value,
             'customer_currency' => $this->customer_currency,
             'customer_amount' => $this->customer_amount,
             'customer_exchange_rate' => $this->customer_exchange_rate,

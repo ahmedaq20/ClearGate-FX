@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "ClearGate FX API Documentation",
-        "_postman_id": "b910d13b-179d-425f-ab60-68cf4d0d205e",
+        "_postman_id": "42781365-1df4-43bc-a30b-c8a07cde1bb0",
         "description": "API documentation for the ClearGate FX currency exchange backend.",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -88,7 +88,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the archive."
                                 }
                             ]
@@ -134,7 +134,7 @@
                                 {
                                     "id": "archive_id",
                                     "key": "archive_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the archive."
                                 }
                             ]
@@ -347,7 +347,7 @@
                                 {
                                     "id": "box_id",
                                     "key": "box_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the box."
                                 }
                             ]
@@ -365,7 +365,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"operation_type\":\"subtract\",\"amount\":4326.41688,\"notes\":\"architecto\"}"
+                            "raw": "{\"operation_type\":\"add\",\"amount\":4326.41688,\"notes\":\"architecto\"}"
                         },
                         "description": "Adjust the current balance and save a full audit log entry."
                     },
@@ -397,7 +397,7 @@
                                 {
                                     "id": "box_id",
                                     "key": "box_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the box."
                                 }
                             ]
@@ -492,7 +492,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"type\":\"usdt_wallet\",\"current_balance\":39,\"currency\":\"gzmiyv\",\"assigned_user_id\":16,\"status\":\"n\",\"notes\":\"architecto\"}"
+                            "raw": "{\"name\":\"b\",\"type\":\"turkish\",\"current_balance\":39,\"currency\":\"gzmiyv\",\"assigned_user_id\":16,\"status\":\"n\",\"notes\":\"architecto\"}"
                         },
                         "description": "Owner users and managers with box.create can create boxes."
                     },
@@ -517,7 +517,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the box."
                                 }
                             ]
@@ -563,7 +563,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the box."
                                 }
                             ]
@@ -581,7 +581,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"type\":\"local_bank_wallet\",\"currency\":\"ngzmiy\",\"assigned_user_id\":16,\"status\":\"n\",\"notes\":\"architecto\"}"
+                            "raw": "{\"name\":\"b\",\"type\":\"turkish\",\"currency\":\"ngzmiy\",\"assigned_user_id\":16,\"status\":\"n\",\"notes\":\"architecto\"}"
                         },
                         "description": "Update editable box metadata. Balance changes must use the balance endpoint."
                     },
@@ -606,7 +606,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the box."
                                 }
                             ]
@@ -713,7 +713,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"code\":\"bngzmi\",\"name\":\"y\",\"name_ar\":\"v\",\"symbol\":\"dljnik\",\"rate_to_usd\":4326.41688,\"is_active\":false}"
+                            "raw": "{\"code\":\"bngzmi\",\"name\":\"y\",\"name_ar\":\"v\",\"symbol\":\"dljnik\",\"rate_to_usd\":4326.41688,\"is_active\":true}"
                         },
                         "description": "Create a new currency with its initial exchange rate to USD."
                     },
@@ -744,7 +744,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the currency."
                                 }
                             ]
@@ -784,7 +784,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the currency."
                                 }
                             ]
@@ -833,7 +833,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the currency."
                                 }
                             ]
@@ -886,7 +886,7 @@
                                 {
                                     "id": "customer_id",
                                     "key": "customer_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the customer."
                                 }
                             ]
@@ -973,7 +973,7 @@
                                 {
                                     "id": "customer_id",
                                     "key": "customer_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the customer."
                                 }
                             ]
@@ -1088,7 +1088,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the customer."
                                 }
                             ]
@@ -1134,7 +1134,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the customer."
                                 }
                             ]
@@ -1152,7 +1152,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"customer_code\":\"3302\",\"name\":\"Ahmed Updated\",\"phone\":\"059xxxxxxx\",\"type\":\"supplier\",\"note\":\"Updated note\",\"category\":\"vip\",\"country\":\"Jordan\",\"is_active\":true}"
+                            "raw": "{\"customer_code\":\"3302\",\"name\":\"Ahmed Updated\",\"phone\":\"059xxxxxxx\",\"type\":\"supplier\",\"note\":\"Updated note\",\"category\":\"vip\",\"country\":\"Jordan\",\"is_active\":true,\"balance_usd\":84}"
                         },
                         "description": "Update customer profile fields."
                     },
@@ -1189,7 +1189,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the customer."
                                 }
                             ]
@@ -1235,7 +1235,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "7",
+                                    "value": 7,
                                     "description": "Customer ID."
                                 }
                             ]
@@ -1281,7 +1281,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "7",
+                                    "value": 7,
                                     "description": "Customer ID."
                                 }
                             ]
@@ -1391,6 +1391,849 @@
                             "name": ""
                         }
                     ]
+                },
+                {
+                    "name": "GET api\/v1\/dashboard\/financial",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/dashboard\/financial",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/dashboard\/financial"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"box_id\":16}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/dashboard\/suppliers",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/dashboard\/suppliers",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/dashboard\/suppliers"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"box_id\":16}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/dashboard\/boxes",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/dashboard\/boxes",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/dashboard\/boxes"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"box_id\":16}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/dashboard\/commissions",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/dashboard\/commissions",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/dashboard\/commissions"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"box_id\":16}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/dashboard\/charts",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/dashboard\/charts",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/dashboard\/charts"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"box_id\":16}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Endpoints",
+            "description": "",
+            "item": [
+                {
+                    "name": "POST api\/v1\/boxes\/{box_id}\/adjust",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/boxes\/:box_id\/adjust",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/boxes\/:box_id\/adjust",
+                            "variable": [
+                                {
+                                    "id": "box_id",
+                                    "key": "box_id",
+                                    "value": 16,
+                                    "description": "The ID of the box."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"adjustment_type\":\"increase\",\"amount\":4326.41688,\"reason\":\"m\",\"notes\":\"architecto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/boxes\/{box_id}\/adjustments",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/boxes\/:box_id\/adjustments",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/boxes\/:box_id\/adjustments",
+                            "variable": [
+                                {
+                                    "id": "box_id",
+                                    "key": "box_id",
+                                    "value": 16,
+                                    "description": "The ID of the box."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/expense-report",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/expense-report",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/expense-report"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"category\":\"architecto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/capital-report",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/capital-report",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/capital-report"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"category\":\"architecto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/net-worth-report",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/net-worth-report",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/net-worth-report"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/capital",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/capital",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/capital"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/capital\/deposit",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/capital\/deposit",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/capital\/deposit"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"amount\":4326.41688,\"transaction_date\":\"2026-08-03T21:10:59\",\"notes\":\"architecto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/capital\/withdraw",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/capital\/withdraw",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/capital\/withdraw"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"amount\":4326.41688,\"transaction_date\":\"2026-08-03T21:10:59\",\"notes\":\"architecto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/capital\/transfer-to-box",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/capital\/transfer-to-box",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/capital\/transfer-to-box"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"box_id\":16,\"amount\":4326.41688,\"transaction_date\":\"2026-08-03T21:10:59\",\"notes\":\"architecto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/capital\/transactions",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/capital\/transactions",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/capital\/transactions"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/capital\/accounts",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/capital\/accounts",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/capital\/accounts"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/capital\/accounts",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/capital\/accounts",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/capital\/accounts"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"type\":\"investor\",\"name\":\"b\",\"amount\":4326.41688,\"currency\":\"miyvdl\",\"transaction_date\":\"2026-08-03T21:10:59\",\"reference_number\":\"j\",\"statement\":\"n\",\"notes\":\"i\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/capital\/accounts\/{capitalAccount_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/capital\/accounts\/:capitalAccount_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/capital\/accounts\/:capitalAccount_id",
+                            "variable": [
+                                {
+                                    "id": "capitalAccount_id",
+                                    "key": "capitalAccount_id",
+                                    "value": 16,
+                                    "description": "The ID of the capitalAccount."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/capital\/accounts\/{capitalAccount_id}\/movements",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/capital\/accounts\/:capitalAccount_id\/movements",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/capital\/accounts\/:capitalAccount_id\/movements",
+                            "variable": [
+                                {
+                                    "id": "capitalAccount_id",
+                                    "key": "capitalAccount_id",
+                                    "value": 16,
+                                    "description": "The ID of the capitalAccount."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"type\":\"top_up\",\"amount\":4326.41688,\"currency\":\"miyvdl\",\"transaction_date\":\"2026-08-03T21:10:59\",\"reference_number\":\"j\",\"statement\":\"n\",\"notes\":\"i\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PATCH api\/v1\/capital\/movements\/{capitalTransaction_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/capital\/movements\/:capitalTransaction_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/capital\/movements\/:capitalTransaction_id",
+                            "variable": [
+                                {
+                                    "id": "capitalTransaction_id",
+                                    "key": "capitalTransaction_id",
+                                    "value": 16,
+                                    "description": "The ID of the capitalTransaction."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"amount\":4326.41688,\"transaction_date\":\"2026-08-03T21:10:59\",\"reference_number\":\"m\",\"statement\":\"i\",\"notes\":\"y\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/capital\/movements\/{capitalTransaction_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/capital\/movements\/:capitalTransaction_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/capital\/movements\/:capitalTransaction_id",
+                            "variable": [
+                                {
+                                    "id": "capitalTransaction_id",
+                                    "key": "capitalTransaction_id",
+                                    "value": 16,
+                                    "description": "The ID of the capitalTransaction."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reconciliation",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reconciliation",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reconciliation"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/reconciliation\/run",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reconciliation\/run",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reconciliation\/run"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reconciliation\/history",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reconciliation\/history",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reconciliation\/history"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/adjustments",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/adjustments",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/adjustments"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/expenses",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/expenses",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/expenses"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/expenses",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/expenses",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/expenses"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"title\":\"b\",\"category\":\"family\",\"amount\":4326.41688,\"expense_date\":\"2026-08-03T21:10:59\",\"notes\":\"architecto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/expenses\/{id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/expenses\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/expenses\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": 16,
+                                    "description": "The ID of the expense."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"title\":\"b\",\"category\":\"education\",\"amount\":4326.41688,\"expense_date\":\"2026-08-03T21:10:59\",\"notes\":\"architecto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/expenses\/{id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/expenses\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/expenses\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": 16,
+                                    "description": "The ID of the expense."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
                 }
             ]
         },
@@ -1428,7 +2271,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"rate\":4326.41688,\"date\":\"2026-06-16T21:08:42\"}"
+                            "raw": "{\"rate\":4326.41688,\"date\":\"2026-08-03T21:10:58\"}"
                         },
                         "description": "Update the current exchange rate for a currency and append a historical exchange-rate row."
                     },
@@ -1678,7 +2521,7 @@
                                 {
                                     "id": "notification_id",
                                     "key": "notification_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the notification."
                                 }
                             ]
@@ -1724,7 +2567,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the notification."
                                 }
                             ]
@@ -1909,6 +2752,114 @@
                     "response": []
                 },
                 {
+                    "name": "POST api\/v1\/operations\/{operation}\/customer-settlement",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations\/:operation\/customer-settlement",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations\/:operation\/customer-settlement",
+                            "variable": [
+                                {
+                                    "id": "operation",
+                                    "key": "operation",
+                                    "value": "architecto",
+                                    "description": "The operation."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"customer_direction\":\"customer_pays_intermediary\",\"customer_settlement_status\":\"pending\",\"box_id\":16,\"settlement_date\":\"2026-08-03T21:10:58\",\"idempotency_key\":\"n\",\"notes\":\"architecto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/operations\/{operation}\/supplier-fulfillment",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations\/:operation\/supplier-fulfillment",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations\/:operation\/supplier-fulfillment",
+                            "variable": [
+                                {
+                                    "id": "operation",
+                                    "key": "operation",
+                                    "value": "architecto",
+                                    "description": "The operation."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"supplier_fulfillment_status\":\"pending\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/operations\/{operation}\/supplier-settlement",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/operations\/:operation\/supplier-settlement",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/operations\/:operation\/supplier-settlement",
+                            "variable": [
+                                {
+                                    "id": "operation",
+                                    "key": "operation",
+                                    "value": "architecto",
+                                    "description": "The operation."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"amount\":4326.41688,\"box_id\":16,\"operation_obligation_id\":16,\"settlement_date\":\"2026-08-03T21:10:58\",\"idempotency_key\":\"n\",\"notes\":\"architecto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
                     "name": "Operation receipt",
                     "request": {
                         "url": {
@@ -1920,7 +2871,7 @@
                                 {
                                     "id": "operation_id",
                                     "key": "operation_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the operation."
                                 }
                             ]
@@ -1942,7 +2893,7 @@
                     "response": []
                 },
                 {
-                    "name": "List operations",
+                    "name": "List operations\nContinue following AGENTS.md and the updated project plan.",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
@@ -2037,7 +2988,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"transaction_date\":\"2026-06-15\",\"supplier_id\":5,\"box_id\":3,\"status\":\"pending\",\"customer_id\":10,\"supplier_currency\":\"USD\",\"supplier_amount\":1000,\"supplier_exchange_rate\":1,\"customer_currency\":\"USD\",\"customer_amount\":1000,\"customer_exchange_rate\":1,\"commission_type\":\"percentage\",\"commission_rate\":2,\"notes\":\"Supplier funded transfer.\"}"
+                            "raw": "{\"transaction_date\":\"2026-06-15\",\"supplier_id\":5,\"box_id\":3,\"status\":\"pending\",\"customer_id\":10,\"supplier_currency\":\"USD\",\"supplier_amount\":1000,\"supplier_exchange_rate\":1,\"supplier_direction\":\"supplier_pays_intermediary\",\"customer_currency\":\"USD\",\"customer_amount\":1000,\"customer_exchange_rate\":1,\"commission_type\":\"percentage\",\"commission_rate\":2,\"notes\":\"Supplier funded transfer.\"}"
                         },
                         "description": "Supplier-funded operations must include status as pending or completed. Box-funded operations omit status and are stored as completed automatically."
                     },
@@ -2074,7 +3025,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the operation."
                                 }
                             ]
@@ -2107,7 +3058,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the operation."
                                 }
                             ]
@@ -2125,7 +3076,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"transaction_date\":\"2026-06-16T21:08:42\",\"supplier_id\":16,\"box_id\":16,\"customer_id\":16,\"supplier_currency\":\"ngzmiy\",\"supplier_amount\":4326.41688,\"supplier_exchange_rate\":4326.41688,\"customer_currency\":\"miyvdl\",\"customer_amount\":4326.41688,\"customer_exchange_rate\":4326.41688,\"commission_type\":\"fixed\",\"commission_rate\":4326.41688,\"notes\":\"architecto\"}"
+                            "raw": "{\"transaction_date\":\"2026-08-03T21:10:58\",\"supplier_id\":16,\"box_id\":16,\"customer_id\":16,\"supplier_currency\":\"ngzmiy\",\"supplier_amount\":4326.41688,\"supplier_exchange_rate\":4326.41688,\"supplier_direction\":\"supplier_pays_intermediary\",\"customer_currency\":\"miyvdl\",\"customer_amount\":4326.41688,\"customer_exchange_rate\":4326.41688,\"commission_type\":\"percentage\",\"commission_rate\":4326.41688,\"notes\":\"architecto\"}"
                         },
                         "description": ""
                     },
@@ -2143,7 +3094,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the operation."
                                 }
                             ]
@@ -2213,7 +3164,7 @@
                                 {
                                     "id": "transaction_id",
                                     "key": "transaction_id",
-                                    "value": "10",
+                                    "value": 10,
                                     "description": "Transaction ID."
                                 }
                             ]
@@ -2344,6 +3295,426 @@
                     ]
                 },
                 {
+                    "name": "GET api\/v1\/reports\/operations",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/operations",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/operations"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date\":\"2026-08-03T21:10:58\",\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"pending\",\"obligation_type\":\"receivable\",\"counterparty_role\":\"supplier\",\"obligation_status\":\"cancelled\",\"currency\":\"ngzmiy\",\"period\":\"monthly\",\"group_by_status\":true,\"per_page\":1}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/commissions",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/commissions",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/commissions"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date\":\"2026-08-03T21:10:58\",\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"completed\",\"obligation_type\":\"receivable\",\"counterparty_role\":\"customer\",\"obligation_status\":\"settled\",\"currency\":\"ngzmiy\",\"period\":\"daily\",\"group_by_status\":false,\"per_page\":1}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/profit-summary",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/profit-summary",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/profit-summary"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"pending\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/daily-profit",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/daily-profit",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/daily-profit"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"completed\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/monthly-profit",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/monthly-profit",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/monthly-profit"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"completed\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/profit-by-supplier",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/profit-by-supplier",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/profit-by-supplier"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"completed\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/profit-by-user",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/profit-by-user",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/profit-by-user"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"completed\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/suppliers",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/suppliers",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/suppliers"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date\":\"2026-08-03T21:10:58\",\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"pending\",\"obligation_type\":\"receivable\",\"counterparty_role\":\"supplier\",\"obligation_status\":\"settled\",\"currency\":\"ngzmiy\",\"period\":\"monthly\",\"group_by_status\":true,\"per_page\":1}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/customers",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/customers",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/customers"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date\":\"2026-08-03T21:10:58\",\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"pending\",\"obligation_type\":\"receivable\",\"counterparty_role\":\"customer\",\"obligation_status\":\"settled\",\"currency\":\"ngzmiy\",\"period\":\"custom\",\"group_by_status\":false,\"per_page\":1}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/boxes",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/boxes",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/boxes"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date\":\"2026-08-03T21:10:58\",\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"completed\",\"obligation_type\":\"payable\",\"counterparty_role\":\"customer\",\"obligation_status\":\"settled\",\"currency\":\"ngzmiy\",\"period\":\"monthly\",\"group_by_status\":true,\"per_page\":1}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/pending",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/pending",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/pending"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date\":\"2026-08-03T21:10:58\",\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"cancelled\",\"obligation_type\":\"receivable\",\"counterparty_role\":\"supplier\",\"obligation_status\":\"cancelled\",\"currency\":\"ngzmiy\",\"period\":\"daily\",\"group_by_status\":true,\"per_page\":1}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/cancelled",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/cancelled",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/cancelled"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date\":\"2026-08-03T21:10:58\",\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"cancelled\",\"obligation_type\":\"receivable\",\"counterparty_role\":\"customer\",\"obligation_status\":\"settled\",\"currency\":\"ngzmiy\",\"period\":\"custom\",\"group_by_status\":true,\"per_page\":1}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/obligations",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/obligations",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/obligations"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date\":\"2026-08-03T21:10:58\",\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"cancelled\",\"obligation_type\":\"receivable\",\"counterparty_role\":\"supplier\",\"obligation_status\":\"cancelled\",\"currency\":\"ngzmiy\",\"period\":\"daily\",\"group_by_status\":false,\"per_page\":1}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/operations-workflow",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/operations-workflow",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/operations-workflow"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date\":\"2026-08-03T21:10:58\",\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"completed\",\"obligation_type\":\"receivable\",\"counterparty_role\":\"customer\",\"obligation_status\":\"settled\",\"currency\":\"ngzmiy\",\"period\":\"daily\",\"group_by_status\":true,\"per_page\":1}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/reports\/reconciliation",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/reports\/reconciliation",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/reports\/reconciliation"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"date\":\"2026-08-03T21:10:58\",\"date_from\":\"2026-08-03T21:10:58\",\"date_to\":\"2052-08-26\",\"supplier_id\":16,\"customer_id\":16,\"box_id\":16,\"user_id\":16,\"status\":\"cancelled\",\"obligation_type\":\"payable\",\"counterparty_role\":\"customer\",\"obligation_status\":\"partially_settled\",\"currency\":\"ngzmiy\",\"period\":\"monthly\",\"group_by_status\":false,\"per_page\":1}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
                     "name": "Users comparison report",
                     "request": {
                         "url": {
@@ -2419,7 +3790,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "5",
+                                    "value": 5,
                                     "description": "Customer ID."
                                 }
                             ]
@@ -2475,7 +3846,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"type\":\"comparison\",\"format\":\"excel\"}"
+                            "raw": "{\"type\":\"pending\",\"format\":\"excel\"}"
                         },
                         "description": "Queue a PDF or Excel export and return a job ID for polling."
                     },
@@ -2622,7 +3993,7 @@
                                 {
                                     "id": "role_id",
                                     "key": "role_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the role."
                                 }
                             ]
@@ -2711,7 +4082,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the role."
                                 }
                             ]
@@ -2744,7 +4115,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the role."
                                 }
                             ]
@@ -2780,7 +4151,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the role."
                                 }
                             ]
@@ -3185,7 +4556,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"type\":\"receive\",\"amount\":4326.41688,\"currency_code\":\"miyvdl\",\"exchange_rate\":4326.41688,\"customer_id\":16,\"from_customer_id\":16,\"to_customer_id\":16,\"commission_type\":\"fixed\",\"commission_rate\":4326.41688,\"commission_sign\":-1,\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-06-16T21:08:42\"}"
+                            "raw": "{\"type\":\"receive\",\"amount\":4326.41688,\"currency_code\":\"miyvdl\",\"exchange_rate\":4326.41688,\"customer_id\":16,\"from_customer_id\":16,\"to_customer_id\":16,\"commission_type\":\"fixed\",\"commission_rate\":4326.41688,\"commission_sign\":1,\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-08-03T21:10:58\"}"
                         },
                         "description": "Create a receive, send, or transfer transaction using the current user's vault. Commission is calculated in TransactionService.\nFor transfer type, provide `from_customer_id`, `to_customer_id`, and `exchange_rate`. No vault balance is affected for transfers \u2014 only customer balances."
                     },
@@ -3228,7 +4599,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the transaction."
                                 }
                             ]
@@ -3274,7 +4645,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the transaction."
                                 }
                             ]
@@ -3292,7 +4663,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-06-16T21:08:42\"}"
+                            "raw": "{\"note\":\"architecto\",\"reference_number\":\"n\",\"country\":\"g\",\"transaction_date\":\"2026-08-03T21:10:58\"}"
                         },
                         "description": "Update non-financial transaction fields only."
                     },
@@ -3329,7 +4700,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the transaction."
                                 }
                             ]
@@ -3375,7 +4746,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "10",
+                                    "value": 10,
                                     "description": "Transaction ID."
                                 }
                             ]
@@ -3421,7 +4792,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "10",
+                                    "value": 10,
                                     "description": "Transaction ID."
                                 }
                             ]
@@ -3473,7 +4844,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "2",
+                                    "value": 2,
                                     "description": "User ID."
                                 }
                             ]
@@ -3519,7 +4890,7 @@
                                 {
                                     "id": "user_id",
                                     "key": "user_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the user."
                                 }
                             ]
@@ -3568,7 +4939,7 @@
                                 {
                                     "id": "user_id",
                                     "key": "user_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the user."
                                 }
                             ]
@@ -3614,7 +4985,7 @@
                                 {
                                     "id": "user_id",
                                     "key": "user_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the user."
                                 }
                             ]
@@ -3736,7 +5107,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"password\":\"-0pBNvYgxw\",\"phone\":\"a\",\"role\":\"architecto\",\"initial_balance\":4326.41688,\"is_active\":false}"
+                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"password\":\"-0pBNvYgxw\",\"phone\":\"a\",\"role\":\"architecto\",\"initial_balance\":4326.41688,\"is_active\":true}"
                         },
                         "description": "Owner-only endpoint that creates a user, creates their vault, and optionally assigns the manager role."
                     },
@@ -3767,7 +5138,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the user."
                                 }
                             ]
@@ -3813,7 +5184,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the user."
                                 }
                             ]
@@ -3831,7 +5202,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"password\":\"-0pBNvYgxw\",\"phone\":\"a\",\"is_active\":true}"
+                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"password\":\"-0pBNvYgxw\",\"phone\":\"a\",\"is_active\":false}"
                         },
                         "description": "Owner-only endpoint for updating user profile fields and active status."
                     },
@@ -3862,7 +5233,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the user."
                                 }
                             ]
@@ -3914,7 +5285,7 @@
                                 {
                                     "id": "vault_id",
                                     "key": "vault_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the vault."
                                 }
                             ]
@@ -3970,7 +5341,7 @@
                                 {
                                     "id": "vault_id",
                                     "key": "vault_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the vault."
                                 }
                             ]
@@ -4016,7 +5387,7 @@
                                 {
                                     "id": "vault_id",
                                     "key": "vault_id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the vault."
                                 }
                             ]
@@ -4095,7 +5466,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the vault."
                                 }
                             ]
@@ -4141,7 +5512,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": "16",
+                                    "value": 16,
                                     "description": "The ID of the vault."
                                 }
                             ]

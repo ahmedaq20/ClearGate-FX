@@ -105,3 +105,428 @@ endpoints:
     controller: null
     method: null
     route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/dashboard/financial
+    metadata:
+      custom: []
+      groupName: Dashboard
+      groupDescription: |-
+
+        Operational summaries and charts for the authenticated user's permitted scope.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      date_from:
+        custom: []
+        name: date_from
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-08-03T21:10:58'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date_to:
+        custom: []
+        name: date_to
+        description: 'Must be a valid date. Must be a date after or equal to <code>date_from</code>.'
+        required: false
+        example: '2052-08-26'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      supplier_id:
+        custom: []
+        name: supplier_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      box_id:
+        custom: []
+        name: box_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      date_from: '2026-08-03T21:10:58'
+      date_to: '2052-08-26'
+      supplier_id: 16
+      box_id: 16
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/dashboard/suppliers
+    metadata:
+      custom: []
+      groupName: Dashboard
+      groupDescription: |-
+
+        Operational summaries and charts for the authenticated user's permitted scope.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      date_from:
+        custom: []
+        name: date_from
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-08-03T21:10:58'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date_to:
+        custom: []
+        name: date_to
+        description: 'Must be a valid date. Must be a date after or equal to <code>date_from</code>.'
+        required: false
+        example: '2052-08-26'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      supplier_id:
+        custom: []
+        name: supplier_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      box_id:
+        custom: []
+        name: box_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      date_from: '2026-08-03T21:10:58'
+      date_to: '2052-08-26'
+      supplier_id: 16
+      box_id: 16
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/dashboard/boxes
+    metadata:
+      custom: []
+      groupName: Dashboard
+      groupDescription: |-
+
+        Operational summaries and charts for the authenticated user's permitted scope.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      date_from:
+        custom: []
+        name: date_from
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-08-03T21:10:58'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date_to:
+        custom: []
+        name: date_to
+        description: 'Must be a valid date. Must be a date after or equal to <code>date_from</code>.'
+        required: false
+        example: '2052-08-26'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      supplier_id:
+        custom: []
+        name: supplier_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      box_id:
+        custom: []
+        name: box_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      date_from: '2026-08-03T21:10:58'
+      date_to: '2052-08-26'
+      supplier_id: 16
+      box_id: 16
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/dashboard/commissions
+    metadata:
+      custom: []
+      groupName: Dashboard
+      groupDescription: |-
+
+        Operational summaries and charts for the authenticated user's permitted scope.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      date_from:
+        custom: []
+        name: date_from
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-08-03T21:10:58'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date_to:
+        custom: []
+        name: date_to
+        description: 'Must be a valid date. Must be a date after or equal to <code>date_from</code>.'
+        required: false
+        example: '2052-08-26'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      supplier_id:
+        custom: []
+        name: supplier_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      box_id:
+        custom: []
+        name: box_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      date_from: '2026-08-03T21:10:58'
+      date_to: '2052-08-26'
+      supplier_id: 16
+      box_id: 16
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/dashboard/charts
+    metadata:
+      custom: []
+      groupName: Dashboard
+      groupDescription: |-
+
+        Operational summaries and charts for the authenticated user's permitted scope.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      date_from:
+        custom: []
+        name: date_from
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-08-03T21:10:58'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date_to:
+        custom: []
+        name: date_to
+        description: 'Must be a valid date. Must be a date after or equal to <code>date_from</code>.'
+        required: false
+        example: '2052-08-26'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      supplier_id:
+        custom: []
+        name: supplier_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      box_id:
+        custom: []
+        name: box_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      date_from: '2026-08-03T21:10:58'
+      date_to: '2052-08-26'
+      supplier_id: 16
+      box_id: 16
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

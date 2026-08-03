@@ -1,23 +1,194 @@
-name: Currencies
+name: 'Exchange Rates'
 description: |-
 
-  Manage supported currencies and their current USD exchange rates.
+  View exchange-rate history and update current currency rates.
 endpoints:
   -
     custom: []
     httpMethods:
-      - GET
-    uri: api/v1/currencies
+      - PUT
+    uri: 'api/v1/currencies/{code}/rate'
     metadata:
       custom: []
-      groupName: Currencies
+      groupName: 'Exchange Rates'
       groupDescription: |-
 
-        Manage supported currencies and their current USD exchange rates.
+        View exchange-rate history and update current currency rates.
       subgroup: ''
       subgroupDescription: ''
-      title: 'List currencies'
-      description: 'Return paginated currencies with optional search and active status filters.'
+      title: 'Update currency rate'
+      description: 'Update the current exchange rate for a currency and append a historical exchange-rate row.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      code:
+        custom: []
+        name: code
+        description: 'Currency code.'
+        required: true
+        example: USD
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      code: USD
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      rate:
+        custom: []
+        name: rate
+        description: ''
+        required: true
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date:
+        custom: []
+        name: date
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-08-03T21:10:58'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      rate: 4326.41688
+      date: '2026-08-03T21:10:58'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"تم تحديث سعر الصرف","data":{"code":"USD","rate_to_usd":"1.000000"}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: '{"success":false,"message":"Validation Error"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/exchange-rates/bulk-update
+    metadata:
+      custom: []
+      groupName: 'Exchange Rates'
+      groupDescription: |-
+
+        View exchange-rate history and update current currency rates.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Bulk update exchange rates'
+      description: 'Update multiple currency rates in one request. Each item creates a historical exchange-rate row.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      rates:
+        custom: []
+        name: rates
+        description: 'Must have at least 1 items.'
+        required: true
+        example:
+          - []
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'rates[].code':
+        custom: []
+        name: 'rates[].code'
+        description: 'Must match an existing stored value. Must not be greater than 10 characters.'
+        required: true
+        example: bngzmi
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'rates[].rate':
+        custom: []
+        name: 'rates[].rate'
+        description: ''
+        required: true
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      rates:
+        - code: bngzmi
+          rate: 4326.41688
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"success":true,"message":"تم تحديث أسعار الصرف"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: '{"success":false,"message":"Validation Error"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/exchange-rates
+    metadata:
+      custom: []
+      groupName: 'Exchange Rates'
+      groupDescription: |-
+
+        View exchange-rate history and update current currency rates.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List exchange rates'
+      description: 'Return paginated exchange-rate history with optional currency and date filters.'
       authenticated: true
       deprecated: false
     headers:
@@ -27,10 +198,10 @@ endpoints:
     urlParameters: []
     cleanUrlParameters: []
     queryParameters:
-      search:
+      currency:
         custom: []
-        name: search
-        description: 'Search by code, English name, or Arabic name.'
+        name: currency
+        description: 'Filter by currency code.'
         required: false
         example: USD
         type: string
@@ -38,13 +209,24 @@ endpoints:
         exampleWasSpecified: true
         nullable: false
         deprecated: false
-      is_active:
+      date_from:
         custom: []
-        name: is_active
-        description: 'Filter by active status.'
+        name: date_from
+        description: 'date Filter from rate date.'
         required: false
-        example: true
-        type: boolean
+        example: '2026-05-01'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      date_to:
+        custom: []
+        name: date_to
+        description: 'date Filter to rate date.'
+        required: false
+        example: '2026-05-31'
+        type: string
         enumValues: []
         exampleWasSpecified: true
         nullable: false
@@ -61,8 +243,9 @@ endpoints:
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      search: USD
-      is_active: true
+      currency: USD
+      date_from: '2026-05-01'
+      date_to: '2026-05-31'
       per_page: 20
     bodyParameters: []
     cleanBodyParameters: []
@@ -71,372 +254,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"message":"Success","data":[{"id":1,"code":"USD","name":"US Dollar","name_ar":"دولار أمريكي","symbol":"$","rate_to_usd":"1.000000","is_active":true}]}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: api/v1/currencies
-    metadata:
-      custom: []
-      groupName: Currencies
-      groupDescription: |-
-
-        Manage supported currencies and their current USD exchange rates.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Create currency'
-      description: 'Create a new currency with its initial exchange rate to USD.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      code:
-        custom: []
-        name: code
-        description: 'Must not be greater than 10 characters.'
-        required: true
-        example: bngzmi
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      name:
-        custom: []
-        name: name
-        description: 'Must not be greater than 100 characters.'
-        required: true
-        example: 'y'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      name_ar:
-        custom: []
-        name: name_ar
-        description: 'Must not be greater than 100 characters.'
-        required: true
-        example: v
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      symbol:
-        custom: []
-        name: symbol
-        description: 'Must not be greater than 10 characters.'
-        required: true
-        example: dljnik
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      rate_to_usd:
-        custom: []
-        name: rate_to_usd
-        description: ''
-        required: true
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      is_active:
-        custom: []
-        name: is_active
-        description: ''
-        required: false
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      code: bngzmi
-      name: 'y'
-      name_ar: v
-      symbol: dljnik
-      rate_to_usd: 4326.41688
-      is_active: false
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 201
-        content: '{"success":true,"message":"تم إنشاء العملة","data":{"id":1,"code":"USD","name":"US Dollar","rate_to_usd":"1.000000","is_active":true}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 422
-        content: '{"success":false,"message":"Validation Error"}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'api/v1/currencies/{id}'
-    metadata:
-      custom: []
-      groupName: Currencies
-      groupDescription: |-
-
-        Manage supported currencies and their current USD exchange rates.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Show currency'
-      description: 'Return one currency and its exchange rate history.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The ID of the currency.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 16
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"Success","data":{"id":1,"code":"USD","name":"US Dollar","exchange_rates":[]}}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-      - PATCH
-    uri: 'api/v1/currencies/{id}'
-    metadata:
-      custom: []
-      groupName: Currencies
-      groupDescription: |-
-
-        Manage supported currencies and their current USD exchange rates.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Update currency'
-      description: 'Update currency metadata or its active status.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The ID of the currency.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 16
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      code:
-        custom: []
-        name: code
-        description: 'Must not be greater than 10 characters.'
-        required: false
-        example: bngzmi
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      name:
-        custom: []
-        name: name
-        description: 'Must not be greater than 100 characters.'
-        required: false
-        example: 'y'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      name_ar:
-        custom: []
-        name: name_ar
-        description: 'Must not be greater than 100 characters.'
-        required: false
-        example: v
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      symbol:
-        custom: []
-        name: symbol
-        description: 'Must not be greater than 10 characters.'
-        required: false
-        example: dljnik
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      rate_to_usd:
-        custom: []
-        name: rate_to_usd
-        description: ''
-        required: false
-        example: 4326.41688
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      is_active:
-        custom: []
-        name: is_active
-        description: ''
-        required: false
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      code: bngzmi
-      name: 'y'
-      name_ar: v
-      symbol: dljnik
-      rate_to_usd: 4326.41688
-      is_active: false
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم تحديث العملة","data":{"id":1,"code":"USD","name":"US Dollar","is_active":true}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 422
-        content: '{"success":false,"message":"Validation Error"}'
-        headers: []
-        description: ''
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'api/v1/currencies/{id}'
-    metadata:
-      custom: []
-      groupName: Currencies
-      groupDescription: |-
-
-        Manage supported currencies and their current USD exchange rates.
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Disable currency'
-      description: 'Disable a currency by setting it inactive instead of deleting it.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The ID of the currency.'
-        required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 16
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"success":true,"message":"تم تعطيل العملة"}'
+        content: '{"success":true,"message":"Success","data":[{"id":1,"currency_code":"USD","rate":"1.000000","source":"manual","date":"2026-05-03"}]}'
         headers: []
         description: ''
     responseFields: []

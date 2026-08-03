@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Enums\BoxBalanceOperationType;
+use App\Enums\OperationCustomerDirection;
 use App\Enums\OperationStatus;
+use App\Enums\OperationSupplierDirection;
 use App\Models\AuditLog;
 use App\Models\Box;
 use App\Models\Operation;
@@ -49,6 +51,7 @@ class OperationService
             $oldValues = $lockedOperation->attributesToArray();
             $payload = $this->operationPayload($this->mergeOperationData($lockedOperation, $data), $user, $lockedOperation);
 
+            $this->ensureDirectionsCanChange($lockedOperation, $payload);
             $this->applyBoxFunding($lockedOperation, $user, BoxBalanceOperationType::Add);
             $this->reverseSupplierFunding($lockedOperation);
 
@@ -177,6 +180,9 @@ class OperationService
     private function operationPayload(array $data, User $user, ?Operation $operation = null): array
     {
         $isSupplierFunded = isset($data['supplier_id']) && $data['supplier_id'] !== null;
+        $supplierDirection = $isSupplierFunded
+            ? $this->resolveSupplierDirection($data, $operation)
+            : null;
         $customerAmount = round((float) $data['customer_amount'], 4);
         $commissionAmount = $this->calculateCommissionAmount(
             $customerAmount,
@@ -204,6 +210,16 @@ class OperationService
             'created_by' => $operation?->created_by ?? $user->id,
         ];
 
+        if ($isSupplierFunded && $supplierDirection !== null) {
+            $payload['supplier_direction'] = $supplierDirection->value;
+            $payload['customer_direction'] = $this->customerDirectionForSupplier($supplierDirection)->value;
+        }
+
+        if (! $isSupplierFunded) {
+            $payload['supplier_direction'] = null;
+            $payload['customer_direction'] = null;
+        }
+
         if ($operation === null) {
             $status = isset($data['box_id']) && $data['box_id'] !== null
                 ? OperationStatus::Completed
@@ -214,6 +230,35 @@ class OperationService
         }
 
         return $payload;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function resolveSupplierDirection(array $data, ?Operation $operation): ?OperationSupplierDirection
+    {
+        $direction = $data['supplier_direction'] ?? $operation?->supplier_direction;
+
+        if ($direction instanceof OperationSupplierDirection) {
+            return $direction;
+        }
+
+        if ($direction !== null && $direction !== '') {
+            return OperationSupplierDirection::from((string) $direction);
+        }
+
+        if ($operation !== null) {
+            return null;
+        }
+
+        return OperationSupplierDirection::SupplierPaysIntermediary;
+    }
+
+    private function customerDirectionForSupplier(OperationSupplierDirection $supplierDirection): OperationCustomerDirection
+    {
+        return $supplierDirection === OperationSupplierDirection::SupplierPaysIntermediary
+            ? OperationCustomerDirection::IntermediaryPaysCustomer
+            : OperationCustomerDirection::CustomerPaysIntermediary;
     }
 
     private function calculateCommissionAmount(float $amount, string $commissionType, float $commissionRate): float
@@ -333,6 +378,7 @@ class OperationService
             'supplier_currency',
             'supplier_amount',
             'supplier_exchange_rate',
+            'supplier_direction',
             'customer_currency',
             'customer_amount',
             'customer_exchange_rate',
@@ -340,5 +386,38 @@ class OperationService
             'commission_rate',
             'notes',
         ]), $data);
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    private function ensureDirectionsCanChange(Operation $operation, array $payload): void
+    {
+        if (
+            $this->directionValue($operation->supplier_direction) === $this->directionValue($payload['supplier_direction'] ?? null)
+            && $this->directionValue($operation->customer_direction) === $this->directionValue($payload['customer_direction'] ?? null)
+        ) {
+            return;
+        }
+
+        if (
+            $operation->customer_settlement_status !== null
+            || $operation->supplier_fulfillment_status !== null
+            || $operation->obligations()->exists()
+            || $operation->settlements()->exists()
+        ) {
+            throw ValidationException::withMessages([
+                'supplier_direction' => 'لا يمكن تغيير اتجاه العملية بعد بدء التنفيذ أو التسوية.',
+            ]);
+        }
+    }
+
+    private function directionValue(mixed $direction): ?string
+    {
+        if ($direction instanceof OperationCustomerDirection || $direction instanceof OperationSupplierDirection) {
+            return $direction->value;
+        }
+
+        return $direction === null || $direction === '' ? null : (string) $direction;
     }
 }

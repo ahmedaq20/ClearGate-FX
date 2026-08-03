@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Schema;
 test('operation financial workflow schema is available', function (): void {
     foreach ([
         'customer_direction',
+        'supplier_direction',
         'customer_settlement_status',
         'customer_settled_at',
         'supplier_fulfillment_status',

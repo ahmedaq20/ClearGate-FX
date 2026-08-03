@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Operation;
 
 use App\Enums\CustomerType;
+use App\Enums\OperationSupplierDirection;
 use App\Http\Requests\ApiFormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -36,6 +37,7 @@ class UpdateOperationRequest extends ApiFormRequest
             'supplier_currency' => ['sometimes', 'nullable', 'string', 'max:10'],
             'supplier_amount' => ['sometimes', 'nullable', 'numeric', 'gt:0'],
             'supplier_exchange_rate' => ['sometimes', 'nullable', 'numeric', 'gt:0'],
+            'supplier_direction' => ['sometimes', 'nullable', Rule::in(array_column(OperationSupplierDirection::cases(), 'value'))],
             'customer_currency' => ['sometimes', 'string', 'max:10'],
             'customer_amount' => ['sometimes', 'numeric', 'gt:0'],
             'customer_exchange_rate' => ['sometimes', 'numeric', 'gt:0'],
@@ -71,6 +73,10 @@ class UpdateOperationRequest extends ApiFormRequest
                 if ($hasSupplier && ! $this->filledFromRequestOrOperation('supplier_exchange_rate')) {
                     $validator->errors()->add('supplier_exchange_rate', 'حقل سعر صرف المورد مطلوب عند استخدام مورد كمصدر للأموال.');
                 }
+
+                if ($hasBox && $this->filled('supplier_direction')) {
+                    $validator->errors()->add('supplier_direction', 'لا يتم تحديد اتجاه المورد عند استخدام صندوق كمصدر للأموال.');
+                }
             },
         ];
     }
@@ -93,6 +99,7 @@ class UpdateOperationRequest extends ApiFormRequest
     {
         return array_merge(parent::messages(), [
             'supplier_id.exists' => 'المورد المحدد غير موجود.',
+            'supplier_direction.in' => 'اتجاه المورد غير صالح.',
             'customer_id.exists' => 'العميل المحدد غير موجود.',
             'box_id.exists' => 'الصندوق المحدد غير موجود.',
         ]);

@@ -42,7 +42,7 @@ class ExcelService
             'pending' => ['Reference', 'Supplier', 'Customer', 'Amount USD', 'Commission USD', 'Created At'],
             'cancelled' => ['Reference', 'Supplier', 'Customer', 'Amount USD', 'Commission USD', 'Cancellation Reason', 'Cancelled At'],
             'obligations', 'operation-obligations' => ['Operation', 'Counterparty', 'Role', 'Type', 'Reason', 'Amount', 'Currency', 'Settled', 'Balance', 'Status'],
-            'operations-workflow' => ['Reference', 'Customer', 'Customer Amount', 'Customer Currency', 'Supplier', 'Supplier Amount', 'Supplier Currency', 'Status', 'Customer Settlement', 'Supplier Fulfillment', 'Supplier Settlement', 'Outstanding'],
+            'operations-workflow' => ['Reference', 'Customer', 'Customer Amount', 'Customer Currency', 'Supplier', 'Supplier Amount', 'Supplier Currency', 'Supplier Direction', 'Status', 'Customer Settlement', 'Supplier Fulfillment', 'Supplier Settlement', 'Outstanding'],
             'workflow-reconciliation', 'reconciliation' => ['Issue Type', 'Operation ID', 'Reference', 'Currency', 'Actual', 'Expected', 'Details'],
             default => ['Reference', 'Supplier', 'Customer', 'Amount USD', 'Commission USD', 'Status', 'Created At'],
         };
@@ -205,6 +205,7 @@ class ExcelService
                 $row['supplier'],
                 $row['supplier_amount'],
                 $row['supplier_currency'],
+                $row['supplier_direction'],
                 $row['status'],
                 $row['customer_settlement_status'],
                 $row['supplier_fulfillment_status'],

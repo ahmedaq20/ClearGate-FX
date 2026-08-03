@@ -7,6 +7,8 @@ use App\Enums\OperationObligationStatus;
 use App\Enums\OperationObligationType;
 use App\Enums\OperationSettlementDirection;
 use App\Enums\OperationStatus;
+use App\Enums\OperationSupplierDirection;
+use App\Enums\OperationSupplierFulfillmentStatus;
 use App\Enums\OperationSupplierSettlementStatus;
 use App\Models\Box;
 use App\Models\BoxBalanceLog;
@@ -215,6 +217,46 @@ test('supplier receivable settlement records cash in to the box', function (): v
         'box_id' => $box->id,
         'operation_obligation_id' => $obligation->id,
         'idempotency_key' => 'supplier-receivable-1',
+    ])->assertOk();
+
+    $settlement = OperationSettlement::query()->firstOrFail();
+    $balanceLog = BoxBalanceLog::query()->firstOrFail();
+
+    expect((float) $box->refresh()->current_balance)->toBe(800.0)
+        ->and($settlement->direction)->toBe(OperationSettlementDirection::CashIn)
+        ->and($balanceLog->operation_type)->toBe(BoxBalanceOperationType::Add)
+        ->and($operation->refresh()->supplier_settlement_status)->toBe(OperationSupplierSettlementStatus::Settled);
+});
+
+test('supplier pays intermediary workflow opens supplier receivable and settles cash into box', function (): void {
+    $user = actingAsSupplierSettlementUser();
+    $supplier = Customer::factory()->create(['type' => 'supplier']);
+    $box = Box::factory()->create(['currency' => 'USD', 'current_balance' => 300]);
+    $operation = Operation::factory()->create([
+        'created_by' => $user->id,
+        'supplier_id' => $supplier->id,
+        'supplier_amount' => 500,
+        'supplier_currency' => 'USD',
+        'supplier_exchange_rate' => 1,
+        'supplier_direction' => OperationSupplierDirection::SupplierPaysIntermediary->value,
+    ]);
+
+    $this->postJson("/api/v1/operations/{$operation->id}/supplier-fulfillment", [
+        'supplier_fulfillment_status' => OperationSupplierFulfillmentStatus::Completed->value,
+    ])->assertOk();
+
+    $obligation = OperationObligation::query()->firstOrFail();
+
+    expect($obligation->counterparty_id)->toBe($supplier->id)
+        ->and($obligation->counterparty_role)->toBe(OperationCounterpartyRole::Supplier)
+        ->and($obligation->type)->toBe(OperationObligationType::Receivable)
+        ->and($obligation->reason)->toBe(OperationObligationReason::SupplierPrincipal);
+
+    $this->postJson("/api/v1/operations/{$operation->id}/supplier-settlement", [
+        'amount' => 500,
+        'box_id' => $box->id,
+        'operation_obligation_id' => $obligation->id,
+        'idempotency_key' => 'supplier-pays-intermediary-1',
     ])->assertOk();
 
     $settlement = OperationSettlement::query()->firstOrFail();

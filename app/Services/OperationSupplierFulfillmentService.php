@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\OperationCounterpartyRole;
 use App\Enums\OperationObligationReason;
 use App\Enums\OperationStatus;
+use App\Enums\OperationSupplierDirection;
 use App\Enums\OperationSupplierFulfillmentStatus;
 use App\Models\AuditLog;
 use App\Models\Operation;
@@ -93,17 +94,31 @@ class OperationSupplierFulfillmentService
         $supplierAmount = $this->supplierAmount($operation);
         $supplierCurrency = $this->supplierCurrency($operation);
         $supplierExchangeRate = $this->supplierExchangeRate($operation);
+        $supplierDirection = $operation->supplier_direction ?? OperationSupplierDirection::IntermediaryPaysSupplier;
 
-        $this->obligationService->openPayable(
-            operation: $operation,
-            counterparty: $operation->supplier()->firstOrFail(),
-            creator: $user,
-            reason: OperationObligationReason::SupplierSettlement,
-            amount: $supplierAmount,
-            currency: $supplierCurrency,
-            exchangeRate: $supplierExchangeRate,
-            counterpartyRole: OperationCounterpartyRole::Supplier
-        );
+        if ($supplierDirection === OperationSupplierDirection::SupplierPaysIntermediary) {
+            $this->obligationService->openReceivable(
+                operation: $operation,
+                counterparty: $operation->supplier()->firstOrFail(),
+                creator: $user,
+                reason: OperationObligationReason::SupplierPrincipal,
+                amount: $supplierAmount,
+                currency: $supplierCurrency,
+                exchangeRate: $supplierExchangeRate,
+                counterpartyRole: OperationCounterpartyRole::Supplier
+            );
+        } else {
+            $this->obligationService->openPayable(
+                operation: $operation,
+                counterparty: $operation->supplier()->firstOrFail(),
+                creator: $user,
+                reason: OperationObligationReason::SupplierSettlement,
+                amount: $supplierAmount,
+                currency: $supplierCurrency,
+                exchangeRate: $supplierExchangeRate,
+                counterpartyRole: OperationCounterpartyRole::Supplier
+            );
+        }
 
         $operation->update([
             'supplier_fulfillment_status' => OperationSupplierFulfillmentStatus::Completed->value,

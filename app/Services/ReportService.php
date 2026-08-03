@@ -722,6 +722,7 @@ class ReportService
             'supplier' => $operation->supplier?->name,
             'supplier_amount' => $operation->supplier_amount === null ? null : round((float) $operation->supplier_amount, 4),
             'supplier_currency' => $operation->supplier_currency,
+            'supplier_direction' => $operation->supplier_direction?->value,
             'commission_amount' => round((float) $operation->commission_amount, 4),
             'commission_currency' => $operation->commission_currency,
             'customer_settlement_status' => $operation->customer_settlement_status?->value,

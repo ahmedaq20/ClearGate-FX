@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\OperationCustomerDirection;
 use App\Enums\OperationCustomerSettlementStatus;
 use App\Enums\OperationStatus;
+use App\Enums\OperationSupplierDirection;
 use App\Enums\OperationSupplierFulfillmentStatus;
 use App\Enums\OperationSupplierSettlementStatus;
 use Database\Factories\OperationFactory;
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'supplier_currency',
     'supplier_amount',
     'supplier_exchange_rate',
+    'supplier_direction',
     'customer_currency',
     'customer_amount',
     'customer_exchange_rate',
@@ -101,6 +103,7 @@ class Operation extends Model
             'status' => OperationStatus::class,
             'supplier_amount' => 'decimal:4',
             'supplier_exchange_rate' => 'decimal:8',
+            'supplier_direction' => OperationSupplierDirection::class,
             'customer_amount' => 'decimal:4',
             'customer_exchange_rate' => 'decimal:8',
             'commission_rate' => 'decimal:4',

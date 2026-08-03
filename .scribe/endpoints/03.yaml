@@ -301,7 +301,7 @@ endpoints:
       currency_code:
         custom: []
         name: currency_code
-        description: 'The <code>code</code> of an existing record in the currencies table. Must not be greater than 10 characters.'
+        description: 'Must match an existing stored value. Must not be greater than 10 characters.'
         required: true
         example: miyvdl
         type: string
@@ -323,7 +323,7 @@ endpoints:
       customer_id:
         custom: []
         name: customer_id
-        description: 'The <code>id</code> of an existing record in the customers table.'
+        description: 'Must match an existing stored value.'
         required: false
         example: 16
         type: integer
@@ -334,7 +334,7 @@ endpoints:
       from_customer_id:
         custom: []
         name: from_customer_id
-        description: 'This field is required when <code>type</code> is <code>transfer</code>. The <code>id</code> of an existing record in the customers table.'
+        description: 'This field is required when <code>type</code> is <code>transfer</code>. Must match an existing stored value.'
         required: false
         example: 16
         type: integer
@@ -345,7 +345,7 @@ endpoints:
       to_customer_id:
         custom: []
         name: to_customer_id
-        description: 'This field is required when <code>type</code> is <code>transfer</code>. The <code>id</code> of an existing record in the customers table.'
+        description: 'This field is required when <code>type</code> is <code>transfer</code>. Must match an existing stored value.'
         required: false
         example: 16
         type: integer
@@ -382,7 +382,7 @@ endpoints:
         name: commission_sign
         description: 'This field is required when <code>commission_type</code> is present.'
         required: false
-        example: -1
+        example: 1
         type: integer
         enumValues:
           - 1
@@ -428,7 +428,7 @@ endpoints:
         name: transaction_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-06-16T21:08:42'
+        example: '2026-08-03T21:10:58'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -444,11 +444,11 @@ endpoints:
       to_customer_id: 16
       commission_type: fixed
       commission_rate: 4326.41688
-      commission_sign: -1
+      commission_sign: 1
       note: architecto
       reference_number: 'n'
       country: g
-      transaction_date: '2026-06-16T21:08:42'
+      transaction_date: '2026-08-03T21:10:58'
     fileParameters: []
     responses:
       -
@@ -621,7 +621,7 @@ endpoints:
         name: transaction_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-06-16T21:08:42'
+        example: '2026-08-03T21:10:58'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -631,7 +631,7 @@ endpoints:
       note: architecto
       reference_number: 'n'
       country: g
-      transaction_date: '2026-06-16T21:08:42'
+      transaction_date: '2026-08-03T21:10:58'
     fileParameters: []
     responses:
       -

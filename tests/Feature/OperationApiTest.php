@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\OperationCustomerDirection;
+use App\Enums\OperationSupplierDirection;
 use App\Models\AuditLog;
 use App\Models\Box;
 use App\Models\BoxBalanceLog;
@@ -55,12 +57,38 @@ test('supplier funded operation stores commission and does not affect boxes', fu
         ->assertJsonPath('data.reference_number', 'TRX-2026-00001')
         ->assertJsonPath('data.commission_amount', '20.0000')
         ->assertJsonPath('data.customer_net_amount', '980.0000')
+        ->assertJsonPath('data.supplier_direction', OperationSupplierDirection::SupplierPaysIntermediary->value)
+        ->assertJsonPath('data.customer_direction', OperationCustomerDirection::IntermediaryPaysCustomer->value)
         ->assertJsonPath('data.status', 'pending')
         ->assertJsonPath('data.completed_at', null)
         ->assertJsonPath('data.created_by', $owner->id);
 
     expect(BoxBalanceLog::query()->count())->toBe(0)
         ->and(AuditLog::query()->where('action', 'operation.created')->count())->toBe(1);
+});
+
+test('supplier direction can be set and updated before workflow starts', function (): void {
+    $owner = actingAsOperationUser();
+
+    $this->postJson('/api/v1/operations', operationPayload([
+        'supplier_direction' => OperationSupplierDirection::IntermediaryPaysSupplier->value,
+    ]))
+        ->assertCreated()
+        ->assertJsonPath('data.supplier_direction', OperationSupplierDirection::IntermediaryPaysSupplier->value)
+        ->assertJsonPath('data.customer_direction', OperationCustomerDirection::CustomerPaysIntermediary->value);
+
+    $operation = Operation::query()->firstOrFail();
+
+    $this->putJson("/api/v1/operations/{$operation->id}", [
+        'supplier_direction' => OperationSupplierDirection::SupplierPaysIntermediary->value,
+    ])
+        ->assertOk()
+        ->assertJsonPath('data.supplier_direction', OperationSupplierDirection::SupplierPaysIntermediary->value)
+        ->assertJsonPath('data.customer_direction', OperationCustomerDirection::IntermediaryPaysCustomer->value);
+
+    expect($operation->refresh()->created_by)->toBe($owner->id)
+        ->and($operation->supplier_direction)->toBe(OperationSupplierDirection::SupplierPaysIntermediary)
+        ->and($operation->customer_direction)->toBe(OperationCustomerDirection::IntermediaryPaysCustomer);
 });
 
 test('supplier funded operation can be created completed when supplier already settled', function (): void {

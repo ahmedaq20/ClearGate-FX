@@ -227,6 +227,315 @@ endpoints:
   -
     custom: []
     httpMethods:
+      - POST
+    uri: 'api/v1/operations/{operation}/customer-settlement'
+    metadata:
+      custom: []
+      groupName: Operations
+      groupDescription: |-
+
+        Manage complete money transfer operations beside the legacy transaction system.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      operation:
+        custom: []
+        name: operation
+        description: 'The operation.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      operation: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      customer_direction:
+        custom: []
+        name: customer_direction
+        description: ''
+        required: true
+        example: customer_pays_intermediary
+        type: string
+        enumValues:
+          - customer_pays_intermediary
+          - intermediary_pays_customer
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      customer_settlement_status:
+        custom: []
+        name: customer_settlement_status
+        description: ''
+        required: true
+        example: pending
+        type: string
+        enumValues:
+          - pending
+          - completed
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      box_id:
+        custom: []
+        name: box_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      settlement_date:
+        custom: []
+        name: settlement_date
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-08-03T21:10:58'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      idempotency_key:
+        custom: []
+        name: idempotency_key
+        description: 'Must not be greater than 100 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      notes:
+        custom: []
+        name: notes
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      customer_direction: customer_pays_intermediary
+      customer_settlement_status: pending
+      box_id: 16
+      settlement_date: '2026-08-03T21:10:58'
+      idempotency_key: 'n'
+      notes: architecto
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/operations/{operation}/supplier-fulfillment'
+    metadata:
+      custom: []
+      groupName: Operations
+      groupDescription: |-
+
+        Manage complete money transfer operations beside the legacy transaction system.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      operation:
+        custom: []
+        name: operation
+        description: 'The operation.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      operation: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      supplier_fulfillment_status:
+        custom: []
+        name: supplier_fulfillment_status
+        description: ''
+        required: true
+        example: pending
+        type: string
+        enumValues:
+          - pending
+          - completed
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      supplier_fulfillment_status: pending
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/operations/{operation}/supplier-settlement'
+    metadata:
+      custom: []
+      groupName: Operations
+      groupDescription: |-
+
+        Manage complete money transfer operations beside the legacy transaction system.
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_BEARER_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      operation:
+        custom: []
+        name: operation
+        description: 'The operation.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      operation: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      amount:
+        custom: []
+        name: amount
+        description: ''
+        required: true
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      box_id:
+        custom: []
+        name: box_id
+        description: 'Must match an existing stored value.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      operation_obligation_id:
+        custom: []
+        name: operation_obligation_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      settlement_date:
+        custom: []
+        name: settlement_date
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-08-03T21:10:58'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      idempotency_key:
+        custom: []
+        name: idempotency_key
+        description: 'Must not be greater than 100 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      notes:
+        custom: []
+        name: notes
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      amount: 4326.41688
+      box_id: 16
+      operation_obligation_id: 16
+      settlement_date: '2026-08-03T21:10:58'
+      idempotency_key: 'n'
+      notes: architecto
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
       - GET
     uri: 'api/v1/operations/{operation_id}/receipt'
     metadata:
@@ -286,7 +595,9 @@ endpoints:
         Manage complete money transfer operations beside the legacy transaction system.
       subgroup: ''
       subgroupDescription: ''
-      title: 'List operations'
+      title: |-
+        List operations
+        Continue following AGENTS.md and the updated project plan.
       description: ''
       authenticated: true
       deprecated: false
@@ -491,34 +802,47 @@ endpoints:
         custom: []
         name: supplier_currency
         description: 'Supplier-side currency code. Must not be greater than 10 characters.'
-        required: true
+        required: false
         example: USD
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
       supplier_amount:
         custom: []
         name: supplier_amount
         description: 'Supplier-side amount.'
-        required: true
+        required: false
         example: 1000.0
         type: number
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
       supplier_exchange_rate:
         custom: []
         name: supplier_exchange_rate
         description: 'Supplier-side exchange rate.'
-        required: true
+        required: false
         example: 1.0
         type: number
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
+        deprecated: false
+      supplier_direction:
+        custom: []
+        name: supplier_direction
+        description: 'Supplier money direction. supplier_pays_intermediary means supplier cash comes in and the customer receives from intermediary.'
+        required: false
+        example: supplier_pays_intermediary
+        type: string
+        enumValues:
+          - supplier_pays_intermediary
+          - intermediary_pays_supplier
+        exampleWasSpecified: false
+        nullable: true
         deprecated: false
       customer_currency:
         custom: []
@@ -597,6 +921,7 @@ endpoints:
       supplier_currency: USD
       supplier_amount: 1000.0
       supplier_exchange_rate: 1.0
+      supplier_direction: supplier_pays_intermediary
       customer_currency: USD
       customer_amount: 1000.0
       customer_exchange_rate: 1.0
@@ -724,7 +1049,7 @@ endpoints:
         name: transaction_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-06-16T21:08:42'
+        example: '2026-08-03T21:10:58'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -733,7 +1058,7 @@ endpoints:
       supplier_id:
         custom: []
         name: supplier_id
-        description: 'The <code>id</code> of an existing record in the customers table.'
+        description: 'Must match an existing stored value.'
         required: false
         example: 16
         type: integer
@@ -744,7 +1069,7 @@ endpoints:
       box_id:
         custom: []
         name: box_id
-        description: 'The <code>id</code> of an existing record in the boxes table.'
+        description: 'Must match an existing stored value.'
         required: false
         example: 16
         type: integer
@@ -755,7 +1080,7 @@ endpoints:
       customer_id:
         custom: []
         name: customer_id
-        description: 'The <code>id</code> of an existing record in the customers table.'
+        description: 'Must match an existing stored value.'
         required: false
         example: 16
         type: integer
@@ -772,7 +1097,7 @@ endpoints:
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
       supplier_amount:
         custom: []
@@ -783,7 +1108,7 @@ endpoints:
         type: number
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
       supplier_exchange_rate:
         custom: []
@@ -794,7 +1119,20 @@ endpoints:
         type: number
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
+        deprecated: false
+      supplier_direction:
+        custom: []
+        name: supplier_direction
+        description: ''
+        required: false
+        example: supplier_pays_intermediary
+        type: string
+        enumValues:
+          - supplier_pays_intermediary
+          - intermediary_pays_supplier
+        exampleWasSpecified: false
+        nullable: true
         deprecated: false
       customer_currency:
         custom: []
@@ -834,7 +1172,7 @@ endpoints:
         name: commission_type
         description: ''
         required: false
-        example: fixed
+        example: percentage
         type: string
         enumValues:
           - percentage
@@ -865,17 +1203,18 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      transaction_date: '2026-06-16T21:08:42'
+      transaction_date: '2026-08-03T21:10:58'
       supplier_id: 16
       box_id: 16
       customer_id: 16
       supplier_currency: ngzmiy
       supplier_amount: 4326.41688
       supplier_exchange_rate: 4326.41688
+      supplier_direction: supplier_pays_intermediary
       customer_currency: miyvdl
       customer_amount: 4326.41688
       customer_exchange_rate: 4326.41688
-      commission_type: fixed
+      commission_type: percentage
       commission_rate: 4326.41688
       notes: architecto
     fileParameters: []
