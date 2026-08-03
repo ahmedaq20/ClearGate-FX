@@ -12,6 +12,9 @@ test('operation financial workflow schema is available', function (): void {
         'supplier_fulfilled_at',
         'supplier_settlement_status',
         'supplier_settled_at',
+        'commission_payer',
+        'customer_commission_amount',
+        'supplier_commission_amount',
         'commission_currency',
     ] as $column) {
         expect(Schema::hasColumn('operations', $column))->toBeTrue();

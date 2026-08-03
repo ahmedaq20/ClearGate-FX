@@ -82,6 +82,9 @@ class OperationController extends BaseApiController
      * @bodyParam supplier_id integer Supplier ID for supplier-funded operations. Example: 5
      * @bodyParam box_id integer Box ID for box-funded operations. Example: 3
      * @bodyParam customer_id integer required Receiving customer ID. Example: 10
+     * @bodyParam commission_payer string Who pays the commission: customer, supplier, or both. Defaults to customer. Example: customer
+     * @bodyParam customer_commission_amount numeric Customer-paid commission share. Required when commission_payer is both. Example: 10
+     * @bodyParam supplier_commission_amount numeric Supplier-paid commission share. Required when commission_payer is both. Example: 10
      *
      * @response 201 {"success":true,"message":"تم إنشاء العملية","data":{"supplier_id":5,"box_id":null,"customer_id":10,"status":"pending"}}
      * @response 201 {"success":true,"message":"تم إنشاء العملية","data":{"supplier_id":5,"box_id":null,"customer_id":10,"status":"completed"}}

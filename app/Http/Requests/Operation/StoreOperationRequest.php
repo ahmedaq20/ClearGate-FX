@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Operation;
 
 use App\Enums\CustomerType;
+use App\Enums\OperationCommissionPayer;
 use App\Enums\OperationStatus;
 use App\Enums\OperationSupplierDirection;
 use App\Http\Requests\ApiFormRequest;
@@ -44,6 +45,9 @@ class StoreOperationRequest extends ApiFormRequest
             'customer_exchange_rate' => ['required', 'numeric', 'gt:0'],
             'commission_type' => ['required', Rule::in(['percentage', 'fixed'])],
             'commission_rate' => ['required', 'numeric', 'gte:0'],
+            'commission_payer' => ['nullable', Rule::in(array_column(OperationCommissionPayer::cases(), 'value'))],
+            'customer_commission_amount' => ['nullable', 'numeric', 'gte:0'],
+            'supplier_commission_amount' => ['nullable', 'numeric', 'gte:0'],
             'notes' => ['nullable', 'string'],
         ];
     }
@@ -110,6 +114,18 @@ class StoreOperationRequest extends ApiFormRequest
                 'description' => 'Commission rate or fixed value.',
                 'example' => 2,
             ],
+            'commission_payer' => [
+                'description' => 'Who pays the commission. Allowed values: customer, supplier, both. Defaults to customer.',
+                'example' => OperationCommissionPayer::Customer->value,
+            ],
+            'customer_commission_amount' => [
+                'description' => 'Customer-paid part of the commission. Required when commission_payer is both.',
+                'example' => 10,
+            ],
+            'supplier_commission_amount' => [
+                'description' => 'Supplier-paid part of the commission. Required when commission_payer is both.',
+                'example' => 10,
+            ],
             'notes' => [
                 'description' => 'Optional operation notes.',
                 'example' => 'Supplier funded transfer.',
@@ -154,8 +170,59 @@ class StoreOperationRequest extends ApiFormRequest
                 if ($hasBox && $this->input('status') === OperationStatus::Pending->value) {
                     $validator->errors()->add('status', 'لا يمكن إنشاء عملية معلقة عند استخدام صندوق كمصدر للأموال');
                 }
+
+                $this->validateCommissionSplit($validator, $hasSupplier);
             },
         ];
+    }
+
+    private function validateCommissionSplit(Validator $validator, bool $hasSupplier): void
+    {
+        $commissionPayer = (string) $this->input('commission_payer', OperationCommissionPayer::Customer->value);
+
+        if (! $hasSupplier && in_array($commissionPayer, [OperationCommissionPayer::Supplier->value, OperationCommissionPayer::Both->value], true)) {
+            $validator->errors()->add('commission_payer', 'لا يمكن تحميل المورد عمولة بدون اختيار مورد للعملية.');
+        }
+
+        if ($commissionPayer !== OperationCommissionPayer::Both->value) {
+            return;
+        }
+
+        if (! $this->filled('customer_commission_amount')) {
+            $validator->errors()->add('customer_commission_amount', 'حقل عمولة العميل مطلوب عند توزيع العمولة على الطرفين.');
+        }
+
+        if (! $this->filled('supplier_commission_amount')) {
+            $validator->errors()->add('supplier_commission_amount', 'حقل عمولة المورد مطلوب عند توزيع العمولة على الطرفين.');
+        }
+
+        if (! is_numeric($this->input('customer_amount')) || ! is_numeric($this->input('commission_rate'))) {
+            return;
+        }
+
+        if (! is_numeric($this->input('customer_commission_amount')) || ! is_numeric($this->input('supplier_commission_amount'))) {
+            return;
+        }
+
+        $commissionAmount = $this->commissionAmount(
+            (float) $this->input('customer_amount'),
+            (string) $this->input('commission_type'),
+            (float) $this->input('commission_rate')
+        );
+        $splitAmount = round((float) $this->input('customer_commission_amount') + (float) $this->input('supplier_commission_amount'), 4);
+
+        if (abs($splitAmount - $commissionAmount) > 0.00009) {
+            $validator->errors()->add('commission_split', 'مجموع عمولة العميل والمورد يجب أن يساوي إجمالي العمولة.');
+        }
+    }
+
+    private function commissionAmount(float $customerAmount, string $commissionType, float $commissionRate): float
+    {
+        return match ($commissionType) {
+            'percentage' => round($customerAmount * ($commissionRate / 100), 4),
+            'fixed' => round($commissionRate, 4),
+            default => 0.0,
+        };
     }
 
     /**

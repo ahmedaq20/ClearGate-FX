@@ -3,12 +3,19 @@
 namespace App\Services;
 
 use App\Enums\BoxBalanceOperationType;
+use App\Enums\OperationCommissionPayer;
+use App\Enums\OperationCounterpartyRole;
 use App\Enums\OperationCustomerDirection;
+use App\Enums\OperationObligationReason;
+use App\Enums\OperationObligationStatus;
+use App\Enums\OperationObligationType;
 use App\Enums\OperationStatus;
 use App\Enums\OperationSupplierDirection;
+use App\Enums\OperationSupplierSettlementStatus;
 use App\Models\AuditLog;
 use App\Models\Box;
 use App\Models\Operation;
+use App\Models\OperationObligation;
 use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +23,8 @@ use Illuminate\Validation\ValidationException;
 
 class OperationService
 {
+    public function __construct(private readonly OperationObligationService $operationObligationService) {}
+
     /**
      * @param  array<string, mixed>  $data
      */
@@ -26,6 +35,7 @@ class OperationService
 
             $this->applyBoxFunding($operation, $user, BoxBalanceOperationType::Subtract);
             $this->applySupplierFunding($operation);
+            $this->syncSupplierCommissionObligation($operation, $user);
 
             AuditLog::record(
                 action: 'operation.created',
@@ -60,6 +70,7 @@ class OperationService
 
             $this->applyBoxFunding($lockedOperation, $user, BoxBalanceOperationType::Subtract);
             $this->applySupplierFunding($lockedOperation);
+            $this->syncSupplierCommissionObligation($lockedOperation, $user);
 
             AuditLog::record(
                 action: 'operation.updated',
@@ -84,6 +95,7 @@ class OperationService
 
             $this->applyBoxFunding($lockedOperation, $user, BoxBalanceOperationType::Add);
             $this->reverseSupplierFunding($lockedOperation);
+            $this->removeSupplierCommissionObligation($lockedOperation);
 
             AuditLog::record(
                 action: 'operation.deleted',
@@ -154,6 +166,8 @@ class OperationService
                 ]);
             }
 
+            $this->removeSupplierCommissionObligation($lockedOperation);
+
             $lockedOperation->update([
                 'status' => OperationStatus::Cancelled->value,
                 'cancelled_at' => now(),
@@ -189,6 +203,15 @@ class OperationService
             (string) $data['commission_type'],
             (float) $data['commission_rate']
         );
+        $commissionPayer = $this->resolveCommissionPayer($data, $operation);
+
+        if (! $isSupplierFunded && in_array($commissionPayer, [OperationCommissionPayer::Supplier, OperationCommissionPayer::Both], true)) {
+            throw ValidationException::withMessages([
+                'commission_payer' => 'لا يمكن تحميل المورد عمولة بدون اختيار مورد للعملية.',
+            ]);
+        }
+
+        [$customerCommissionAmount, $supplierCommissionAmount] = $this->resolveCommissionSplit($commissionAmount, $commissionPayer, $data);
 
         $payload = [
             'reference_number' => $operation?->reference_number ?? $this->nextReferenceNumber((string) $data['transaction_date']),
@@ -204,8 +227,12 @@ class OperationService
             'customer_exchange_rate' => round((float) $data['customer_exchange_rate'], 8),
             'commission_type' => $data['commission_type'],
             'commission_rate' => round((float) $data['commission_rate'], 4),
+            'commission_payer' => $commissionPayer->value,
             'commission_amount' => $commissionAmount,
-            'customer_net_amount' => round($customerAmount - $commissionAmount, 4),
+            'customer_commission_amount' => $customerCommissionAmount,
+            'supplier_commission_amount' => $supplierCommissionAmount,
+            'customer_net_amount' => round($customerAmount - $customerCommissionAmount, 4),
+            'commission_currency' => $data['customer_currency'],
             'notes' => $data['notes'] ?? null,
             'created_by' => $operation?->created_by ?? $user->id,
         ];
@@ -230,6 +257,62 @@ class OperationService
         }
 
         return $payload;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function resolveCommissionPayer(array $data, ?Operation $operation): OperationCommissionPayer
+    {
+        $commissionPayer = $data['commission_payer'] ?? $operation?->commission_payer ?? OperationCommissionPayer::Customer;
+
+        if ($commissionPayer instanceof OperationCommissionPayer) {
+            return $commissionPayer;
+        }
+
+        if ($commissionPayer === null || $commissionPayer === '') {
+            return OperationCommissionPayer::Customer;
+        }
+
+        return OperationCommissionPayer::from((string) $commissionPayer);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array{0: float, 1: float}
+     */
+    private function resolveCommissionSplit(float $commissionAmount, OperationCommissionPayer $commissionPayer, array $data): array
+    {
+        if ($commissionPayer === OperationCommissionPayer::Customer) {
+            return [$commissionAmount, 0.0];
+        }
+
+        if ($commissionPayer === OperationCommissionPayer::Supplier) {
+            return [0.0, $commissionAmount];
+        }
+
+        if (! array_key_exists('customer_commission_amount', $data) || ! array_key_exists('supplier_commission_amount', $data)) {
+            throw ValidationException::withMessages([
+                'commission_split' => 'يجب تحديد عمولة العميل وعمولة المورد عند توزيع العمولة على الطرفين.',
+            ]);
+        }
+
+        $customerCommissionAmount = round((float) $data['customer_commission_amount'], 4);
+        $supplierCommissionAmount = round((float) $data['supplier_commission_amount'], 4);
+
+        if ($customerCommissionAmount < 0 || $supplierCommissionAmount < 0) {
+            throw ValidationException::withMessages([
+                'commission_split' => 'قيم توزيع العمولة يجب أن تكون أكبر من أو تساوي صفر.',
+            ]);
+        }
+
+        if (abs(round($customerCommissionAmount + $supplierCommissionAmount, 4) - $commissionAmount) > 0.00009) {
+            throw ValidationException::withMessages([
+                'commission_split' => 'مجموع عمولة العميل والمورد يجب أن يساوي إجمالي العمولة.',
+            ]);
+        }
+
+        return [$customerCommissionAmount, $supplierCommissionAmount];
     }
 
     /**
@@ -349,6 +432,151 @@ class OperationService
         ]);
     }
 
+    private function syncSupplierCommissionObligation(Operation $operation, User $user): void
+    {
+        $existingObligation = $this->supplierCommissionObligation($operation);
+        $supplierCommissionAmount = round((float) $operation->supplier_commission_amount, 4);
+
+        if ($operation->supplier_id === null || $supplierCommissionAmount <= 0) {
+            $this->deleteUnsettledSupplierCommissionObligation($existingObligation);
+            $this->refreshSupplierSettlementStatus($operation);
+
+            return;
+        }
+
+        if ($existingObligation !== null) {
+            $this->ensureSupplierCommissionCanChange($existingObligation, $operation);
+
+            if ((float) $existingObligation->settled_amount > 0 || $existingObligation->settlements()->exists()) {
+                $this->refreshSupplierSettlementStatus($operation);
+
+                return;
+            }
+
+            $existingObligation->update([
+                'counterparty_id' => $operation->supplier_id,
+                'amount' => $supplierCommissionAmount,
+                'currency' => $operation->commission_currency,
+                'exchange_rate' => $operation->customer_exchange_rate,
+                'settled_amount' => 0,
+                'balance_amount' => $supplierCommissionAmount,
+                'status' => OperationObligationStatus::Open->value,
+            ]);
+            $this->refreshSupplierSettlementStatus($operation);
+
+            return;
+        }
+
+        $supplier = $operation->supplier()->lockForUpdate()->firstOrFail();
+
+        $this->operationObligationService->openReceivable(
+            operation: $operation,
+            counterparty: $supplier,
+            creator: $user,
+            reason: OperationObligationReason::Commission,
+            amount: $supplierCommissionAmount,
+            currency: (string) $operation->commission_currency,
+            exchangeRate: (float) $operation->customer_exchange_rate,
+            counterpartyRole: OperationCounterpartyRole::Supplier
+        );
+        $this->refreshSupplierSettlementStatus($operation);
+    }
+
+    private function removeSupplierCommissionObligation(Operation $operation): void
+    {
+        $this->deleteUnsettledSupplierCommissionObligation($this->supplierCommissionObligation($operation));
+        $this->refreshSupplierSettlementStatus($operation);
+    }
+
+    private function supplierCommissionObligation(Operation $operation): ?OperationObligation
+    {
+        return OperationObligation::query()
+            ->where('operation_id', $operation->id)
+            ->where('counterparty_role', OperationCounterpartyRole::Supplier->value)
+            ->where('type', OperationObligationType::Receivable->value)
+            ->where('reason', OperationObligationReason::Commission->value)
+            ->lockForUpdate()
+            ->first();
+    }
+
+    private function ensureSupplierCommissionCanChange(OperationObligation $obligation, Operation $operation): void
+    {
+        if ((float) $obligation->settled_amount <= 0 && ! $obligation->settlements()->exists()) {
+            return;
+        }
+
+        $sameCommission = (int) $obligation->counterparty_id === (int) $operation->supplier_id
+            && abs(round((float) $obligation->amount, 4) - round((float) $operation->supplier_commission_amount, 4)) <= 0.00009
+            && $obligation->currency === $operation->commission_currency
+            && abs(round((float) $obligation->exchange_rate, 8) - round((float) $operation->customer_exchange_rate, 8)) <= 0.000000009;
+
+        if ($sameCommission) {
+            return;
+        }
+
+        throw ValidationException::withMessages([
+            'commission_payer' => 'لا يمكن تغيير عمولة المورد بعد بدء تسويتها.',
+        ]);
+    }
+
+    private function deleteUnsettledSupplierCommissionObligation(?OperationObligation $obligation): void
+    {
+        if ($obligation === null) {
+            return;
+        }
+
+        if ((float) $obligation->settled_amount > 0 || $obligation->settlements()->exists()) {
+            throw ValidationException::withMessages([
+                'commission_payer' => 'لا يمكن إزالة عمولة المورد بعد بدء تسويتها.',
+            ]);
+        }
+
+        $obligation->delete();
+    }
+
+    private function refreshSupplierSettlementStatus(Operation $operation): void
+    {
+        if ($operation->supplier_id === null) {
+            $operation->update([
+                'supplier_settlement_status' => null,
+                'supplier_settled_at' => null,
+            ]);
+
+            return;
+        }
+
+        $supplierObligations = OperationObligation::query()
+            ->where('operation_id', $operation->id)
+            ->where('counterparty_id', $operation->supplier_id)
+            ->where('counterparty_role', OperationCounterpartyRole::Supplier->value)
+            ->get();
+
+        if ($supplierObligations->isEmpty()) {
+            $operation->update([
+                'supplier_settlement_status' => null,
+                'supplier_settled_at' => null,
+            ]);
+
+            return;
+        }
+
+        $hasSettledAmount = $supplierObligations->contains(
+            fn (OperationObligation $obligation): bool => round((float) $obligation->settled_amount, 4) > 0
+        );
+        $allSettled = $supplierObligations->every(
+            fn (OperationObligation $obligation): bool => $obligation->status === OperationObligationStatus::Settled
+        );
+
+        $operation->update([
+            'supplier_settlement_status' => $allSettled
+                ? OperationSupplierSettlementStatus::Settled->value
+                : ($hasSettledAmount
+                    ? OperationSupplierSettlementStatus::PartiallySettled->value
+                    : OperationSupplierSettlementStatus::Unsettled->value),
+            'supplier_settled_at' => $allSettled ? now() : null,
+        ]);
+    }
+
     private function nextReferenceNumber(string $transactionDate): string
     {
         $year = date('Y', strtotime($transactionDate));
@@ -384,6 +612,9 @@ class OperationService
             'customer_exchange_rate',
             'commission_type',
             'commission_rate',
+            'commission_payer',
+            'customer_commission_amount',
+            'supplier_commission_amount',
             'notes',
         ]), $data);
     }

@@ -1,12 +1,17 @@
 <?php
 
+use App\Enums\OperationCommissionPayer;
+use App\Enums\OperationCounterpartyRole;
 use App\Enums\OperationCustomerDirection;
+use App\Enums\OperationObligationReason;
+use App\Enums\OperationObligationType;
 use App\Enums\OperationSupplierDirection;
 use App\Models\AuditLog;
 use App\Models\Box;
 use App\Models\BoxBalanceLog;
 use App\Models\Customer;
 use App\Models\Operation;
+use App\Models\OperationObligation;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 use Laravel\Sanctum\Sanctum;
@@ -56,6 +61,9 @@ test('supplier funded operation stores commission and does not affect boxes', fu
         ->assertJsonPath('message', 'تم إنشاء العملية')
         ->assertJsonPath('data.reference_number', 'TRX-2026-00001')
         ->assertJsonPath('data.commission_amount', '20.0000')
+        ->assertJsonPath('data.commission_payer', OperationCommissionPayer::Customer->value)
+        ->assertJsonPath('data.customer_commission_amount', '20.0000')
+        ->assertJsonPath('data.supplier_commission_amount', '0.0000')
         ->assertJsonPath('data.customer_net_amount', '980.0000')
         ->assertJsonPath('data.supplier_direction', OperationSupplierDirection::SupplierPaysIntermediary->value)
         ->assertJsonPath('data.customer_direction', OperationCustomerDirection::IntermediaryPaysCustomer->value)
@@ -65,6 +73,88 @@ test('supplier funded operation stores commission and does not affect boxes', fu
 
     expect(BoxBalanceLog::query()->count())->toBe(0)
         ->and(AuditLog::query()->where('action', 'operation.created')->count())->toBe(1);
+});
+
+test('supplier paid commission opens receivable and leaves customer net unchanged', function (): void {
+    actingAsOperationUser();
+
+    $this->postJson('/api/v1/operations', operationPayload([
+        'commission_type' => 'fixed',
+        'commission_rate' => 100,
+        'commission_payer' => OperationCommissionPayer::Supplier->value,
+    ]))
+        ->assertCreated()
+        ->assertJsonPath('data.commission_amount', '100.0000')
+        ->assertJsonPath('data.commission_payer', OperationCommissionPayer::Supplier->value)
+        ->assertJsonPath('data.customer_commission_amount', '0.0000')
+        ->assertJsonPath('data.supplier_commission_amount', '100.0000')
+        ->assertJsonPath('data.customer_net_amount', '1000.0000')
+        ->assertJsonPath('data.commission_currency', 'USD');
+
+    $operation = Operation::query()->firstOrFail();
+    $obligation = OperationObligation::query()->firstOrFail();
+
+    expect($obligation->operation_id)->toBe($operation->id)
+        ->and($obligation->counterparty_id)->toBe($operation->supplier_id)
+        ->and($obligation->counterparty_role)->toBe(OperationCounterpartyRole::Supplier)
+        ->and($obligation->type)->toBe(OperationObligationType::Receivable)
+        ->and($obligation->reason)->toBe(OperationObligationReason::Commission)
+        ->and((float) $obligation->amount)->toBe(100.0)
+        ->and((float) $obligation->balance_amount)->toBe(100.0)
+        ->and($obligation->currency)->toBe('USD');
+});
+
+test('commission can be split between customer and supplier', function (): void {
+    actingAsOperationUser();
+
+    $this->postJson('/api/v1/operations', operationPayload([
+        'commission_type' => 'fixed',
+        'commission_rate' => 100,
+        'commission_payer' => OperationCommissionPayer::Both->value,
+        'customer_commission_amount' => 40,
+        'supplier_commission_amount' => 60,
+    ]))
+        ->assertCreated()
+        ->assertJsonPath('data.commission_amount', '100.0000')
+        ->assertJsonPath('data.commission_payer', OperationCommissionPayer::Both->value)
+        ->assertJsonPath('data.customer_commission_amount', '40.0000')
+        ->assertJsonPath('data.supplier_commission_amount', '60.0000')
+        ->assertJsonPath('data.customer_net_amount', '960.0000');
+
+    $obligation = OperationObligation::query()->firstOrFail();
+
+    expect($obligation->reason)->toBe(OperationObligationReason::Commission)
+        ->and($obligation->counterparty_role)->toBe(OperationCounterpartyRole::Supplier)
+        ->and($obligation->type)->toBe(OperationObligationType::Receivable)
+        ->and((float) $obligation->amount)->toBe(60.0);
+});
+
+test('split commission must equal total commission', function (): void {
+    actingAsOperationUser();
+
+    $this->postJson('/api/v1/operations', operationPayload([
+        'commission_type' => 'fixed',
+        'commission_rate' => 100,
+        'commission_payer' => OperationCommissionPayer::Both->value,
+        'customer_commission_amount' => 40,
+        'supplier_commission_amount' => 40,
+    ]))
+        ->assertUnprocessable()
+        ->assertJsonPath('errors.commission_split.0', 'مجموع عمولة العميل والمورد يجب أن يساوي إجمالي العمولة.');
+});
+
+test('supplier commission requires supplier funded operation', function (): void {
+    actingAsOperationUser();
+    $box = Box::factory()->create(['current_balance' => 1500]);
+
+    $this->postJson('/api/v1/operations', operationPayload([
+        'supplier_id' => null,
+        'box_id' => $box->id,
+        'status' => null,
+        'commission_payer' => OperationCommissionPayer::Supplier->value,
+    ]))
+        ->assertUnprocessable()
+        ->assertJsonPath('errors.commission_payer.0', 'لا يمكن تحميل المورد عمولة بدون اختيار مورد للعملية.');
 });
 
 test('supplier direction can be set and updated before workflow starts', function (): void {

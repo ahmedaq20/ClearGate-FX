@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OperationCommissionPayer;
 use App\Enums\OperationCustomerDirection;
 use App\Enums\OperationCustomerSettlementStatus;
 use App\Enums\OperationStatus;
@@ -30,7 +31,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'customer_exchange_rate',
     'commission_type',
     'commission_rate',
+    'commission_payer',
     'commission_amount',
+    'customer_commission_amount',
+    'supplier_commission_amount',
     'customer_net_amount',
     'status',
     'customer_direction',
@@ -54,6 +58,9 @@ class Operation extends Model
 
     protected $attributes = [
         'status' => 'pending',
+        'commission_payer' => 'customer',
+        'customer_commission_amount' => 0,
+        'supplier_commission_amount' => 0,
     ];
 
     public function customer(): BelongsTo
@@ -107,7 +114,10 @@ class Operation extends Model
             'customer_amount' => 'decimal:4',
             'customer_exchange_rate' => 'decimal:8',
             'commission_rate' => 'decimal:4',
+            'commission_payer' => OperationCommissionPayer::class,
             'commission_amount' => 'decimal:4',
+            'customer_commission_amount' => 'decimal:4',
+            'supplier_commission_amount' => 'decimal:4',
             'customer_net_amount' => 'decimal:4',
             'customer_direction' => OperationCustomerDirection::class,
             'customer_settlement_status' => OperationCustomerSettlementStatus::class,

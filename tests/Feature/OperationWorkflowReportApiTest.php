@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\BoxBalanceOperationType;
+use App\Enums\OperationCommissionPayer;
 use App\Enums\OperationCounterpartyRole;
 use App\Enums\OperationCustomerSettlementStatus;
 use App\Enums\OperationObligationReason;
@@ -60,7 +61,10 @@ function workflowReportOperation(User $user, Customer $customer, ?Customer $supp
         'supplier_amount' => $supplier === null ? null : 50000,
         'supplier_currency' => $supplier === null ? null : 'EGP',
         'supplier_exchange_rate' => $supplier === null ? null : 50,
+        'commission_payer' => OperationCommissionPayer::Customer->value,
         'commission_amount' => 25,
+        'customer_commission_amount' => 25,
+        'supplier_commission_amount' => 0,
         'commission_currency' => 'USD',
         'status' => OperationStatus::Pending->value,
         'created_by' => $user->id,
@@ -155,6 +159,10 @@ test('workflow report exposes independent operation financial states and outstan
         ->and($row['supplier_settlement_status'])->toBe(OperationSupplierSettlementStatus::Unsettled->value)
         ->and($row['customer_currency'])->toBe('USD')
         ->and($row['supplier_currency'])->toBe('EGP')
+        ->and($row['commission_amount'])->toBe(25)
+        ->and($row['commission_payer'])->toBe(OperationCommissionPayer::Customer->value)
+        ->and($row['customer_commission_amount'])->toBe(25)
+        ->and($row['supplier_commission_amount'])->toBe(0)
         ->and($row['outstanding'][0]['type'])->toBe(OperationObligationType::Payable->value)
         ->and($row['outstanding'][0]['currency'])->toBe('EGP')
         ->and($row['outstanding'][0]['balance_amount'])->toBe(50000);

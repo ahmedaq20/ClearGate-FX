@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\OperationCommissionPayer;
 use App\Enums\OperationStatus;
 use App\Models\Box;
 use App\Models\Customer;
@@ -39,8 +40,12 @@ class OperationFactory extends Factory
             'customer_exchange_rate' => 1,
             'commission_type' => 'percentage',
             'commission_rate' => $commissionRate,
+            'commission_payer' => OperationCommissionPayer::Customer->value,
             'commission_amount' => $commissionAmount,
+            'customer_commission_amount' => $commissionAmount,
+            'supplier_commission_amount' => 0,
             'customer_net_amount' => round($amount - $commissionAmount, 4),
+            'commission_currency' => 'USD',
             'status' => OperationStatus::Pending->value,
             'completed_at' => null,
             'cancelled_at' => null,
