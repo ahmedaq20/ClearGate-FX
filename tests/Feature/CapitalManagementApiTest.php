@@ -1,11 +1,13 @@
 <?php
 
+use App\Enums\CapitalAccountType;
 use App\Models\Box;
 use App\Models\BoxBalanceLog;
 use App\Models\CapitalAccount;
 use App\Models\CapitalTransaction;
 use App\Models\OwnerExpense;
 use App\Models\User;
+use App\Services\CapitalService;
 use Database\Seeders\RolePermissionSeeder;
 use Laravel\Sanctum\Sanctum;
 
@@ -68,6 +70,11 @@ test('owner can deposit withdraw and transfer capital to a box with movement log
 
     $this->getJson('/api/v1/capital')
         ->assertOk()
+        ->assertJsonPath('data.registered_capital', 800)
+        ->assertJsonPath('data.unallocated_capital', 500)
+        ->assertJsonPath('data.allocated_capital', 300)
+        ->assertJsonPath('data.boxes_liquidity', 400)
+        ->assertJsonPath('data.funds_under_management', 900)
         ->assertJsonPath('data.capital_balance', 900)
         ->assertJsonPath('data.boxes_total_balance', 400)
         ->assertJsonPath('data.free_capital', 500);
@@ -157,6 +164,11 @@ test('capital reports return expenses capital movements and net worth', function
 
     $this->getJson('/api/v1/reports/capital-report')
         ->assertOk()
+        ->assertJsonPath('data.registered_capital', 875)
+        ->assertJsonPath('data.unallocated_capital', 875)
+        ->assertJsonPath('data.allocated_capital', 0)
+        ->assertJsonPath('data.boxes_liquidity', 400)
+        ->assertJsonPath('data.funds_under_management', 1275)
         ->assertJsonPath('data.capital_balance', 1275)
         ->assertJsonPath('data.free_capital', 875)
         ->assertJsonPath('data.boxes_total_balance', 400)
@@ -166,10 +178,42 @@ test('capital reports return expenses capital movements and net worth', function
 
     $this->getJson('/api/v1/reports/net-worth-report')
         ->assertOk()
+        ->assertJsonPath('data.registered_capital', 875)
+        ->assertJsonPath('data.unallocated_capital', 875)
+        ->assertJsonPath('data.allocated_capital', 0)
+        ->assertJsonPath('data.boxes_liquidity', 400)
+        ->assertJsonPath('data.funds_under_management', 1275)
         ->assertJsonPath('data.capital_balance', 1275)
         ->assertJsonPath('data.free_capital', 875)
         ->assertJsonPath('data.boxes_total_balance', 400)
         ->assertJsonPath('data.net_worth', 1275);
+});
+
+test('capital dashboard separates registered capital from box liquidity without double counting allocations', function (): void {
+    $owner = actingAsCapitalUser();
+    $box = Box::factory()->create(['currency' => 'USD', 'current_balance' => 100]);
+    $service = app(CapitalService::class);
+    $account = $service->createCapitalAccount($owner, [
+        'name' => 'Investor Liquidity',
+        'type' => CapitalAccountType::Investor->value,
+        'currency' => 'USD',
+        'initial_balance' => 5000,
+    ]);
+
+    $service->allocateToBox($owner, $account, [
+        'amount' => 2000,
+        'currency' => 'USD',
+        'box_id' => $box->id,
+    ]);
+
+    $this->getJson('/api/v1/capital')
+        ->assertOk()
+        ->assertJsonPath('data.registered_capital', 5000)
+        ->assertJsonPath('data.unallocated_capital', 3000)
+        ->assertJsonPath('data.allocated_capital', 2000)
+        ->assertJsonPath('data.boxes_liquidity', 2100)
+        ->assertJsonPath('data.funds_under_management', 5100)
+        ->assertJsonPath('data.capital_balance', 5100);
 });
 
 test('capital module is owner only', function (): void {

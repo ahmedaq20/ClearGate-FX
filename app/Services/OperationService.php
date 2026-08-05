@@ -93,6 +93,7 @@ class OperationService
                 ->firstOrFail();
             $oldValues = $lockedOperation->attributesToArray();
 
+            $this->ensureOperationCanBeDeleted($lockedOperation);
             $this->applyBoxFunding($lockedOperation, $user, BoxBalanceOperationType::Add);
             $this->reverseSupplierFunding($lockedOperation);
             $this->removeSupplierCommissionObligation($lockedOperation);
@@ -106,6 +107,23 @@ class OperationService
 
             $lockedOperation->delete();
         }, attempts: 3);
+    }
+
+    private function ensureOperationCanBeDeleted(Operation $operation): void
+    {
+        $hasFinancialActivity = $operation->customer_settlement_status !== null
+            || $operation->supplier_fulfillment_status !== null
+            || $operation->supplier_settlement_status !== null
+            || $operation->settlements()->exists()
+            || $operation->obligations()
+                ->where('reason', '!=', OperationObligationReason::Commission->value)
+                ->exists();
+
+        if ($hasFinancialActivity) {
+            throw ValidationException::withMessages([
+                'operation' => 'لا يمكن حذف العملية بعد بدء تنفيذها أو تسويتها.',
+            ]);
+        }
     }
 
     public function complete(Operation $operation, User $user): Operation

@@ -35,7 +35,7 @@ function actingAsSupplierSettlementUser(string $role = 'manager'): User
     return $user;
 }
 
-test('supplier payable can be partially and fully settled with linked box cash movement', function (): void {
+test('supplier payable rejects partial settlement and settles the full amount with linked box cash movement', function (): void {
     $user = actingAsSupplierSettlementUser();
     $supplier = Customer::factory()->create(['type' => 'supplier', 'balance_usd' => 900]);
     $box = Box::factory()->create(['currency' => 'USD', 'current_balance' => 2000]);
@@ -64,29 +64,22 @@ test('supplier payable can be partially and fully settled with linked box cash m
         'operation_obligation_id' => $obligation->id,
         'idempotency_key' => 'supplier-partial-1',
     ])
-        ->assertOk()
-        ->assertJsonPath('message', 'تم تحديث تسوية المورد')
-        ->assertJsonPath('data.supplier_settlement_status', OperationSupplierSettlementStatus::PartiallySettled->value)
-        ->assertJsonPath('data.supplier_settled_at', null)
-        ->assertJsonPath('data.status', OperationStatus::Pending->value);
-
-    expect($obligation->refresh()->status)->toBe(OperationObligationStatus::PartiallySettled)
-        ->and((float) $obligation->settled_amount)->toBe(400.0)
-        ->and((float) $obligation->balance_amount)->toBe(600.0)
-        ->and((float) $box->refresh()->current_balance)->toBe(1600.0)
-        ->and((float) $supplier->refresh()->balance_usd)->toBe(900.0);
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('amount');
 
     $this->postJson("/api/v1/operations/{$operation->id}/supplier-settlement", [
-        'amount' => 600,
+        'amount' => 1000,
         'box_id' => $box->id,
         'operation_obligation_id' => $obligation->id,
         'idempotency_key' => 'supplier-final-1',
     ])
         ->assertOk()
-        ->assertJsonPath('data.supplier_settlement_status', OperationSupplierSettlementStatus::Settled->value);
+        ->assertJsonPath('message', 'تم تحديث تسوية المورد')
+        ->assertJsonPath('data.supplier_settlement_status', OperationSupplierSettlementStatus::Settled->value)
+        ->assertJsonPath('data.status', OperationStatus::Pending->value);
 
-    $settlements = OperationSettlement::query()->orderBy('id')->get();
-    $balanceLogs = BoxBalanceLog::query()->orderBy('id')->get();
+    $settlement = OperationSettlement::query()->firstOrFail();
+    $balanceLog = BoxBalanceLog::query()->firstOrFail();
 
     expect($operation->refresh()->supplier_settlement_status)->toBe(OperationSupplierSettlementStatus::Settled)
         ->and($operation->supplier_settled_at)->not->toBeNull()
@@ -94,13 +87,10 @@ test('supplier payable can be partially and fully settled with linked box cash m
         ->and((float) $obligation->settled_amount)->toBe(1000.0)
         ->and((float) $obligation->balance_amount)->toBe(0.0)
         ->and((float) $box->refresh()->current_balance)->toBe(1000.0)
-        ->and($settlements)->toHaveCount(2)
-        ->and($settlements[0]->direction)->toBe(OperationSettlementDirection::CashOut)
-        ->and($settlements[1]->direction)->toBe(OperationSettlementDirection::CashOut)
-        ->and($balanceLogs)->toHaveCount(2)
-        ->and($balanceLogs[0]->operation_type)->toBe(BoxBalanceOperationType::Subtract)
-        ->and($balanceLogs[0]->operation_settlement_id)->toBe($settlements[0]->id)
-        ->and($balanceLogs[1]->operation_settlement_id)->toBe($settlements[1]->id);
+        ->and((float) $supplier->refresh()->balance_usd)->toBe(900.0)
+        ->and($settlement->direction)->toBe(OperationSettlementDirection::CashOut)
+        ->and($balanceLog->operation_type)->toBe(BoxBalanceOperationType::Subtract)
+        ->and($balanceLog->operation_settlement_id)->toBe($settlement->id);
 });
 
 test('supplier settlement retries do not double move the selected box', function (): void {
@@ -269,7 +259,7 @@ test('supplier pays intermediary workflow opens supplier receivable and settles 
         ->and($operation->refresh()->supplier_settlement_status)->toBe(OperationSupplierSettlementStatus::Settled);
 });
 
-test('supplier settlement without obligation id chooses principal before split commission when amount fits', function (): void {
+test('supplier settlement without obligation id settles principal and split commission in full', function (): void {
     $user = actingAsSupplierSettlementUser();
     $customer = Customer::factory()->create(['type' => 'customer']);
     $supplier = Customer::factory()->create(['type' => 'supplier']);
@@ -313,19 +303,29 @@ test('supplier settlement without obligation id chooses principal before split c
     $this->postJson("/api/v1/operations/{$operation->id}/supplier-settlement", [
         'amount' => 50,
         'box_id' => $box->id,
+        'idempotency_key' => 'supplier-partial-with-split-commission',
+    ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('amount');
+
+    $this->postJson("/api/v1/operations/{$operation->id}/supplier-settlement", [
+        'amount' => 55,
+        'box_id' => $box->id,
         'idempotency_key' => 'supplier-principal-with-split-commission',
     ])
         ->assertOk()
-        ->assertJsonPath('data.supplier_settlement_status', OperationSupplierSettlementStatus::PartiallySettled->value);
+        ->assertJsonPath('data.supplier_settlement_status', OperationSupplierSettlementStatus::Settled->value);
 
-    $settlement = OperationSettlement::query()->firstOrFail();
+    $settlements = OperationSettlement::query()->orderBy('id')->get();
 
-    expect($settlement->operation_obligation_id)->toBe($principalObligation->id)
+    expect($settlements)->toHaveCount(2)
+        ->and($settlements[0]->operation_obligation_id)->toBe($principalObligation->id)
+        ->and($settlements[1]->operation_obligation_id)->toBe($commissionObligation->id)
         ->and($principalObligation->refresh()->status)->toBe(OperationObligationStatus::Settled)
         ->and((float) $principalObligation->balance_amount)->toBe(0.0)
-        ->and($commissionObligation->refresh()->status)->toBe(OperationObligationStatus::Open)
-        ->and((float) $commissionObligation->balance_amount)->toBe(5.0)
-        ->and((float) $box->refresh()->current_balance)->toBe(150.0);
+        ->and($commissionObligation->refresh()->status)->toBe(OperationObligationStatus::Settled)
+        ->and((float) $commissionObligation->balance_amount)->toBe(0.0)
+        ->and((float) $box->refresh()->current_balance)->toBe(155.0);
 });
 
 test('supplier settlement rejects missing obligations currency mismatches and overdrafts', function (): void {
@@ -466,19 +466,19 @@ test('supplier settlement is limited to boxes the current user can use', functio
     ]);
 
     $this->postJson("/api/v1/operations/{$operation->id}/supplier-settlement", [
-        'amount' => 100,
+        'amount' => 1000,
         'box_id' => $otherBox->id,
         'operation_obligation_id' => $obligation->id,
     ])->assertUnprocessable();
 
     $this->postJson("/api/v1/operations/{$operation->id}/supplier-settlement", [
-        'amount' => 100,
+        'amount' => 1000,
         'box_id' => $assignedBox->id,
         'operation_obligation_id' => $obligation->id,
         'idempotency_key' => 'employee-assigned-box',
     ])->assertOk();
 
-    expect((float) $assignedBox->refresh()->current_balance)->toBe(1900.0)
+    expect((float) $assignedBox->refresh()->current_balance)->toBe(1000.0)
         ->and((float) $otherBox->refresh()->current_balance)->toBe(2000.0)
         ->and(BoxBalanceLog::query()->count())->toBe(1);
 });

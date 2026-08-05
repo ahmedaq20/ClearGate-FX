@@ -562,15 +562,11 @@ class CapitalService
      */
     public function dashboard(User $owner): array
     {
-        $account = $this->account($owner);
-        $freeCapital = round((float) $account->free_balance_usd, 4);
-        $boxesTotalBalance = round((float) Box::query()->sum('current_balance'), 4);
-        $capitalBalance = $this->capitalBalance($freeCapital, $boxesTotalBalance);
+        $this->account($owner);
+        $capitalMetrics = $this->capitalMetrics($owner);
 
         return [
-            'capital_balance' => $capitalBalance,
-            'boxes_total_balance' => $boxesTotalBalance,
-            'free_capital' => $freeCapital,
+            ...$capitalMetrics,
             'monthly_expenses' => round((float) $owner->ownerExpenses()
                 ->whereYear('expense_date', now()->year)
                 ->whereMonth('expense_date', now()->month)
@@ -617,10 +613,8 @@ class CapitalService
     public function capitalReport(User $owner, array $filters): array
     {
         $query = $this->transactionQuery($owner, $filters);
-        $account = $this->account($owner);
-        $freeCapital = round((float) $account->free_balance_usd, 4);
-        $boxesTotalBalance = round((float) Box::query()->sum('current_balance'), 4);
-        $capitalBalance = $this->capitalBalance($freeCapital, $boxesTotalBalance);
+        $this->account($owner);
+        $capitalMetrics = $this->capitalMetrics($owner);
         $rows = (clone $query)
             ->selectRaw('type')
             ->selectRaw('COUNT(*) as transactions_count')
@@ -636,36 +630,52 @@ class CapitalService
             ->all();
 
         return [
-            'capital_balance' => $capitalBalance,
-            'free_capital' => $freeCapital,
-            'boxes_total_balance' => $boxesTotalBalance,
-            'net_worth' => $capitalBalance,
+            ...$capitalMetrics,
             'by_type' => $rows,
             'transactions' => (clone $query)->latest('transaction_date')->latest('id')->get(),
         ];
     }
 
     /**
-     * @return array<string, float>
+     * @return array<string, mixed>
      */
     public function netWorthReport(User $owner): array
     {
-        $account = $this->account($owner);
-        $freeCapital = round((float) $account->free_balance_usd, 4);
-        $boxesTotalBalance = round((float) Box::query()->sum('current_balance'), 4);
-        $capitalBalance = $this->capitalBalance($freeCapital, $boxesTotalBalance);
+        $this->account($owner);
 
-        return [
-            'capital_balance' => $capitalBalance,
-            'free_capital' => $freeCapital,
-            'boxes_total_balance' => $boxesTotalBalance,
-            'net_worth' => $capitalBalance,
-        ];
+        return $this->capitalMetrics($owner);
     }
 
-    private function capitalBalance(float $freeCapital, float $boxesTotalBalance): float
+    /**
+     * @return array{currency: string, registered_capital: float, unallocated_capital: float, allocated_capital: float, boxes_liquidity: float, funds_under_management: float, capital_balance: float, free_capital: float, boxes_total_balance: float, net_worth: float}
+     */
+    private function capitalMetrics(User $owner, string $currency = 'USD'): array
     {
-        return round($freeCapital + $boxesTotalBalance, 4);
+        $currency = $this->normalizeCurrency($currency);
+        $accountsQuery = CapitalAccount::query()
+            ->where('user_id', $owner->id)
+            ->where('currency', $currency);
+
+        $registeredCapital = $this->roundMoney((clone $accountsQuery)->sum('total_balance'));
+        $unallocatedCapital = $this->roundMoney((clone $accountsQuery)->sum('unallocated_balance'));
+        $allocatedCapital = $this->roundMoney((clone $accountsQuery)->sum('allocated_balance'));
+        $boxesLiquidity = $this->roundMoney(Box::query()
+            ->where('currency', $currency)
+            ->sum('current_balance'));
+        $fundsUnderManagement = $this->roundMoney($unallocatedCapital + $boxesLiquidity);
+
+        return [
+            'currency' => $currency,
+            'registered_capital' => $registeredCapital,
+            'unallocated_capital' => $unallocatedCapital,
+            'allocated_capital' => $allocatedCapital,
+            'boxes_liquidity' => $boxesLiquidity,
+            'funds_under_management' => $fundsUnderManagement,
+            'capital_balance' => $fundsUnderManagement,
+            'free_capital' => $unallocatedCapital,
+            'boxes_total_balance' => $boxesLiquidity,
+            'net_worth' => $fundsUnderManagement,
+        ];
     }
 
     /**

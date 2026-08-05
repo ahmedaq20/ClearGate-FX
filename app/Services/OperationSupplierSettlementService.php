@@ -16,6 +16,7 @@ use App\Models\Operation;
 use App\Models\OperationObligation;
 use App\Models\OperationSettlement;
 use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -49,12 +50,40 @@ class OperationSupplierSettlementService
                 ]);
             }
 
-            $obligation = $this->supplierObligation(
-                $lockedOperation,
-                $data['operation_obligation_id'] ?? null,
-                $data['idempotency_key'] ?? null,
-                $data['amount']
-            );
+            $idempotencyKey = $this->nullableString($data['idempotency_key'] ?? null);
+
+            if ($idempotencyKey !== null) {
+                $existingSettlement = OperationSettlement::query()
+                    ->where('idempotency_key', $idempotencyKey)
+                    ->where('operation_id', $lockedOperation->id)
+                    ->where('counterparty_role', OperationCounterpartyRole::Supplier->value)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($existingSettlement !== null) {
+                    $this->ensureReplayMatches($existingSettlement, $lockedOperation, $data);
+
+                    return $lockedOperation;
+                }
+            }
+
+            $obligations = $this->openSupplierObligations($lockedOperation, $data['operation_obligation_id'] ?? null);
+
+            if ($obligations->isEmpty()) {
+                throw ValidationException::withMessages([
+                    'operation_obligation_id' => 'لا يوجد التزام مفتوح للمورد على هذه العملية.',
+                ]);
+            }
+
+            $totalRemaining = round((float) $obligations->sum('balance_amount'), 4);
+            $requestedAmount = round((float) $data['amount'], 4);
+
+            if (abs($requestedAmount - $totalRemaining) > 0.00009) {
+                throw ValidationException::withMessages([
+                    'amount' => 'يجب تسوية كامل مبلغ تسوية المورد ('.$totalRemaining.') دفعة واحدة.',
+                ]);
+            }
+
             $box = Box::query()
                 ->whereKey($data['box_id'])
                 ->lockForUpdate()
@@ -66,11 +95,22 @@ class OperationSupplierSettlementService
                 ]);
             }
 
-            $this->ensureBoxCurrencyMatches($box, $obligation);
+            foreach ($obligations as $obligation) {
+                $this->ensureBoxCurrencyMatches($box, $obligation);
+            }
 
-            $settlement = $this->settlementForObligation($obligation, $user, $data);
-            $settlement->update(['box_id' => $box->id]);
-            $this->moveBoxBalance($box, $lockedOperation, $settlement, $user, $obligation);
+            foreach ($obligations as $index => $obligation) {
+                $settlement = $this->settlementForObligation($obligation, $user, [
+                    'amount' => (float) $obligation->balance_amount,
+                    'box_id' => $box->id,
+                    'settlement_date' => $data['settlement_date'] ?? now()->toDateString(),
+                    'idempotency_key' => $index === 0 ? $idempotencyKey : null,
+                    'notes' => $data['notes'] ?? null,
+                ]);
+                $settlement->update(['box_id' => $box->id]);
+                $this->moveBoxBalance($box, $lockedOperation, $settlement, $user, $obligation);
+            }
+
             $this->updateOperationSupplierSettlementStatus($lockedOperation);
 
             $lockedOperation->refresh();
@@ -87,78 +127,36 @@ class OperationSupplierSettlementService
         }, attempts: 3);
     }
 
-    private function supplierObligation(Operation $operation, mixed $operationObligationId, mixed $idempotencyKey, mixed $amount): OperationObligation
+    /**
+     * @return Collection<int, OperationObligation>
+     */
+    private function openSupplierObligations(Operation $operation, mixed $operationObligationId): Collection
     {
-        if (($operationObligationId === null || $operationObligationId === '') && $this->nullableString($idempotencyKey) !== null) {
-            $existingSettlement = OperationSettlement::query()
-                ->where('idempotency_key', $this->nullableString($idempotencyKey))
-                ->lockForUpdate()
-                ->first();
-
-            if ($existingSettlement !== null) {
-                if (
-                    (int) $existingSettlement->operation_id !== (int) $operation->id
-                    || (int) $existingSettlement->counterparty_id !== (int) $operation->supplier_id
-                    || $existingSettlement->counterparty_role !== OperationCounterpartyRole::Supplier
-                    || $existingSettlement->operation_obligation_id === null
-                ) {
-                    throw ValidationException::withMessages([
-                        'idempotency_key' => 'مفتاح التكرار مستخدم لتسوية مختلفة.',
-                    ]);
-                }
-
-                $operationObligationId = $existingSettlement->operation_obligation_id;
-            }
-        }
-
         $query = OperationObligation::query()
             ->where('operation_id', $operation->id)
             ->where('counterparty_id', $operation->supplier_id)
             ->where('counterparty_role', OperationCounterpartyRole::Supplier->value)
+            ->whereIn('status', [
+                OperationObligationStatus::Open->value,
+                OperationObligationStatus::PartiallySettled->value,
+            ])
             ->lockForUpdate();
 
         if ($operationObligationId !== null && $operationObligationId !== '') {
             $query->whereKey((int) $operationObligationId);
-        } else {
-            $query->whereIn('status', [
-                OperationObligationStatus::Open->value,
-                OperationObligationStatus::PartiallySettled->value,
-            ]);
-
-            $settlementAmount = round((float) $amount, 4);
-
-            if ($settlementAmount > 0) {
-                $query
-                    ->where('balance_amount', '>=', $settlementAmount)
-                    ->orderByRaw('CASE WHEN ROUND(balance_amount, 4) = ? THEN 0 ELSE 1 END', [$settlementAmount])
-                    ->orderByRaw(
-                        'CASE reason WHEN ? THEN 0 WHEN ? THEN 1 WHEN ? THEN 2 ELSE 3 END',
-                        [
-                            OperationObligationReason::SupplierPrincipal->value,
-                            OperationObligationReason::SupplierSettlement->value,
-                            OperationObligationReason::Commission->value,
-                        ]
-                    );
-            }
-
-            $query->orderBy('id');
         }
 
-        $obligation = $query->first();
-
-        if ($obligation === null) {
-            throw ValidationException::withMessages([
-                'operation_obligation_id' => 'لا يوجد التزام مفتوح للمورد على هذه العملية.',
-            ]);
-        }
-
-        if (! in_array($obligation->status, [OperationObligationStatus::Open, OperationObligationStatus::PartiallySettled, OperationObligationStatus::Settled], true)) {
-            throw ValidationException::withMessages([
-                'operation_obligation_id' => 'التزام المورد المحدد غير مفتوح للتسوية.',
-            ]);
-        }
-
-        return $obligation;
+        return $query
+            ->orderByRaw(
+                'CASE reason WHEN ? THEN 0 WHEN ? THEN 1 WHEN ? THEN 2 ELSE 3 END',
+                [
+                    OperationObligationReason::SupplierPrincipal->value,
+                    OperationObligationReason::SupplierSettlement->value,
+                    OperationObligationReason::Commission->value,
+                ]
+            )
+            ->orderBy('id')
+            ->get();
     }
 
     /**
@@ -167,7 +165,12 @@ class OperationSupplierSettlementService
     private function settlementForObligation(OperationObligation $obligation, User $user, array $data): OperationSettlement
     {
         if ($obligation->status === OperationObligationStatus::Settled) {
-            $settlement = $this->existingSettlementForKey($data['idempotency_key'] ?? null, $obligation, $data['amount'], $data['box_id']);
+            $settlement = $this->existingObligationSettlementForKey(
+                $data['idempotency_key'] ?? null,
+                $obligation,
+                $data['amount'],
+                $data['box_id']
+            );
 
             if ($settlement !== null) {
                 return $settlement;
@@ -197,7 +200,7 @@ class OperationSupplierSettlementService
         ]);
     }
 
-    private function existingSettlementForKey(mixed $idempotencyKey, OperationObligation $obligation, mixed $amount, mixed $boxId): ?OperationSettlement
+    private function existingObligationSettlementForKey(mixed $idempotencyKey, OperationObligation $obligation, mixed $amount, mixed $boxId): ?OperationSettlement
     {
         if ($idempotencyKey === null || trim((string) $idempotencyKey) === '') {
             return null;
@@ -224,6 +227,25 @@ class OperationSupplierSettlementService
         }
 
         return $settlement;
+    }
+
+    private function ensureReplayMatches(OperationSettlement $settlement, Operation $operation, array $data): void
+    {
+        if (
+            (int) $settlement->operation_id !== (int) $operation->id
+            || (int) $settlement->counterparty_id !== (int) $operation->supplier_id
+            || $settlement->counterparty_role !== OperationCounterpartyRole::Supplier
+        ) {
+            throw ValidationException::withMessages([
+                'idempotency_key' => 'مفتاح التكرار مستخدم لتسوية مختلفة.',
+            ]);
+        }
+
+        if ($settlement->box_id !== null && (int) $settlement->box_id !== (int) $data['box_id']) {
+            throw ValidationException::withMessages([
+                'idempotency_key' => 'مفتاح التكرار مستخدم لتسوية مختلفة.',
+            ]);
+        }
     }
 
     private function moveBoxBalance(

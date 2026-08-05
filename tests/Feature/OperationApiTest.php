@@ -453,6 +453,40 @@ test('deleting box funded operation reverses box balance and records audit', fun
         ->and(AuditLog::query()->where('action', 'operation.deleted')->count())->toBe(1);
 });
 
+test('deleting an operation with obligations or settlements is blocked', function (): void {
+    $owner = actingAsOperationUser();
+    $supplier = Customer::factory()->create(['type' => 'supplier']);
+    $operation = Operation::factory()->create(['created_by' => $owner->id]);
+
+    OperationObligation::factory()->create([
+        'operation_id' => $operation->id,
+        'counterparty_id' => $supplier->id,
+        'created_by' => $owner->id,
+    ]);
+
+    $this->deleteJson("/api/v1/operations/{$operation->id}")
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('operation');
+
+    expect(Operation::query()->whereKey($operation->id)->exists())->toBeTrue()
+        ->and(OperationObligation::query()->count())->toBe(1);
+});
+
+test('deleting an operation with a started settlement is blocked', function (): void {
+    $owner = actingAsOperationUser();
+    $supplier = Customer::factory()->create(['type' => 'supplier']);
+    $operation = Operation::factory()->create([
+        'created_by' => $owner->id,
+        'supplier_fulfillment_status' => 'completed',
+    ]);
+
+    $this->deleteJson("/api/v1/operations/{$operation->id}")
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('operation');
+
+    expect(Operation::query()->whereKey($operation->id)->exists())->toBeTrue();
+});
+
 test('operations can be filtered and receipt can be returned', function (): void {
     $owner = actingAsOperationUser();
     $customer = Customer::factory()->create(['type' => 'customer']);
